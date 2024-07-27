@@ -1,0 +1,21 @@
+/* src/AttendanceList.css */
+.fc-event {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  border: none;
+  text-align: center;
+  padding: 10px 0;
+  color: white;
+}
+
+.fc-event.present {
+  background: green;
+  color: white;
+}
+
+.fc-event.absent {
+  background-color: red;
+  color: white;
+}
