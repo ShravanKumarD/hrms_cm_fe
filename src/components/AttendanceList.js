@@ -8,7 +8,7 @@ const AttendanceList = () => {
   useEffect(() => {
     const fetchAttendances = async () => {
       try {
-        const response = await axios.get("http://localhost:80/api/attendance", {
+        const response = await axios.get("http://13.232.177.171/api/attendance", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setAttendances(response.data);

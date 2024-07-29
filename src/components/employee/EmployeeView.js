@@ -38,7 +38,7 @@ export default class EmployeeViewEmployee extends Component {
   }
 
   componentDidMount() {
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "get",
       url: "api/users/" + JSON.parse(localStorage.getItem("user")).id,

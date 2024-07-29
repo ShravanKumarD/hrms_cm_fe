@@ -52,7 +52,7 @@ const StartWork = () => {
     setIsStarted(true);
     try {
       const response = await axios.post(
-        "http://localhost:80/api/attendance/clock-in",
+        "http://13.232.177.171/api/attendance/clock-in",
         {
           userId:userId,
           date,
@@ -81,7 +81,7 @@ let x = localStorage.getItem("userId")
 console.log(userId,"aatid")
     try {
       const response = await axios.put(
-        `http://localhost:80/api/attendance/clock-out`,
+        `http://13.232.177.171/api/attendance/clock-out`,
         {
           userId,
           date,

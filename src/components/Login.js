@@ -44,7 +44,7 @@ export default class Login extends Component {
       password: this.state.password,
     };
 
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "post",
       url: "/login",

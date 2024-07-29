@@ -31,7 +31,7 @@ export default class DepartmentAdd extends Component {
       departmentName: this.state.departmentName,
     };
 
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "post",
       url: "/api/departments",

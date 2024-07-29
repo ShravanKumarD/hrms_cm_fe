@@ -24,7 +24,7 @@ const AttendanceList = () => {
     const fetchAttendances = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:80/api/attendance/user/${userId}`,
+          `http://13.232.177.171/api/attendance/user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

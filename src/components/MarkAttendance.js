@@ -15,7 +15,7 @@ const MarkAttendance = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:80/api/attendance/mark",
+        "http://13.232.177.171/api/attendance/mark",
         {
           userId,
           date,

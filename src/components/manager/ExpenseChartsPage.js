@@ -20,7 +20,7 @@ export default class ExpenseChartsPage extends React.Component {
 
   fetchData = () => {
     let deptId = JSON.parse(localStorage.getItem("user")).departmentId;
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "get",
       url:

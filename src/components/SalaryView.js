@@ -21,7 +21,7 @@ export default class SalaryView extends Component {
   componentDidMount() {
     if (this.props.location.state) {
       console.log(this.props.location.state.selectedUser.id, "props");
-      axios.defaults.baseURL = "http://localhost:80";
+      axios.defaults.baseURL = "http://13.232.177.171";
       axios({
         method: "get",
         url: "api/users/" + this.props.location.state.selectedUser.id,
