@@ -121,10 +121,6 @@ div.myDiv input {
   font-weight: 500;
   font-size: smaller;
 }
-.card{
-  font-family: monospace;
-  background-color: #ccc;
-}
 .animate__animated{
   font-family: monospace;
   font-weight: bold;

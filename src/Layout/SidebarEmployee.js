@@ -80,12 +80,12 @@ export default class SidebarEmployee extends Component {
                       <p>Timesheet</p>
                     </NavLink>
                   </li>
-                  <li className="nav-item">
+                  {/* <li className="nav-item">
                     <NavLink to="/attendance/mark" className="nav-link">
                       <i className="fas fa-check-circle nav-icon" />
                       <p>Mark Attendance</p>
                     </NavLink>
-                  </li>
+                  </li> */}
                   <li className="nav-item">
                     <NavLink to="/attendance/startwork" className="nav-link">
                       <i className="fas fa-briefcase nav-icon" />

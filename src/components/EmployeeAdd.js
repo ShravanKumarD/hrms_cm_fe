@@ -78,7 +78,7 @@ export default class EmployeeAdd extends Component {
 
     let user = {
       username: this.state.username,
-      password: 1234,
+      password: this.state.password,
       fullname: this.state.fistname + " " + this.state.lastname,
       role: this.state.role,
       departmentId: this.state.departmentId,
