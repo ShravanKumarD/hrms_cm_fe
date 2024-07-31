@@ -11,6 +11,7 @@ const AttendanceList = () => {
         const response = await axios.get("http://13.232.177.171/api/attendance", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
+        console.log(response.data,"datatatta")
         setAttendances(response.data);
       } catch (error) {
         console.error(error);
@@ -48,9 +49,9 @@ const AttendanceList = () => {
     <h2 className="my-4 text-center">Attendance List</h2>
     <table className="table table-striped table-bordered">
       <thead className="thead-dark">
-        <tr>
-          <th>ID</th>
+        <tr>       
           <th>User ID</th>
+         <th>Name</th>
           <th>Date</th>
           <th>Status</th>
         </tr>
@@ -58,12 +59,12 @@ const AttendanceList = () => {
       <tbody>
         {attendances.map((attendance) => (
           <tr key={attendance.id}>
-            <td>{attendance.id}</td>
-            <td>{attendance.userId}</td>
+             <td>{attendance.userId}</td>
+            <td>{attendance.user.fullName}</td>
             <td>{new Date(attendance.date).toLocaleDateString()}</td>
             <td className={attendance.status === 'Present' ? 'attendance-status-present' : 'attendance-status-absent'}>
               {attendance.status}
-            </td>
+            </td>   
           </tr>
         ))}
       </tbody>

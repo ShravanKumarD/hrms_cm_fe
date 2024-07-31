@@ -42,6 +42,10 @@ export default class EmployeeAdd extends Component {
       completed: false,
       uploadStatus: "",
       file: null,
+      paySlips: [],
+      hikeLetter: null,
+      relievingLetter: null,
+      resignationLetter: null,
     };
   }
 
@@ -71,6 +75,14 @@ export default class EmployeeAdd extends Component {
     this.setState({
       file: event.target.files[0],
     });
+  };
+  handleFileChange = (type) => (event) => {
+    const selectedFiles = Array.from(event.target.files);
+    if (type === "paySlips") {
+        this.setState({ paySlips: selectedFiles })
+    } else {
+      this.setState({ [type]: selectedFiles[0] });
+    }
   };
 
   onSubmit = (e) => {
@@ -142,7 +154,7 @@ export default class EmployeeAdd extends Component {
                   startDate: this.state.startDate,
                   endDate: this.state.endDate,
                   userId: userId,
-                  file:this.state.file,
+                  file: this.state.file,
                 };
                 axios.defaults.baseURL = "http://13.232.177.171";
                 axios({
@@ -198,10 +210,6 @@ export default class EmployeeAdd extends Component {
     });
     return items;
   };
-  handleFileChange = (event) => {
-    this.setState({ file: event.target.files[0] });
-  };
-
   handleUpload = async (event) => {
     event.preventDefault();
     if (!this.state.file) {
@@ -624,7 +632,23 @@ export default class EmployeeAdd extends Component {
                             />
                           </Form.Row>
                         </Form.Group>
-                        <Form.Group controlId="formJobEnd">
+                        <Form.Group controlId="formEmploymentType">
+                          <Form.Label className="text-muted">
+                            Employment Type
+                          </Form.Label>
+                          <Form.Control
+                            as="select"
+                            value={this.state.employmentType}
+                            onChange={this.handleChange}
+                            name="employmentType"
+                          >
+                            <option value="">Select Employment Type</option>
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Contract">Contract</option>
+                          </Form.Control>
+                        </Form.Group>
+                        {/* <Form.Group controlId="formJobEnd">
                           <Form.Label className="text-muted required">
                             End Date
                           </Form.Label>
@@ -642,19 +666,102 @@ export default class EmployeeAdd extends Component {
                               autoComplete="off"
                             />
                           </Form.Row>
-                        </Form.Group>
+                        </Form.Group> */}
                       </div>
+                    </Card.Body>
+                  </Card>
+                </div>
+                {/* <div className="row"> */}
+                <div className="col-sm-6">
+                  <Card className="secondary-card">
+                    <Card.Header>Upload Offer Letter</Card.Header>
+                    <Card.Body>
+                      <Form.Group controlId="formFileOffer">
+                        <Form.Label className="text-muted required">
+                          Upload File
+                        </Form.Label>
+                        <Form.Control
+                          type="file"
+                          name="offerLetter"
+                          onChange={(e) =>
+                            this.handleFileChange("offerLetter", e)
+                          }
+                          required
+                        />
+                      </Form.Group>
+                    </Card.Body>
+                  </Card>
+                  <Card className="secondary-card">
+                    <Card.Header>Upload Salary Slips</Card.Header>
+                    <Card.Body>
+                      <Form.Group controlId="formFileSalarySlips">
+                        <Form.Label className="text-muted">
+                          Upload File(s)
+                        </Form.Label>
+                        <Form.Control
+                          type="file"
+                          name="salarySlips"
+                          onChange={(e) =>
+                            this.handleFileChange("salarySlips", e)
+                          }
+                          multiple
+                        />
+                      </Form.Group>
                     </Card.Body>
                   </Card>
                 </div>
                 <div className="col-sm-6">
                   <Card className="secondary-card">
-                    <Card.Header>Upload Resume</Card.Header>
+                    <Card.Header>Upload Hike Letter</Card.Header>
                     <Card.Body>
-                    <Form.Group controlId="formFile">
-                <Form.Label className="text-muted required">Upload File</Form.Label>
-                <Form.Control type="file" name="file" onChange={this.handleFileChange} required />
-              </Form.Group>
+                      <Form.Group controlId="formFileHike">
+                        <Form.Label className="text-muted">
+                          Upload File
+                        </Form.Label>
+                        <Form.Control
+                          type="file"
+                          name="hikeLetter"
+                          onChange={(e) =>
+                            this.handleFileChange("hikeLetter", e)
+                          }
+                        />
+                      </Form.Group>
+                    </Card.Body>
+                  </Card>
+                  <Card className="secondary-card">
+                    <Card.Header>Upload Relieving Letter</Card.Header>
+                    <Card.Body>
+                      <Form.Group controlId="formFileRelieving">
+                        <Form.Label className="text-muted">
+                          Upload File
+                        </Form.Label>
+                        <Form.Control
+                          type="file"
+                          name="relievingLetter"
+                          onChange={(e) =>
+                            this.handleFileChange("relievingLetter", e)
+                          }
+                        />
+                      </Form.Group>
+                    </Card.Body>
+                  </Card>
+                </div>
+                <div className="col-sm-6">
+                  <Card className="secondary-card">
+                    <Card.Header>Upload Resignation Letter</Card.Header>
+                    <Card.Body>
+                      <Form.Group controlId="formFileResignation">
+                        <Form.Label className="text-muted">
+                          Upload File
+                        </Form.Label>
+                        <Form.Control
+                          type="file"
+                          name="resignationLetter"
+                          onChange={(e) =>
+                            this.handleFileChange("resignationLetter", e)
+                          }
+                        />
+                      </Form.Group>
                     </Card.Body>
                   </Card>
                   <Button variant="primary" type="submit" block>

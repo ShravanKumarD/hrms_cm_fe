@@ -137,6 +137,7 @@ const ManagerContainer = () => (
         <Route exact path="/salary-view" component={withAuth(SalaryViewManager)} />
         <Route exact path="/expense-report" component={withAuth(ExpenseReportManager)} />
         <Route exact path="/announcement" component={withAuth(AnnouncementManager)} />
+        <Route exact path="/attendance/mark" component={withAuth(MarkAttendance)} />
         <Route exact path="/attendance/startwork" component={withAuth(StartWork)} />
         <Route exact path="/attendance/list" component={withAuth(AttendanceList)} />
         <Route exact path="/attendance/timesheet" component={withAuth(Timesheet)} />

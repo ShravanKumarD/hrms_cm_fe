@@ -33,6 +33,9 @@ export default class SalaryDetails extends Component {
       allowanceOther: 0,
       deductionTax: 0,
       deductionOther: 0,
+      pf:0,
+      tds:0,
+      pt:0,
       hasError: false,
       errMsg: "",
       completed: false,
@@ -268,7 +271,10 @@ export default class SalaryDetails extends Component {
         this.state.allowanceOther,
       deductionTax: this.state.deductionTax,
       deductionOther: this.state.deductionOther,
-      deductionTotal: this.state.deductionTax + this.state.deductionOther,
+      pf:this.state.pf,
+      tds:this.state.tds,
+      pt:this.state.pt,
+      deductionTotal: this.state.deductionTax + this.state.deductionOther + this.state.pf + this.state.tds + this.state.pt,
       salaryGross:
         this.state.salaryBasic +
         this.state.allowanceHouseRent +
@@ -286,7 +292,10 @@ export default class SalaryDetails extends Component {
         this.state.allowanceFuel +
         this.state.allowanceOther -
         this.state.deductionTax -
-        this.state.deductionOther,
+        this.state.deductionOther-
+        this.state.pf-
+        this.state.tds-
+        this.state.pt,
     };
 
     axios.defaults.baseURL = "http://13.232.177.171";
@@ -324,7 +333,7 @@ export default class SalaryDetails extends Component {
       this.state.allowanceFuel +
       this.state.allowanceOther;
 
-    let deductionTotal = this.state.deductionTax + this.state.deductionOther;
+    let deductionTotal = this.state.deductionTax + this.state.deductionOther + this.state.pf + this.state.tds + this.state.pt;
 
     let salaryNet = salaryGross - deductionTotal;
 
@@ -412,7 +421,7 @@ export default class SalaryDetails extends Component {
                           Basic Salary
                         </Form.Label>
                         <Form.Control
-                          type="number"
+                          type="text"
                           value={this.state.salaryBasic}
                           onChange={this.handleChange}
                           name="salaryBasic"
@@ -432,7 +441,7 @@ export default class SalaryDetails extends Component {
                       <Form.Group>
                         <Form.Label>House Rent Allowance</Form.Label>
                         <Form.Control
-                          type="number"
+                          type="text"
                           value={this.state.allowanceHouseRent}
                           onChange={this.handleChange}
                           name="allowanceHouseRent"
@@ -441,7 +450,7 @@ export default class SalaryDetails extends Component {
                       <Form.Group>
                         <Form.Label>Medical Allowance</Form.Label>
                         <Form.Control
-                          type="number"
+                          type="text"
                           value={this.state.allowanceMedical}
                           onChange={this.handleChange}
                           name="allowanceMedical"
@@ -450,7 +459,7 @@ export default class SalaryDetails extends Component {
                       <Form.Group>
                         <Form.Label>Special Allowance</Form.Label>
                         <Form.Control
-                          type="number"
+                          type="text"
                           value={this.state.allowanceSpecial}
                           onChange={this.handleChange}
                           name="allowanceSpecial"
@@ -459,7 +468,7 @@ export default class SalaryDetails extends Component {
                       <Form.Group>
                         <Form.Label>Fuel Allowance</Form.Label>
                         <Form.Control
-                          type="number"
+                          type="text"
                           value={this.state.allowanceFuel}
                           onChange={this.handleChange}
                           name="allowanceFuel"
@@ -468,7 +477,7 @@ export default class SalaryDetails extends Component {
                       <Form.Group>
                         <Form.Label>Phone Bill Allowance</Form.Label>
                         <Form.Control
-                          type="number"
+                          type="text"
                           value={this.state.allowancePhoneBill}
                           onChange={this.handleChange}
                           name="allowancePhoneBill"
@@ -477,7 +486,7 @@ export default class SalaryDetails extends Component {
                       <Form.Group>
                         <Form.Label>Other Allowance</Form.Label>
                         <Form.Control
-                          type="number"
+                          type="text"
                           value={this.state.allowanceOther}
                           onChange={this.handleChange}
                           name="allowanceOther"
@@ -495,9 +504,36 @@ export default class SalaryDetails extends Component {
                       <Card.Body>
                         <div>
                           <Form.Group>
+                            <Form.Label>Tax Deducted at Source</Form.Label>
+                            <Form.Control
+                              type="text"
+                              value={this.state.tds}
+                              onChange={this.handleChange}
+                              name="tds"
+                            />
+                          </Form.Group>
+                          <Form.Group>
+                            <Form.Label>Provident Fund</Form.Label>
+                            <Form.Control
+                              type="text"
+                              value={this.state.pf}
+                              onChange={this.handleChange}
+                              name="pf"
+                            />
+                          </Form.Group>
+                          <Form.Group>
+                            <Form.Label>Professional Tax</Form.Label>
+                            <Form.Control
+                              type="text"
+                              value={this.state.pt}
+                              onChange={this.handleChange}
+                              name="pt"
+                            />
+                          </Form.Group>
+                          <Form.Group>
                             <Form.Label>Tax Deduction</Form.Label>
                             <Form.Control
-                              type="number"
+                              type="text"
                               value={this.state.deductionTax}
                               onChange={this.handleChange}
                               name="deductionTax"
@@ -506,7 +542,7 @@ export default class SalaryDetails extends Component {
                           <Form.Group>
                             <Form.Label>Other Deduction</Form.Label>
                             <Form.Control
-                              type="number"
+                              type="text"
                               value={this.state.deductionOther}
                               onChange={this.handleChange}
                               name="deductionOther"
@@ -526,7 +562,7 @@ export default class SalaryDetails extends Component {
                           <Form.Group>
                             <Form.Label>Gross Salary</Form.Label>
                             <Form.Control
-                              type="number"
+                              type="text"
                               value={salaryGross}
                               readOnly
                             />
@@ -534,7 +570,7 @@ export default class SalaryDetails extends Component {
                           <Form.Group>
                             <Form.Label>Total Deductions</Form.Label>
                             <Form.Control
-                              type="number"
+                              type="text"
                               value={deductionTotal}
                               readOnly
                             />
@@ -542,7 +578,7 @@ export default class SalaryDetails extends Component {
                           <Form.Group>
                             <Form.Label>Net Salary</Form.Label>
                             <Form.Control
-                              type="number"
+                              type="text"
                               value={salaryNet}
                               readOnly
                             />

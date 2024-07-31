@@ -47,6 +47,7 @@ export default class EmployeeView extends Component {
       })
         .then((res) => {
           let user = res.data;
+          console.log(user,"user")
           this.setState({ user: user }, () => {
             if (user.jobs) {
               let jobs = user.jobs;

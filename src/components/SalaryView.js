@@ -6,6 +6,7 @@ import moment from "moment";
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 
+
 export default class SalaryView extends Component {
   constructor(props) {
     super(props);
@@ -28,7 +29,7 @@ export default class SalaryView extends Component {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
         .then((res) => {
-          console.log(res);
+          console.log(res,"response");
           this.setState({ user: res.data }, () => {
             if (this.state.user.jobs) {
               this.state.user.jobs.forEach((job) => {
@@ -111,6 +112,8 @@ export default class SalaryView extends Component {
                   <Button variant="primary" onClick={this.exportToPDF}>
                 Export to PDF
               </Button>
+              <br/>
+              <br/>
                     <span style={{ cursor: "pointer" }} onClick={this.onEdit}>
                       <i className="far fa-edit"></i> Edit
                     </span>
@@ -118,7 +121,7 @@ export default class SalaryView extends Component {
                 </Card.Header>
                 
                 <Card.Body>
-                  <Card.Header><strong>Samcint solutions pvt. ltd.</strong></Card.Header>
+                  <Card.Header style={{textAlign:"center"}}><strong>Samcint solutions pvt. ltd.</strong></Card.Header>
                   <br/>
                     <Card.Title>
                       <strong>{this.state.user.fullName}</strong>
@@ -136,11 +139,11 @@ export default class SalaryView extends Component {
                           <div className="emp-view-list">
                             <ul>
                               <li>
-                                <span>Employee ID: </span> {this.state.id}
+                                <span>Employee ID: </span> {this.state.user.id}
                               </li>
                               <li>
                                 <span>Department: </span>{" "}
-                                {this.state.department}
+                                {this.state.user.department || "ADMIN"}
                               </li>
                               <li>
                                 <span>Job Title: </span>{" "}
