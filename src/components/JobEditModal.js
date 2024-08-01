@@ -47,7 +47,7 @@ export default class JobEditModal extends Component {
       endDate: this.state.endDate,
     };
 
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "put",
       url: `/api/jobs/${this.state.id}`,

@@ -16,7 +16,7 @@ export default class RecentApplications extends React.Component {
     this._isMounted = true;
     let deptId = JSON.parse(localStorage.getItem("user")).departmentId;
     //Fetch Applications Recent
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "get",
       url: "/api/applications/recent/department/" + deptId,

@@ -15,7 +15,7 @@ export default function withAuth(ComponentToProtect) {
 
     componentDidMount() {
       let token = localStorage.getItem("token");
-axios.defaults.baseURL = "http://localhost:80";
+      axios.defaults.baseURL = "http://13.232.177.171";
       axios({
         method: "get",
         url: "/checkToken",

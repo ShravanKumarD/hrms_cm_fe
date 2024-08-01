@@ -50,7 +50,7 @@ export default class Announcement extends Component {
     return (event) => {
       event.preventDefault();
 
-axios.defaults.baseURL = "http://localhost:80";
+      axios.defaults.baseURL = "http://13.232.177.171";
       axios({
         method: "delete",
         url: "/api/departmentAnnouncements/" + announcement.id,

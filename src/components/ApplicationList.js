@@ -52,7 +52,7 @@ export default class ApplicationList extends Component {
     return (event) => {
       event.preventDefault();
 
-axios.defaults.baseURL = "http://localhost:80";
+      axios.defaults.baseURL = "http://13.232.177.171";
       axios({
         method: "put",
         url: "/api/applications/" + app.id,
@@ -77,7 +77,7 @@ axios.defaults.baseURL = "http://localhost:80";
     return (event) => {
       event.preventDefault();
 
-axios.defaults.baseURL = "http://localhost:80";
+      axios.defaults.baseURL = "http://13.232.177.171";
       axios({
         method: "put",
         url: "/api/applications/" + app.id,

@@ -8,7 +8,7 @@ const ExpenseChartsPage = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      axios.defaults.baseURL = "http://localhost:80";
+      axios.defaults.baseURL = "http://13.232.177.171";
       const res = await axios.get(`/api/payments/year/${paymentYear}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });

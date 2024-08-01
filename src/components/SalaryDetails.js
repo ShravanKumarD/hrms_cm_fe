@@ -10,9 +10,8 @@ import MaterialTable from "material-table";
 import { ThemeProvider } from "@material-ui/core";
 import { createTheme } from "@material-ui/core/styles";
 import AlertModal from "./AlertModal";
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
-
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
 export default class SalaryDetails extends Component {
   constructor(props) {
@@ -33,9 +32,9 @@ export default class SalaryDetails extends Component {
       allowanceOther: 0,
       deductionTax: 0,
       deductionOther: 0,
-      pf:0,
-      tds:0,
-      pt:0,
+      pf: 0,
+      tds: 0,
+      pt: 0,
       hasError: false,
       errMsg: "",
       completed: false,
@@ -43,7 +42,7 @@ export default class SalaryDetails extends Component {
   }
 
   componentDidMount() {
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "get",
       url: "/api/departments",
@@ -81,20 +80,20 @@ export default class SalaryDetails extends Component {
     this.setState({ editRedirect: true, selectedUser: rowData.user });
   };
   exportToPDF = () => {
-    const input = document.getElementById('tableContainer');
+    const input = document.getElementById("tableContainer");
     html2canvas(input)
       .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
+        const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF();
-        pdf.addImage(imgData, 'PNG', 10, 10);
-        pdf.save('employee_salaries.pdf');
+        pdf.addImage(imgData, "PNG", 10, 10);
+        pdf.save("employee_salaries.pdf");
       })
       .catch((error) => {
-        console.error('Error generating PDF', error);
+        console.error("Error generating PDF", error);
       });
   };
   pushChanges = () => {
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "get",
       url: "api/financialInformations/user/" + this.state.selectedUser,
@@ -113,7 +112,7 @@ export default class SalaryDetails extends Component {
   };
 
   fetchData = () => {
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "get",
       url: "api/departments/" + this.state.selectedDepartment,
@@ -135,7 +134,7 @@ export default class SalaryDetails extends Component {
   };
 
   fetchDataAll = () => {
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "get",
       url: "api/departments/",
@@ -211,7 +210,7 @@ export default class SalaryDetails extends Component {
     this.state.users.map((user) => {
       if (user.id == event.target.value) {
         this.setState({ selectedUser: event.target.value }, () => {
-          axios.defaults.baseURL = "http://localhost:80";
+          axios.defaults.baseURL = "http://13.232.177.171";
           axios({
             method: "get",
             url: "api/financialInformations/user/" + this.state.selectedUser,
@@ -271,10 +270,15 @@ export default class SalaryDetails extends Component {
         this.state.allowanceOther,
       deductionTax: this.state.deductionTax,
       deductionOther: this.state.deductionOther,
-      pf:this.state.pf,
-      tds:this.state.tds,
-      pt:this.state.pt,
-      deductionTotal: this.state.deductionTax + this.state.deductionOther + this.state.pf + this.state.tds + this.state.pt,
+      pf: this.state.pf,
+      tds: this.state.tds,
+      pt: this.state.pt,
+      deductionTotal:
+        this.state.deductionTax +
+        this.state.deductionOther +
+        this.state.pf +
+        this.state.tds +
+        this.state.pt,
       salaryGross:
         this.state.salaryBasic +
         this.state.allowanceHouseRent +
@@ -292,13 +296,13 @@ export default class SalaryDetails extends Component {
         this.state.allowanceFuel +
         this.state.allowanceOther -
         this.state.deductionTax -
-        this.state.deductionOther-
-        this.state.pf-
-        this.state.tds-
+        this.state.deductionOther -
+        this.state.pf -
+        this.state.tds -
         this.state.pt,
     };
 
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "put",
       url: "api/financialInformations/" + this.state.financialId,
@@ -333,7 +337,12 @@ export default class SalaryDetails extends Component {
       this.state.allowanceFuel +
       this.state.allowanceOther;
 
-    let deductionTotal = this.state.deductionTax + this.state.deductionOther + this.state.pf + this.state.tds + this.state.pt;
+    let deductionTotal =
+      this.state.deductionTax +
+      this.state.deductionOther +
+      this.state.pf +
+      this.state.tds +
+      this.state.pt;
 
     let salaryNet = salaryGross - deductionTotal;
 

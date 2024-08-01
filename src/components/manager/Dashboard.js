@@ -23,7 +23,7 @@ export default class DashboardManager extends Component {
   componentDidMount() {
     let departmentId = JSON.parse(localStorage.getItem("user")).departmentId;
     // Fetch Employees Total
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "get",
       url: "/api/users/total/department/" + departmentId,
@@ -35,7 +35,7 @@ export default class DashboardManager extends Component {
       .catch((err) => console.log(err));
 
     //Fetch Expenses Total
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     axios({
       method: "get",
       url: "/api/expenses/year/2021/department/" + departmentId,

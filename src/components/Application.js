@@ -46,7 +46,7 @@ const Application = () => {
       userId,
     };
 
-    axios.defaults.baseURL = "http://localhost:80";
+    axios.defaults.baseURL = "http://13.232.177.171";
     try {
       await axios.post("/api/applications", application, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

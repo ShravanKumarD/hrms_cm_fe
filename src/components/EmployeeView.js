@@ -39,7 +39,7 @@ export default class EmployeeView extends Component {
 
   componentDidMount() {
     if (this.props.location.state) {
-      axios.defaults.baseURL = "http://localhost:80";
+      axios.defaults.baseURL = "http://13.232.177.171";
       axios({
         method: "get",
         url: "api/users/" + this.props.location.state.selectedUser.id,
@@ -47,7 +47,7 @@ export default class EmployeeView extends Component {
       })
         .then((res) => {
           let user = res.data;
-          console.log(user,"user")
+          console.log(user, "user");
           this.setState({ user: user }, () => {
             if (user.jobs) {
               let jobs = user.jobs;
