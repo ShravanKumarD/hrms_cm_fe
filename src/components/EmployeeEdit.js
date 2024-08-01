@@ -58,7 +58,7 @@ export default class EmployeeEdit extends Component {
 
   componentDidMount() {
     if (this.props.location.state) {
-      axios.defaults.baseURL = "http://13.232.177.171";
+      axios.defaults.baseURL = "http://localhost:80";
       axios({
         method: "get",
         url: "api/users/" + this.props.location.state.selectedUser.id,
@@ -92,7 +92,7 @@ export default class EmployeeEdit extends Component {
           console.log(err);
         });
 
-      axios.defaults.baseURL = "http://13.232.177.171";
+      axios.defaults.baseURL = "http://localhost:80";
       axios({
         method: "get",
         url: "/api/departments",
@@ -183,7 +183,7 @@ export default class EmployeeEdit extends Component {
       active: this.state.user.active,
     };
 
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "put",
       url: "/api/users/" + this.props.location.state.selectedUser.id,
@@ -210,7 +210,7 @@ export default class EmployeeEdit extends Component {
           userId: user_id,
         };
 
-        axios.defaults.baseURL = "http://13.232.177.171";
+        axios.defaults.baseURL = "http://localhost:80";
         axios({
           method: "put",
           url: "/api/personalInformations/" + this.state.userPersonalInfo.id,
@@ -226,7 +226,7 @@ export default class EmployeeEdit extends Component {
               userId: user_id,
             };
 
-            axios.defaults.baseURL = "http://13.232.177.171";
+            axios.defaults.baseURL = "http://localhost:80";
             axios({
               method: "put",
               url:
@@ -243,7 +243,7 @@ export default class EmployeeEdit extends Component {
                     startDate: this.state.job.startDate,
                     endDate: this.state.job.endDate,
                   };
-                  axios.defaults.baseURL = "http://13.232.177.171";
+                  axios.defaults.baseURL = "http://localhost:80";
                   axios({
                     method: "put",
                     url: "api/jobs/" + this.state.job.id,

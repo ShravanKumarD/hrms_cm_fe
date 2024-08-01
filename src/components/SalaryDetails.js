@@ -43,7 +43,7 @@ export default class SalaryDetails extends Component {
   }
 
   componentDidMount() {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "/api/departments",
@@ -94,7 +94,7 @@ export default class SalaryDetails extends Component {
       });
   };
   pushChanges = () => {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "api/financialInformations/user/" + this.state.selectedUser,
@@ -113,7 +113,7 @@ export default class SalaryDetails extends Component {
   };
 
   fetchData = () => {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "api/departments/" + this.state.selectedDepartment,
@@ -135,7 +135,7 @@ export default class SalaryDetails extends Component {
   };
 
   fetchDataAll = () => {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "api/departments/",
@@ -211,7 +211,7 @@ export default class SalaryDetails extends Component {
     this.state.users.map((user) => {
       if (user.id == event.target.value) {
         this.setState({ selectedUser: event.target.value }, () => {
-          axios.defaults.baseURL = "http://13.232.177.171";
+          axios.defaults.baseURL = "http://localhost:80";
           axios({
             method: "get",
             url: "api/financialInformations/user/" + this.state.selectedUser,
@@ -298,7 +298,7 @@ export default class SalaryDetails extends Component {
         this.state.pt,
     };
 
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "put",
       url: "api/financialInformations/" + this.state.financialId,

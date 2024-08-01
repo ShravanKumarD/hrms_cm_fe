@@ -22,7 +22,7 @@ export default class EmployeeList extends Component {
 
   componentDidMount() {
     let deptId = JSON.parse(localStorage.getItem("user")).departmentId;
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "/api/users/department/" + deptId,

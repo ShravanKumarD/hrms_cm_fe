@@ -32,7 +32,7 @@ export default class JobList extends Component {
         selectedDepartment: this.props.location.state.selectedDepartment,
       });
     }
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "/api/departments",
@@ -51,7 +51,7 @@ export default class JobList extends Component {
   }
 
   fetchData = () => {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "api/departments/" + this.state.selectedDepartment,
@@ -77,7 +77,7 @@ export default class JobList extends Component {
   };
 
   fetchDataAll = () => {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "api/departments/",
@@ -161,7 +161,7 @@ export default class JobList extends Component {
       // if(department.users.length > 0) {
       //     this.setState({showAlertModel: true})
       // } else {
-      //         axios.defaults.baseURL = 'http://13.232.177.171';
+      //         axios.defaults.baseURL = 'http://localhost:80';
       // axios({
       //         method: 'delete',
       //         url: '/api/departments/'  + department.id,

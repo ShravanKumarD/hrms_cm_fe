@@ -20,7 +20,7 @@ export default class ExpenseReport extends Component {
   }
 
   componentDidMount() {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "/api/users",
@@ -37,7 +37,7 @@ export default class ExpenseReport extends Component {
   onSubmit = (event) => {
     event.preventDefault();
 
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "api/expenses",

@@ -41,6 +41,7 @@ export default class EmployeeAdd extends Component {
       errMsg: "",
       completed: false,
       uploadStatus: "",
+        employmentType: "",
       file: null,
       paySlips: [],
       hikeLetter: null,
@@ -50,7 +51,7 @@ export default class EmployeeAdd extends Component {
   }
 
   componentDidMount() {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "/api/departments",
@@ -67,7 +68,7 @@ export default class EmployeeAdd extends Component {
   handleChange = (event) => {
     const { value, name } = event.target;
     this.setState({
-      [name]: value,
+      [name]: value,  
     });
   };
 
@@ -98,7 +99,7 @@ export default class EmployeeAdd extends Component {
     };
 
     e.preventDefault();
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "post",
       url: "/api/users",
@@ -123,7 +124,7 @@ export default class EmployeeAdd extends Component {
           userId: userId,
         };
 
-        axios.defaults.baseURL = "http://13.232.177.171";
+        axios.defaults.baseURL = "http://localhost:80";
         axios({
           method: "post",
           url: "/api/personalInformations",
@@ -139,7 +140,7 @@ export default class EmployeeAdd extends Component {
               userId: userId,
             };
 
-            axios.defaults.baseURL = "http://13.232.177.171";
+            axios.defaults.baseURL = "http://localhost:80";
             axios({
               method: "post",
               url: "api/financialInformations",
@@ -152,11 +153,11 @@ export default class EmployeeAdd extends Component {
                 let job = {
                   jobTitle: this.state.jobTitle,
                   startDate: this.state.startDate,
-                  endDate: this.state.endDate,
+                  employmentType: this.state.employmentType,
                   userId: userId,
                   file: this.state.file,
                 };
-                axios.defaults.baseURL = "http://13.232.177.171";
+                axios.defaults.baseURL = "http://localhost:80";
                 axios({
                   method: "post",
                   url: "api/jobs/",

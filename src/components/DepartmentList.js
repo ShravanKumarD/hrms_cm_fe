@@ -26,7 +26,7 @@ export default class DepartmentList extends Component {
   }
 
   componentDidMount() {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "/api/departments",
@@ -51,7 +51,7 @@ export default class DepartmentList extends Component {
       if (department.users.length > 0) {
         this.setState({ showAlertModel: true });
       } else {
-        axios.defaults.baseURL = "http://13.232.177.171";
+        axios.defaults.baseURL = "http://localhost:80";
         axios({
           method: "delete",
           url: "/api/departments/" + department.id,

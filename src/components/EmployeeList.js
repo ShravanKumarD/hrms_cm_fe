@@ -16,7 +16,7 @@ const EmployeeList = () => {
 
   const fetchUsers = useCallback(async () => {
     try {
-      axios.defaults.baseURL = "http://13.232.177.171";
+      axios.defaults.baseURL = "http://localhost:80";
       const res = await axios.get("/api/users", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });

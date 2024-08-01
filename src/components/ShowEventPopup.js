@@ -38,7 +38,7 @@ export default class ShowEventPopup extends Component {
 
   deleteEvent = (e) => {
     e.preventDefault();
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "delete",
       url: `/api/personalEvents/${this.state.id}`,
@@ -72,7 +72,7 @@ export default class ShowEventPopup extends Component {
           },
         },
         () => {
-          axios.defaults.baseURL = "http://13.232.177.171";
+          axios.defaults.baseURL = "http://localhost:80";
           axios({
             method: "put",
             url: `/api/personalEvents/${this.state.id}`,

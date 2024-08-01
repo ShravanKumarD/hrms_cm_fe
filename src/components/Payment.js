@@ -38,7 +38,7 @@ export default class Payment extends Component {
   }
 
   componentDidMount() {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "/api/departments",
@@ -53,7 +53,7 @@ export default class Payment extends Component {
   }
 
   fetchData = () => {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "api/departments/" + this.state.selectedDepartment,
@@ -75,7 +75,7 @@ export default class Payment extends Component {
   };
 
   fetchDataAll = () => {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "api/departments/",
@@ -175,7 +175,7 @@ export default class Payment extends Component {
       "December",
     ];
 
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "api/financialInformations/user/" + this.state.selectedUser,
@@ -187,7 +187,7 @@ export default class Payment extends Component {
       }));
     });
 
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "get",
       url: "api/payments/user/" + this.state.selectedUser,
@@ -239,7 +239,7 @@ export default class Payment extends Component {
 
     console.log(newPayment);
 
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = "http://localhost:80";
     axios({
       method: "post",
       url: "api/payments/",
