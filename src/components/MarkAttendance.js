@@ -43,7 +43,7 @@ const MarkAttendance = () => {
       <Col md={8}>
         <Card>
           <br/>
-        <Card.Title className="text-center mb-4">Mark Attendance</Card.Title>
+        <Card.Title className="text-center mb-4"><strong>Mark Attendance</strong></Card.Title>
           <Card.Body>
            
      
