@@ -22,7 +22,7 @@ const ResignationTemplate = () => {
       const documentDefinition = { content: pdfContent };
       pdfMake.createPdf(documentDefinition).download("resignation_letter.pdf");
     } else {
-      console.error("Letter element is not found");
+      console.error("Letter element is not found"); 
     }
   };
 
@@ -51,7 +51,11 @@ const ResignationTemplate = () => {
             <Row>
               <Col>
                 <div ref={letterRef} style={{ padding: '10px', fontFamily: 'Arial, sans-serif', lineHeight: '1.6', width: '80%', margin: '0 auto' }}>
-                  <img style={{ height: "60px" }} src={img} alt="Company Logo" />
+                <img
+                    style={{ height: "40px",width:"150px" }}
+                    src={img}
+                    alt="Company Logo"
+                  />
                   <p>&nbsp;</p>
                   <p>&nbsp;</p>
                   <h1 style={{ textAlign: "center", color: '#EB7301', fontSize: '22px' }}><strong>Resignation Letter</strong></h1>

@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { Alert } from "react-bootstrap";
 import axios from "axios";
+import Logo from "../assets/samcint_logo_2.png";
 
 export default class Login extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    this.state = {    
       username: "",
       password: "",
       checkPassword: "",
@@ -73,8 +74,9 @@ export default class Login extends Component {
         <div className="register-logo">
           <a href="/">
             {this.state.done ? <Redirect to="/" /> : <></>}
-            <b>HR</b>MS{" "}
-            <small style={{ fontSize: "10px" }}>by Samcint Solutions</small>
+            <img src={Logo} style={{width:"200px"}}alt="company-logo"/>
+            {/* <b>HR</b>MS{" "}
+            <small style={{ fontSize: "10px" }}>by Samcint Solutions</small> */}
           </a>
         </div>
         <div className="card">

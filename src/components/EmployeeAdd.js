@@ -4,6 +4,246 @@ import DatePicker from "react-datepicker";
 import axios from "axios";
 import moment from "moment";
 
+const cities = {
+  cities: [
+    "Mumbai",
+    "Delhi",
+    "Bengaluru",
+    "Hyderabad",
+    "Ahmedabad",
+    "Chennai",
+    "Kolkata",
+    "Surat",
+    "Pune",
+    "Jaipur",
+    "Lucknow",
+    "Kanpur",
+    "Nagpur",
+    "Visakhapatnam",
+    "Bhopal",
+    "Patna",
+    "Ludhiana",
+    "Agra",
+    "Nashik",
+    "Vadodara",
+    "Faridabad",
+    "Meerut",
+    "Rajkot",
+    "Varanasi",
+    "Srinagar",
+    "Aurangabad",
+    "Dhanbad",
+    "Amritsar",
+    "Navi Mumbai",
+    "Allahabad",
+    "Howrah",
+    "Ranchi",
+    "Gwalior",
+    "Jabalpur",
+    "Coimbatore",
+    "Vijayawada",
+    "Jodhpur",
+    "Madurai",
+    "Raipur",
+    "Kota",
+    "Chandigarh",
+    "Guwahati",
+    "Solapur",
+    "Hubli-Dharwad",
+    "Mysore",
+    "Tiruchirappalli",
+    "Bareilly",
+    "Aligarh",
+    "Tiruppur",
+    "Moradabad",
+    "Jalandhar",
+    "Bhubaneswar",
+    "Salem",
+    "Warangal",
+    "Guntur",
+    "Bhiwandi",
+    "Saharanpur",
+    "Gorakhpur",
+    "Bikaner",
+    "Amravati",
+    "Noida",
+    "Jamshedpur",
+    "Bhilai",
+    "Cuttack",
+    "Firozabad",
+    "Kochi",
+    "Nellore",
+    "Bhavnagar",
+    "Dehradun",
+    "Durgapur",
+    "Asansol",
+    "Rourkela",
+    "Nanded",
+    "Kolhapur",
+    "Ajmer",
+    "Akola",
+    "Gulbarga",
+    "Jamnagar",
+    "Ujjain",
+    "Loni",
+    "Siliguri",
+    "Jhansi",
+    "Ulhasnagar",
+    "Jammu",
+    "Sangli-Miraj & Kupwad",
+    "Mangalore",
+    "Erode",
+    "Belgaum",
+    "Ambattur",
+    "Tirunelveli",
+    "Malegaon",
+    "Gaya",
+    "Jalgaon",
+    "Udaipur",
+    "Maheshtala",
+  ],
+};
+
+const countries = {
+  countries: [
+    "India",
+    "United States",
+    "China",
+    "Japan",
+    "Germany",
+    "United Kingdom",
+    "France",
+    "Italy",
+    "Brazil",
+    "Canada",
+    "Russia",
+    "South Korea",
+    "Australia",
+    "Spain",
+    "Mexico",
+    "Indonesia",
+    "Netherlands",
+    "Saudi Arabia",
+    "Turkey",
+    "Switzerland",
+    "Argentina",
+    "Sweden",
+    "Poland",
+    "Belgium",
+    "Thailand",
+    "Iran",
+    "Austria",
+    "Norway",
+    "United Arab Emirates",
+    "Israel",
+    "South Africa",
+    "Denmark",
+    "Singapore",
+    "Malaysia",
+    "Ireland",
+    "Philippines",
+    "Pakistan",
+    "Chile",
+    "Finland",
+    "Portugal",
+    "Greece",
+    "Vietnam",
+    "New Zealand",
+    "Czech Republic",
+    "Romania",
+    "Hungary",
+    "Kazakhstan",
+    "Peru",
+    "Iraq",
+    "Qatar",
+    "Bangladesh",
+    "Kuwait",
+    "Morocco",
+    "Slovakia",
+    "Angola",
+    "Ecuador",
+    "Sudan",
+    "Sri Lanka",
+    "Myanmar",
+    "Oman",
+    "Panama",
+    "Uzbekistan",
+    "Luxembourg",
+    "Croatia",
+    "Bahrain",
+    "Ivory Coast",
+    "Cameroon",
+    "Nepal",
+    "Uruguay",
+    "Mongolia",
+    "Paraguay",
+    "Bolivia",
+    "Trinidad and Tobago",
+    "Afghanistan",
+    "Estonia",
+    "Cyprus",
+    "Iceland",
+    "Montenegro",
+    "Malta",
+    "Bhutan",
+    "Barbados",
+    "Brunei",
+    "Belize",
+    "Seychelles",
+    "Saint Kitts and Nevis",
+    "Liechtenstein",
+    "Monaco",
+    "San Marino",
+    "Andorra",
+    "Palau",
+    "Marshall Islands",
+  ],
+};
+
+const banks = {
+  banks: [
+    "State Bank of India",
+    "HDFC Bank",
+    "ICICI Bank",
+    "Axis Bank",
+    "Kotak Mahindra Bank",
+    "IndusInd Bank",
+    "Yes Bank",
+    "Punjab National Bank",
+    "Bank of Baroda",
+    "Canara Bank",
+    "Union Bank of India",
+    "Bank of India",
+    "Indian Bank",
+    "Central Bank of India",
+    "IDBI Bank",
+    "UCO Bank",
+    "Indian Overseas Bank",
+    "Bank of Maharashtra",
+    "Punjab & Sind Bank",
+    "Federal Bank",
+    "South Indian Bank",
+    "RBL Bank",
+    "Karnataka Bank",
+    "City Union Bank",
+    "Karur Vysya Bank",
+    "DCB Bank",
+    "Tamilnad Mercantile Bank",
+    "IDFC First Bank",
+    "Jammu & Kashmir Bank",
+    "Suryoday Small Finance Bank",
+    "Ujjivan Small Finance Bank",
+    "Equitas Small Finance Bank",
+    "AU Small Finance Bank",
+    "Bandhan Bank",
+    "Dhanlaxmi Bank",
+    "Nainital Bank",
+    "North East Small Finance Bank",
+    "ESAFF Small Finance Bank",
+    "Fincare Small Finance Bank",
+  ],
+};
+
 export default class EmployeeAdd extends Component {
   constructor(props) {
     super(props);
@@ -400,7 +640,7 @@ export default class EmployeeAdd extends Component {
                             required
                           />
                         </Form.Group>
-                        <Form.Group controlId="formCountry">
+                        {/* <Form.Group controlId="formCountry">
                           <Form.Label className="text-muted required">
                             Country
                           </Form.Label>
@@ -412,8 +652,27 @@ export default class EmployeeAdd extends Component {
                             placeholder="Enter Country"
                             required
                           />
+                        </Form.Group> */}
+                        <Form.Group controlId="formCountry">
+                          <Form.Label className="text-muted required">
+                            Country
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            list="countryOptions"
+                            value={this.state.country}
+                            onChange={this.handleChange}
+                            name="country"
+                            placeholder="Enter Country"
+                            required
+                          />
+                          <datalist id="countryOptions">
+                            {countries.countries.map((country, index) => (
+                              <option key={index} value={country} />
+                            ))}
+                          </datalist>
                         </Form.Group>
-                        <Form.Group controlId="formCity">
+                        {/* <Form.Group controlId="formCity">
                           <Form.Label className="text-muted required">
                             City
                           </Form.Label>
@@ -425,6 +684,25 @@ export default class EmployeeAdd extends Component {
                             placeholder="Enter City"
                             required
                           />
+                        </Form.Group> */}
+                        <Form.Group controlId="formCity">
+                          <Form.Label className="text-muted required">
+                            City
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            list="cityOptions"
+                            value={this.state.city}
+                            onChange={this.handleChange}
+                            name="city"
+                            placeholder="Enter City"
+                            required
+                          />
+                          <datalist id="cityOptions">
+                            {cities.cities.map((city, index) => (
+                              <option key={index} value={city} />
+                            ))}
+                          </datalist>
                         </Form.Group>
                         <Form.Group controlId="formMobile">
                           <Form.Label className="text-muted required">
@@ -479,11 +757,17 @@ export default class EmployeeAdd extends Component {
                           </Form.Label>
                           <Form.Control
                             type="text"
+                            list="bankOptions"
                             value={this.state.bankName}
                             onChange={this.handleChange}
                             name="bankName"
                             placeholder="Enter Bank name"
                           />
+                          <datalist id="bankOptions">
+                            {banks.banks.map((bank, index) => (
+                              <option key={index} value={bank} />
+                            ))}
+                          </datalist>
                         </Form.Group>
                         <Form.Group controlId="formAccountName">
                           <Form.Label className="text-muted">
@@ -674,11 +958,11 @@ export default class EmployeeAdd extends Component {
                 </div>
                 {/* <div className="row"> */}
                 <div className="col-sm-6">
-                  <Card className="secondary-card">
+                  {/* <Card className="secondary-card">
                     <Card.Header>Upload Offer Letter</Card.Header>
                     <Card.Body>
                       <Form.Group controlId="formFileOffer">
-                        <Form.Label className="text-muted required">
+                        <Form.Label className="text-muted">
                           Upload File
                         </Form.Label>
                         <Form.Control
@@ -687,12 +971,12 @@ export default class EmployeeAdd extends Component {
                           onChange={(e) =>
                             this.handleFileChange("offerLetter", e)
                           }
-                          required
+                          // required
                         />
                       </Form.Group>
                     </Card.Body>
-                  </Card>
-                  <Card className="secondary-card">
+                  </Card> */}
+                  {/* <Card className="secondary-card">
                     <Card.Header>Upload Salary Slips</Card.Header>
                     <Card.Body>
                       <Form.Group controlId="formFileSalarySlips">
@@ -709,10 +993,10 @@ export default class EmployeeAdd extends Component {
                         />
                       </Form.Group>
                     </Card.Body>
-                  </Card>
-                </div>
+                  </Card> */}
+                </div>      
                 <div className="col-sm-6">
-                  <Card className="secondary-card">
+                  {/* <Card className="secondary-card">
                     <Card.Header>Upload Hike Letter</Card.Header>
                     <Card.Body>
                       <Form.Group controlId="formFileHike">
@@ -728,8 +1012,8 @@ export default class EmployeeAdd extends Component {
                         />
                       </Form.Group>
                     </Card.Body>
-                  </Card>
-                  <Card className="secondary-card">
+                  </Card> */}
+                  {/* <Card className="secondary-card">
                     <Card.Header>Upload Relieving Letter</Card.Header>
                     <Card.Body>
                       <Form.Group controlId="formFileRelieving">
@@ -745,10 +1029,10 @@ export default class EmployeeAdd extends Component {
                         />
                       </Form.Group>
                     </Card.Body>
-                  </Card>
+                  </Card> */}
                 </div>
                 <div className="col-sm-6">
-                  <Card className="secondary-card">
+                  {/* <Card className="secondary-card">
                     <Card.Header>Upload Resignation Letter</Card.Header>
                     <Card.Body>
                       <Form.Group controlId="formFileResignation">
@@ -764,7 +1048,7 @@ export default class EmployeeAdd extends Component {
                         />
                       </Form.Group>
                     </Card.Body>
-                  </Card>
+                  </Card> */}
                   <Button variant="primary" type="submit" block>
                     Submit
                   </Button>
@@ -777,3 +1061,4 @@ export default class EmployeeAdd extends Component {
     );
   }
 }
+  

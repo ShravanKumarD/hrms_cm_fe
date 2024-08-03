@@ -13,6 +13,12 @@ import AlertModal from "./AlertModal";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
+
+const months = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+
 export default class SalaryDetails extends Component {
   constructor(props) {
     super(props);
@@ -32,12 +38,15 @@ export default class SalaryDetails extends Component {
       allowanceOther: 0,
       deductionTax: 0,
       deductionOther: 0,
+      deductionTotal:0,
       pf: 0,
       tds: 0,
       pt: 0,
       hasError: false,
       errMsg: "",
       completed: false,
+      month:'',
+      date_of_joining:''
     };
   }
 
@@ -100,6 +109,7 @@ export default class SalaryDetails extends Component {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then((res) => {
+        console.log(res,"lkwehfuieruf");
         this.setState((prevState) => ({
           ...prevState,
           financialId: res.data[0].id,
@@ -240,17 +250,44 @@ export default class SalaryDetails extends Component {
     });
   };
 
-  handleChange = (event) => {
-    const { name, value } = event.target;
-    this.setState({
-      [name]: +value,
+handleChange = (event) => {
+  const { name, value } = event.target;
+  this.setState({ [name]: value });
+  const numericValue = value === '' ? 0 : Number(value);
+  if (isNaN(numericValue)) {
+    this.setState({ [name]: 0 });
+  } else {
+    this.setState({ [name]: numericValue });
+  }
+};
+
+
+componentDidUpdate(prevProps, prevState) {
+  if (this.state.selectedUser) {
+    axios.defaults.baseURL = "http://13.232.177.171";
+    axios({
+      method: "get",
+      url: "api/users/" + this.state.financialId,
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    })
+    .then((res) => {
+      this.setState({name:res.data.fullName })
+      this.setState({designation:res.data.jobs[0].jobTitle})
+      this.setState({address:res.data.user_personal_info.address})
+    })
+    .catch((error) => {
+      console.error("There was an error!", error);
     });
-  };
+  }
+}
+
 
   onSubmit = (event) => {
     event.preventDefault();
 
     let data = {
+      month:this.state.month,
+      date_of_joining:this.state.formattedDate  ,
       employmentType: this.state.employmentType,
       salaryBasic: this.state.salaryBasic,
       salaryGross: this.salaryGross,
@@ -301,8 +338,43 @@ export default class SalaryDetails extends Component {
         this.state.tds -
         this.state.pt,
     };
+    const salary_slip = {
+userId:this.state.financialId,
+designation:this.state.designation,
+month:this.state.month,
+date_of_joining:this.state.date_of_joining,
+tds:this.state.tds,
+address: this.state.address,
+total_deductions:this.state.deductionTotal,
+      name: this.state.name,  
+      designation: this.state.designation,  
+      basic_salary: this.state.salaryBasic,
+      hra: this.state.allowanceHouseRent,
+      conveyance_allowance: this.state.allowanceFuel,
+      special_allowance: this.state.allowanceSpecial,
+      medical_allowance: this.state.allowanceMedical,
+      total_earnings: this.state.salaryGross,  
+      professional_tax: this.state.pt,
+      employee_pf: this.state.pf,
+      other_deductions: this.state.deductionOther,
+    };
+    
+
 
     axios.defaults.baseURL = "http://13.232.177.171";
+    axios({
+      method: "post",
+      url: "api/salary-slip",
+      data: salary_slip,
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    })
+      .then((res) => {
+       console.log(res,'data sent');
+      })
+      .catch((err) => {
+        this.setState({ hasError: true, errMsg: err.response.data.message });
+      });
+
     axios({
       method: "put",
       url: "api/financialInformations/" + this.state.financialId,
@@ -326,8 +398,17 @@ export default class SalaryDetails extends Component {
       this.setState({ selectedJob: job, showEditModel: true });
     };
   }
+  validateForm = () => {
+    const { name, address, designation, salaryBasic, allowanceHouseRent, allowanceFuel, allowanceSpecial, allowanceMedical, salaryGross, pt, pf, deductionOther, totalDeductions } = this.state;
+    if (!name || !address || !designation || !salaryBasic || !allowanceHouseRent || !allowanceFuel || !allowanceSpecial || !allowanceMedical || !salaryGross || !pt || !pf || !deductionOther || !totalDeductions) {
+      alert("Please fill out all required fields.");
+      return false;
+    }
+    return true;
+  };
 
   render() {
+    const formattedDate = moment(this.state.date_of_joining).format('YYYY-MM-DD');
     let salaryGross =
       this.state.salaryBasic +
       this.state.allowanceHouseRent +
@@ -404,7 +485,7 @@ export default class SalaryDetails extends Component {
         {this.state.selectedUser ? (
           <Form onSubmit={this.onSubmit}>
             <div className="row">
-              <div className="col-sm-12">
+              <div className="col-sm-6">
                 <Card className="main-card">
                   <Card.Header>Salary Details</Card.Header>
                   <Card.Body>
@@ -440,6 +521,40 @@ export default class SalaryDetails extends Component {
                   </Card.Body>
                 </Card>
               </div>
+              <div className="col-sm-6">
+                    <Card className="main-card">
+                      <Card.Header>Employment Details</Card.Header>
+                      <Card.Body>
+                        <div>
+                        <Form.Group controlId="monthSelect">
+                <Form.Label>Select Month</Form.Label>
+                <Form.Control 
+                  as="select" 
+                  value={this.state.selectedMonth} 
+                  onChange={this.handleMonthChange}
+                >
+                  <option value="">Select a month</option>
+                  {months.map((month, index) => (
+                    <option key={index} value={month}>{month}</option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+                          <Form.Group>
+                            <Form.Label className="required">
+                              Date of Joining
+                            </Form.Label>
+                         
+<Form.Control
+  type="date"
+  value={formattedDate}
+  onChange={this.handleChange}
+  name="date_of_joining"
+/>
+                          </Form.Group>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                </div>
             </div>
             <div className="row">
               <div className="col-sm-6">

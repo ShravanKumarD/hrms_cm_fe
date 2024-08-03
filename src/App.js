@@ -43,6 +43,7 @@ import withAuth from "./withAuth";
 import Login from "./components/Login";
 import JobList from "./components/JobList";
 import JobListManager from './components/manager/JobList';
+import MyDocuments from "./components/MyDocuments";
 import "./App.css"
 
 export default class App extends Component {
@@ -141,6 +142,7 @@ const ManagerContainer = () => (
         <Route exact path="/attendance/startwork" component={withAuth(StartWork)} />
         <Route exact path="/attendance/list" component={withAuth(AttendanceList)} />
         <Route exact path="/attendance/timesheet" component={withAuth(Timesheet)} />
+        <Route exact path="/documents" component={withAuth(MyDocuments)} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />
       </Switch>
@@ -164,6 +166,7 @@ const EmployeeContainer = () => (
         <Route exact path="/attendance/startwork" component={withAuth(StartWork)} />
         <Route exact path="/attendance/list" component={withAuth(AttendanceList)} />
         <Route exact path="/attendance/timesheet" component={withAuth(Timesheet)} />
+        <Route exact path="/documents" component={withAuth(MyDocuments)} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />
       </Switch>

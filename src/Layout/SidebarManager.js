@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { loadTree } from '../menuTreeHelper';
-import {NavLink} from 'react-router-dom'
+import {NavLink} from 'react-router-dom';
+import Logo from "../assets/samcintlogowhite.png";
 
 export default class SidebarManager extends Component {
 
@@ -22,8 +23,9 @@ export default class SidebarManager extends Component {
     return (
       <aside className="main-sidebar sidebar-dark-primary elevation-4" >
         {/* Brand Logo */}
+        <img src={Logo} className="logo-main" alt="company-logo"/>
         <a href="/" className="brand-link">
-          <span className="brand-text font-weight-light ml-1">Samcint Manager</span>
+          <span className="brand-text font-weight-light ml-1"><strong>MANAGER</strong></span>
         </a>
         {/* Sidebar */}
         <div className="sidebar">
@@ -161,6 +163,12 @@ export default class SidebarManager extends Component {
                     </NavLink>
                   </li>
                 </ul>
+              </li>
+              <li className="nav-item">
+                <NavLink to="/documents" className="nav-link">
+                  <i className="fas fa-file-alt nav-icon" />
+                  <p>My Documents</p>
+                </NavLink>
               </li>
               <li className="nav-item">
                 <NavLink exact to="/announcement" className="nav-link">

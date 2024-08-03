@@ -50,8 +50,15 @@ const HikeLetterTemplate = () => {
           {showLetter && (
             <Row>
               <Col>
-                <div ref={letterRef} style={{ padding: '10px', fontFamily: 'Arial, sans-serif', lineHeight: '1.6', width: '80%', margin: '0 auto' }}>
-                  <img style={{ height: "60px" }} src={img} alt="Company Logo" />
+                <div ref={letterRef} 
+             style={{ padding: '10px', fontFamily: 'Arial, sans-serif',
+              lineHeight: '1.6', width: '80%', margin: "20px",
+   padding: "20px", border: "1px solid #000" }}>
+                  <img
+                    style={{ height: "40px",width:"150px" }}
+                    src={img}
+                    alt="Company Logo"
+                  />
                   <p>&nbsp;</p>
                   <p>&nbsp;</p>
                   <h1 style={{ textAlign: "center", color: '#EB7301', fontSize: '22px' }}><strong>Hike Letter</strong></h1>
@@ -65,7 +72,7 @@ const HikeLetterTemplate = () => {
                     This hike reflects our recognition of your hard work, dedication, and contributions to the company.
                   </p>
                 
-                  <h2 style={{ fontSize: '16px' }}><strong>Revised Salary Details</strong></h2>
+                  <h4><strong>Revised Salary Details</strong></h4>
                   <p><strong>Previous Salary:</strong> {"previous salary"}</p>
                   <p><strong>New Salary:</strong> {"new salary"}</p>
                   <p><strong>Effective Date:</strong> {"effective date"}</p>

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { loadTree } from "../menuTreeHelper";
 import { NavLink } from "react-router-dom";
+import Logo from "../assets/samcintlogowhite.png";
 
 export default class SidebarAdmin extends Component {
   constructor(props) {
@@ -21,8 +22,9 @@ export default class SidebarAdmin extends Component {
     return (
       <aside className="main-sidebar sidebar-dark-primary elevation-4">
         {/* Brand Logo */}
+        <img src={Logo} className="logo-main" alt="company-logo"/>
         <a href="/" className="brand-link">
-          <span className="brand-text font-weight-light ml-1">Samcint Admin</span>
+          <span className="brand-text font-weight-light ml-1"><strong>ADMIN</strong></span>
         </a>
         {/* Sidebar */}
         <div className="sidebar">
@@ -234,6 +236,7 @@ export default class SidebarAdmin extends Component {
               </li>
             </ul>
           </nav>
+          <div style={{marginTop:'100px'}}></div>
           {/* /.sidebar-menu */}
         </div>
         {/* /.sidebar */}

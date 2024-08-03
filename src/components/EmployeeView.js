@@ -14,6 +14,10 @@ import ResignationTemplate from "./ResignationTemplate";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
+const months = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
 export default class EmployeeView extends Component {
   constructor(props) {
     super(props);
@@ -22,9 +26,10 @@ export default class EmployeeView extends Component {
       department: {
         departmentName: null,
       },
-      job: {
-        jobTitle: null,
-      },
+      // job: {
+      //   jobTitle: null,
+      // },
+      jobTitle: null,
       userPersonalInfo: {
         dateOfBirth: null,
         gender: null,
@@ -41,12 +46,15 @@ export default class EmployeeView extends Component {
         accountNumber: null,
         iban: null,
       },
+      selectedMonth: '' ,
       falseRedirect: false,
       editRedirect: false,
     };
     this.slipRef = createRef();
   }
-
+  handleMonthChange = (event) => {
+    this.setState({ selectedMonth: event.target.value });
+  }
   componentDidMount() {
     if (this.props.location.state) {
       axios.defaults.baseURL = "http://13.232.177.171";
@@ -57,8 +65,12 @@ export default class EmployeeView extends Component {
       })
         .then((res) => {
           let user = res.data;
-          console.log(user, "user");
+          console.log(user,"uesrrrrrrrr")
           this.setState({ user: user }, () => {
+            this.setState({
+              jobTitle: user.jobs?.[0]?.jobTitle ?? "Admin/Manger"
+            });
+            
             if (user.jobs) {
               let jobs = user.jobs;
               jobs.map((job) => {
@@ -71,7 +83,10 @@ export default class EmployeeView extends Component {
               });
             }
             if (user.department) {
-              this.setState({ department: user.department });
+              this.setState({
+                department: user.department ? user.department : "not provided"
+              });
+              
             }
             if (user.user_personal_info) {
               if (user.user_personal_info.dateOfBirth) {
@@ -87,8 +102,19 @@ export default class EmployeeView extends Component {
           });
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err); 
         });
+        axios({
+          method: "get",
+          url: "/api/salary-slip/" + this.props.location.state.selectedUser.id,
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }).then((res) => {
+          let salary_slip = res.data;
+          this.setState({salary_slip:salary_slip});
+        })
+        .catch((err) => {
+          console.log(err);
+        })
     } else {
       this.setState({ falseRedirect: true });
     }
@@ -180,7 +206,7 @@ export default class EmployeeView extends Component {
                                   </li>
                                   <li>
                                     <span>Job Title: </span>{" "}
-                                    {this.state.job.jobTitle}
+                                    {this.state.jobTitle}
                                   </li>
                                   <li>
                                     <span>Role: </span>
@@ -344,13 +370,30 @@ export default class EmployeeView extends Component {
                             <Col sm={12}>
                             <Card className="secondary-card">
                             <Card.Header>Salary Slip</Card.Header>
-                              <Card.Body>
-                                <Row>
-                                  <Col>
-                                    <SalarySlipTemplate />
-                                  </Col>
-                                </Row>
-                              </Card.Body>
+        <Card.Body>
+          <Row>
+            <Col>
+              <Form.Group controlId="monthSelect">
+                <Form.Label>Select Month</Form.Label>
+                <Form.Control 
+                  as="select" 
+                  value={this.state.selectedMonth} 
+                  onChange={this.handleMonthChange}
+                >
+                  <option value="">Select a month</option>
+                  {months.map((month, index) => (
+                    <option key={index} value={month}>{month}</option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              <SalarySlipTemplate
+                user={this.state.user}
+                salarySlip={this.state.salary_slip}
+                selectedMonth={this.state.selectedMonth}
+              />
+            </Col>
+          </Row>
+        </Card.Body>
                               </Card>
                             </Col>
                             <Col sm={12}>
@@ -367,7 +410,7 @@ export default class EmployeeView extends Component {
                             </Col>
                             <Col sm={12}>
                             <Card className="secondary-card">
-                              <Card.Header>Offer Letter</Card.Header>
+                              <Card.Header>Hike Letter</Card.Header>
                               <Card.Body>
                                 <Row>
                                   <Col>
@@ -389,7 +432,7 @@ export default class EmployeeView extends Component {
                               </Card.Body>
                               </Card>
                             </Col>
-                            <Col sm={12}>
+                            {/* <Col sm={12}>
                             <Card className="secondary-card">
                               <Card.Header>Resignation Letter</Card.Header>
                               <Card.Body>
@@ -400,7 +443,7 @@ export default class EmployeeView extends Component {
                                 </Row>
                               </Card.Body>
                               </Card>
-                            </Col>
+                            </Col> */}
                           </Row>
                         </Col>
                       </div>
