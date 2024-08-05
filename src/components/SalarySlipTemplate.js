@@ -52,7 +52,7 @@ if (!userData || !salarySlipData) {
       </h3>
       <div style={{ marginBottom: "20px" }}>
         <p>
-          <strong>Name of Employee:</strong> {salarySlipData.name}
+          <strong>Name of Employee:</strong> {userData.fullName}
         </p>
         <p>
           <strong>Address:</strong> {userData.user_personal_info.address}
