@@ -629,7 +629,7 @@ export default class EmployeeAdd extends Component {
                       <div>
                         <Form.Group controlId="formPhysicalAddress">
                           <Form.Label className="text-muted required">
-                            Physical Address
+                            Current Address
                           </Form.Label>
                           <Form.Control
                             type="text"

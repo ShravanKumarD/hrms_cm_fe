@@ -1,15 +1,22 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState,useEffect } from 'react';
 import { Button, Card, Row, Col, Form } from 'react-bootstrap';
+import { useLocation } from 'react-router-dom';
 import img from "./../assets/samcint_logo.jpeg"; 
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import htmlToPdfmake from "html-to-pdfmake";
-
+import axios from "axios";
+import moment from 'moment';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
+const dateToday = new Date();
+let latestDate= moment(dateToday).format('YYYY-MM-DD');
 
 const HikeLetterTemplate = () => {
   const [showLetter, setShowLetter] = useState(false);
   const letterRef = useRef(null);
+  const [user, setUser]=useState('');
+  const location = useLocation();
 
   const toggleLetter = () => {
     setShowLetter(prevShowLetter => !prevShowLetter);
@@ -26,17 +33,29 @@ const HikeLetterTemplate = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        axios.defaults.baseURL = "http://13.232.177.171";
+        const userId = location.state.selectedUser.id;
+  
+        const userRes = await axios.get(`/api/users/${userId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        const userData = userRes.data;
+        console.log(userData, "user hike letter");
+        setUser(userData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+    fetchUserData();
+  }, []); 
   return (
     <div>
       <Card>
         <Card.Body>
-          <Row>
-            <Col>
-              <Form>
-                {/* Your form elements here */}
-              </Form>
-            </Col>
-          </Row>
           <Row className="mt-3">
             <Col>
               <Button onClick={toggleLetter}>
@@ -63,12 +82,12 @@ const HikeLetterTemplate = () => {
                   <p>&nbsp;</p>
                   <h1 style={{ textAlign: "center", color: '#EB7301', fontSize: '22px' }}><strong>Hike Letter</strong></h1>
                   <p>&nbsp;</p>
-                  <p>Date: 25.03.24</p>
-                  <p>{"name"}</p>
-                  <p>{"place"}</p>
+                  <p>Date: {latestDate}</p>
+                  <p>Name: {user.fullName} </p>
+                  <p>Place: {user.user_personal_info.city}</p>
                   
                   <p>
-                    Dear {"name"}, we are pleased to inform you that your salary has been revised. Effective from <strong>{"effective date"}</strong>, your new salary will be <strong>{"new salary"}</strong>. 
+                    Dear {user.fullName}, we are pleased to inform you that your salary has been revised. Effective from <strong>{latestDate}</strong>, your new salary will be <strong>{"new salary"}</strong>. 
                     This hike reflects our recognition of your hard work, dedication, and contributions to the company.
                   </p>
                 
