@@ -2,69 +2,8 @@
 node_modules/
 
 # Build output
-dist/
 build/
 
 # Environment variables
 .env
-
-# Logs
-logs/
-*.log
-
-# Dependency directories
-jspm_packages/
-
-# OS-specific files
-.DS_Store
-Thumbs.db
-
-# IDE/Editor directories and files
-.vscode/
-.idea/
-*.swp
-
-# NPM cache
-.npm/
-package-lock.json
-
-# Yarn
-yarn-error.log
-yarn-debug.log
-
-# Typescript
-*.tsbuildinfo
-
-# Mac-specific files
-*.DS_Store
-
-# Windows-specific files
-ehthumbs.db
-Desktop.ini
-
-# Sentry
-.sentry/
-
-# Temporary files
-*.tmp
-*.temp
-*.bak
-
-# Coverage
-coverage/
-
-# Optional npm cache directory
-.npm/
-
-# VS Code workspace settings
-.vscode/
-
-# JetBrains IDEs
-.idea/
-*.iml
-
-# Mac-specific files
-.DS_Store
-
-# Windows-specific files
-Thumbs.db
+env.js
