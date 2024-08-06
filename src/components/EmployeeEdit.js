@@ -572,7 +572,7 @@ export default class EmployeeEdit extends Component {
                       <div>
                         <Form.Group controlId="formEmployeeId">
                           <Form.Label className="text-muted">
-                            Employee ID
+                            Username
                           </Form.Label>
                           <div>{this.state.user.username}</div>
                         </Form.Group>

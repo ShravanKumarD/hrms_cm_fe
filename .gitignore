@@ -7,3 +7,9 @@ build/
 # Environment variables
 .env
 env.js
+
+# Mac files
+.DS_Store
+
+# Windows files
+Thumbs.db

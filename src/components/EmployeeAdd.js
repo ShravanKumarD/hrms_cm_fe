@@ -815,7 +815,7 @@ export default class EmployeeAdd extends Component {
                       <div>
                         <Form.Group controlId="formEmployeeId">
                           <Form.Label className="text-muted required">
-                            Employee ID
+                            Username
                           </Form.Label>
                           <Form.Control
                             type="text"
