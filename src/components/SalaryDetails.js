@@ -12,6 +12,7 @@ import { createTheme } from "@material-ui/core/styles";
 import AlertModal from "./AlertModal";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import API_BASE_URL from "../env";
 
 const months = [
   "January",

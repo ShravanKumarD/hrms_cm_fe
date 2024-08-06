@@ -8,6 +8,7 @@ import moment from "moment";
 import MaterialTable from "material-table";
 import { ThemeProvider } from "@material-ui/core";
 import { createTheme } from "@material-ui/core/styles";
+import API_BASE_URL from "../env";
 
 export default class ApplicationList extends Component {
   constructor(props) {

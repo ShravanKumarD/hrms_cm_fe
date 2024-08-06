@@ -8,6 +8,8 @@ import moment from "moment";
 import "@fullcalendar/core/main.css";
 import "@fullcalendar/daygrid/main.css";
 import "../AttendanceList.css"; // Import the CSS file
+import API_BASE_URL from "../env";
+
 
 const AttendanceList = () => {
   const [attendances, setAttendances] = useState([]);
@@ -23,14 +25,12 @@ const AttendanceList = () => {
   useEffect(() => {
     const fetchAttendances = async () => {
       try {
-        const response = await axios.get(
-          `http://13.232.177.171/api/attendance/user/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        axios.defaults.baseURL = API_BASE_URL;
+        const response = await axios.get(`api/attendance/user/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         setAttendances(response.data);
       } catch (error) {
         console.error(error);

@@ -6,6 +6,8 @@ import DeleteModal from "./DeleteModal";
 import axios from "axios";
 import { ThemeProvider } from "@material-ui/core";
 import { createTheme } from "@material-ui/core/styles";
+import API_BASE_URL from "../env";
+
 
 export default class SalaryList extends Component {
   constructor(props) {

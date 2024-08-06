@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Card, Form, Button, Alert } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
+import API_BASE_URL from "../env";
 
 export default class DepartmentAdd extends Component {
   constructor(props) {

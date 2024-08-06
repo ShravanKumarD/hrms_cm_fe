@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
+import API_BASE_URL from "./env";
 
 export default function withAuth(ComponentToProtect) {
   return class extends Component {

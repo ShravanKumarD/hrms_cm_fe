@@ -1,6 +1,7 @@
 // src/components/AttendanceList.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../env";
 
 const AttendanceList = () => {
   const [attendances, setAttendances] = useState([]);
@@ -8,7 +9,8 @@ const AttendanceList = () => {
   useEffect(() => {
     const fetchAttendances = async () => {
       try {
-        const response = await axios.get("http://13.232.177.171/api/attendance", {
+        axios.defaults.baseURL = API_BASE_URL; // Set the base URL
+        const response = await axios.get("/api/attendance", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         console.log(response.data,"datatatta")

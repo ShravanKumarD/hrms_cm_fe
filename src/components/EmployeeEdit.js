@@ -4,6 +4,7 @@ import { Redirect, NavLink } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 import moment from "moment";
+import API_BASE_URL from "../env";
 
 export default class EmployeeEdit extends Component {
   constructor(props) {

@@ -7,6 +7,7 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 import htmlToPdfmake from "html-to-pdfmake";
 import axios from "axios";
 import moment from "moment";
+import API_BASE_URL from "../env";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const dateToday = new Date();

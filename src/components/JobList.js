@@ -10,6 +10,7 @@ import MaterialTable from "material-table";
 import { ThemeProvider } from "@material-ui/core";
 import { createMuiTheme } from "@material-ui/core/styles";
 import AlertModal from "./AlertModal";
+import API_BASE_URL from "../env";
 
 export default class JobList extends Component {
   constructor(props) {
@@ -161,7 +162,7 @@ export default class JobList extends Component {
       // if(department.users.length > 0) {
       //     this.setState({showAlertModel: true})
       // } else {
-      //         axios.defaults.baseURL = 'http://13.232.177.171';
+      //         axios.defaults.baseURL = API_BASE_URL;
       // axios({
       //         method: 'delete',
       //         url: '/api/departments/'  + department.id,

@@ -7,6 +7,7 @@ import ExpenseChartsPage from "../manager/ExpenseChartsPage";
 import RecentApplciations from "../manager/RecentApplications";
 import RecentAnnouncements from "../RecentAnnouncementsManagerEmp";
 import axios from "axios";
+import API_BASE_URL from "../../env";
 
 export default class DashboardManager extends Component {
   constructor(props) {

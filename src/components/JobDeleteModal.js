@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { Modal, Alert, Button } from "react-bootstrap";
 import axios from "axios";
+import API_BASE_URL from "../env";
 
 export default class JobDeleteModal extends Component {
   constructor(props) {

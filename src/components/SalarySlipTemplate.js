@@ -6,6 +6,8 @@ import img from "./../assets/samcint_logo.jpeg";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import htmlToPdfmake from "html-to-pdfmake";
+import API_BASE_URL from "../env";
+
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 

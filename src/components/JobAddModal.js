@@ -5,6 +5,7 @@ import moment from "moment";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import API_BASE_URL from "../env";
 
 export default class JobAddModal extends Component {
   constructor(props) {

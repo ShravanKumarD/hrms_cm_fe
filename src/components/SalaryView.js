@@ -5,6 +5,8 @@ import axios from "axios";
 import moment from "moment";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import API_BASE_URL from "../env";
+
 
 export default class SalaryView extends Component {
   constructor(props) {

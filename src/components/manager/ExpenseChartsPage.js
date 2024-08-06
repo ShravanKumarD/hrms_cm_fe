@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Bar } from "react-chartjs-2";
 import axios from "axios";
+import API_BASE_URL from "../../env";
 
 export default class ExpenseChartsPage extends React.Component {
   constructor(props) {

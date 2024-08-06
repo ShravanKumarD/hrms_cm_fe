@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Alert } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
+import API_BASE_URL from "../env";
 
 export default class Register extends Component {
   constructor(props) {

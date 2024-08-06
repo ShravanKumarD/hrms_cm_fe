@@ -1,38 +1,44 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal } from "react-bootstrap";
 import "./startwork.css";
+import API_BASE_URL from "../env";
+
 
 const quotes = [
   {
-    "author": "Albert Einstein",
-    "quote": "It's not that I'm so smart, it's just that I stay with problems longer."
+    author: "Albert Einstein",
+    quote:
+      "It's not that I'm so smart, it's just that I stay with problems longer.",
   },
   {
-    "author": "Bill Gates",
-    "quote": "Your most unhappy customers are your greatest source of learning."
+    author: "Bill Gates",
+    quote: "Your most unhappy customers are your greatest source of learning.",
   },
   {
-    "author": "Thomas Edison",
-    "quote": "Genius is one percent inspiration and ninety-nine percent perspiration."
+    author: "Thomas Edison",
+    quote:
+      "Genius is one percent inspiration and ninety-nine percent perspiration.",
   },
   {
-    "author": "Isaac Newton",
-    "quote": "If I have seen further, it is by standing on the shoulders of Giants."
+    author: "Isaac Newton",
+    quote:
+      "If I have seen further, it is by standing on the shoulders of Giants.",
   },
   {
-    "author": "Elon Musk",
-    "quote": "When something is important enough, you do it even if the odds are not in your favor."
+    author: "Elon Musk",
+    quote:
+      "When something is important enough, you do it even if the odds are not in your favor.",
   },
   {
-    "author": "Jeff Bezos",
-    "quote": "We are stubborn on vision. We are flexible on details."
+    author: "Jeff Bezos",
+    quote: "We are stubborn on vision. We are flexible on details.",
   },
   {
-    "author": "Walt Disney",
-    "quote": "The way to get started is to quit talking and begin doing."
-  }
+    author: "Walt Disney",
+    quote: "The way to get started is to quit talking and begin doing.",
+  },
 ];
 
 const StartWork = () => {
@@ -42,7 +48,9 @@ const StartWork = () => {
   const [isStarted, setIsStarted] = useState(false);
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
-  const [userId, setUserId] = useState(JSON.parse(localStorage.getItem("user")).id || "");
+  const [userId, setUserId] = useState(
+    JSON.parse(localStorage.getItem("user")).id || ""
+  );
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [status, setStatus] = useState("Present");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -60,8 +68,8 @@ const StartWork = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex(prevIndex => (prevIndex + 1) % quotes.length);
-    }, 5000); 
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % quotes.length);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -85,7 +93,7 @@ const StartWork = () => {
   useEffect(() => {
     const savedStartTime = localStorage.getItem("startTime");
     const savedIsStarted = localStorage.getItem("isStarted") === "true";
-    
+
     if (savedStartTime) {
       setStartTime(new Date(savedStartTime));
       setIsStarted(savedIsStarted);
@@ -94,15 +102,16 @@ const StartWork = () => {
 
   const handleStart = async () => {
     const start = new Date();
-    const dateString = moment(start).format('YYYY-MM-DD HH:mm:ss');
+    const dateString = moment(start).format("YYYY-MM-DD HH:mm:ss");
     setStartTime(start);
     setIsStarted(true);
     localStorage.setItem("startTime", start.toISOString());
     localStorage.setItem("isStarted", "true");
-    
+
     try {
+      axios.defaults.baseURL = API_BASE_URL;
       const response = await axios.post(
-        "http://13.232.177.171/api/attendance/clock-in",
+        "/api/attendance/clock-in",
         {
           userId,
           date,
@@ -133,15 +142,16 @@ const StartWork = () => {
 
   const handleConfirmEnd = async () => {
     const end = new Date();
-    const dateString = moment(end).format('YYYY-MM-DD HH:mm:ss');
+    const dateString = moment(end).format("YYYY-MM-DD HH:mm:ss");
     setEndTime(end);
     setIsStarted(false);
     localStorage.removeItem("startTime");
     localStorage.removeItem("isStarted");
 
     try {
+      axios.defaults.baseURL = API_BASE_URL;
       await axios.put(
-        `http://13.232.177.171/api/attendance/clock-out`,
+        `api/attendance/clock-out`,
         {
           userId,
           date,
@@ -156,7 +166,7 @@ const StartWork = () => {
     } catch (error) {
       console.error("There was an error marking the end time!", error);
     }
-    
+
     handleCloseModal();
   };
 
@@ -168,21 +178,22 @@ const StartWork = () => {
         <h2 className="text-center mb-4">Start Work</h2>
         <div className="text-center mb-4">
           <h3 className="display-4">
-            Current Time:<strong>{currentTime.toLocaleTimeString()}</strong> 
+            Current Time:<strong>{currentTime.toLocaleTimeString()}</strong>
           </h3>
         </div>
         <div className="quote-scroller">
           <blockquote className="quote-content">
             <p>
-              {quotes[currentIndex].quote} — <span>{quotes[currentIndex].author}</span>
+              {quotes[currentIndex].quote} —{" "}
+              <span>{quotes[currentIndex].author}</span>
             </p>
           </blockquote>
-        </div>    
-        <br/>
+        </div>
+        <br />
         <div className="text-center mb-4">
           {!isStarted ? (
             <button className="btn btn-success btn-lg" onClick={handleStart}>
-              <strong> Start Work</strong> 
+              <strong> Start Work</strong>
             </button>
           ) : (
             <button className="btn btn-danger btn-lg" onClick={handleEnd}>
@@ -209,7 +220,8 @@ const StartWork = () => {
           <Modal.Title>Confirm End Work</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to end work? Your total work time today is <strong>{totalTime} hours</strong>.
+          Are you sure you want to end work? Your total work time today is{" "}
+          <strong>{totalTime} hours</strong>.
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
@@ -242,9 +254,19 @@ const Timeline = ({ isStarted, startTime }) => {
 
   return (
     <div className="container mt-4">
-      <div className="progress" style={{ height: "25px", width: "80%", margin: "0 auto", borderRadius: "10px" }}>
+      <div
+        className="progress"
+        style={{
+          height: "25px",
+          width: "80%",
+          margin: "0 auto",
+          borderRadius: "10px",
+        }}
+      >
         <div
-          className={`progress-bar progress-bar-striped ${progress === 100 ? 'bg-success' : 'bg-warning'}`}
+          className={`progress-bar progress-bar-striped ${
+            progress === 100 ? "bg-success" : "bg-warning"
+          }`}
           role="progressbar"
           style={{ width: `${progress}%` }}
           aria-valuenow={progress}
@@ -253,7 +275,9 @@ const Timeline = ({ isStarted, startTime }) => {
         ></div>
       </div>
       <div className="text-center mt-3">
-        <h5>{progress === 100 ? "Full Day" : `${Math.floor(progress)}% Completed`}</h5>
+        <h5>
+          {progress === 100 ? "Full Day" : `${Math.floor(progress)}% Completed`}
+        </h5>
       </div>
     </div>
   );

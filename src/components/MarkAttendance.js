@@ -1,7 +1,9 @@
 // src/components/MarkAttendance.js
 import React, { useState } from "react";
 import axios from "axios";
-import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
+import API_BASE_URL from "../env";
+
 
 const MarkAttendance = () => {
   const [userId, setUserId] = useState("");
@@ -14,130 +16,130 @@ const MarkAttendance = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      axios.defaults.baseURL = API_BASE_URL; // Set the base URL
       const response = await axios.post(
-        'http://13.232.177.171/api/attendance/mark',
+        "/api/attendance/mark",
         {
           userId,
           date,
           status,
-          clockinTime: status === 'Present' ? clockinTime : null,
-          clockoutTime: status === 'Present' ? clockoutTime : null,
-          latitude: status === 'Present' ? latitude : null,
-          longitude: status === 'Present' ? longitude : null,
+          clockinTime: status === "Present" ? clockinTime : null,
+          clockoutTime: status === "Present" ? clockoutTime : null,
+          latitude: status === "Present" ? latitude : null,
+          longitude: status === "Present" ? longitude : null,
         },
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
       console.log(response.data);
-      alert('Attendance marked successfully');
+      alert("Attendance marked successfully");
     } catch (error) {
       console.error(error);
-      alert('Error marking attendance');
+      alert("Error marking attendance");
     }
   };
 
   return (
     <Container className="pt-4">
-    <Row className="justify-content-center">
-      <Col md={8}>
-        <Card>
-          <br/>
-        <Card.Title className="text-center mb-4"><strong>Mark Attendance</strong></Card.Title>
-          <Card.Body>
-           
-     
-            <Form onSubmit={handleSubmit}>
-              
-              <Form.Group controlId="formUserId">
-                <Form.Label>User ID</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
-                  placeholder="Enter User ID"
-                  required
-                />
-              </Form.Group>
+      <Row className="justify-content-center">
+        <Col md={8}>
+          <Card>
+            <br />
+            <Card.Title className="text-center mb-4">
+              <strong>Mark Attendance</strong>
+            </Card.Title>
+            <Card.Body>
+              <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="formUserId">
+                  <Form.Label>User ID</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={userId}
+                    onChange={(e) => setUserId(e.target.value)}
+                    placeholder="Enter User ID"
+                    required
+                  />
+                </Form.Group>
 
-              <Form.Group controlId="formDate">
-                <Form.Label>Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  required
-                />
-              </Form.Group>
+                <Form.Group controlId="formDate">
+                  <Form.Label>Date</Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    required
+                  />
+                </Form.Group>
 
-              <Form.Group controlId="formStatus">
-                <Form.Label>Status</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                >
-                  <option value="Absent">Absent</option>
-                  <option value="Present">Present</option>
-                  <option value="Leave">Leave</option>
-                </Form.Control>
-              </Form.Group>
+                <Form.Group controlId="formStatus">
+                  <Form.Label>Status</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    <option value="Absent">Absent</option>
+                    <option value="Present">Present</option>
+                    <option value="Leave">Leave</option>
+                  </Form.Control>
+                </Form.Group>
 
-              {status === "Present" && (
-                <>
-                  <Form.Group controlId="formClockInTime">
-                    <Form.Label>Clock In Time</Form.Label>
-                    <Form.Control
-                      type="time"
-                      value={clockinTime}
-                      onChange={(e) => setClockInTime(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
+                {status === "Present" && (
+                  <>
+                    <Form.Group controlId="formClockInTime">
+                      <Form.Label>Clock In Time</Form.Label>
+                      <Form.Control
+                        type="time"
+                        value={clockinTime}
+                        onChange={(e) => setClockInTime(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
 
-                  <Form.Group controlId="formClockOutTime">
-                    <Form.Label>Clock Out Time</Form.Label>
-                    <Form.Control
-                      type="time"
-                      value={clockoutTime}
-                      onChange={(e) => setClockOutTime(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
+                    <Form.Group controlId="formClockOutTime">
+                      <Form.Label>Clock Out Time</Form.Label>
+                      <Form.Control
+                        type="time"
+                        value={clockoutTime}
+                        onChange={(e) => setClockOutTime(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
 
-                  <Form.Group controlId="formLatitude">
-                    <Form.Label>Latitude</Form.Label>
-                    <Form.Control
-                      type="number"
-                      step="any"
-                      value={latitude}
-                      onChange={(e) => setLatitude(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
+                    <Form.Group controlId="formLatitude">
+                      <Form.Label>Latitude</Form.Label>
+                      <Form.Control
+                        type="number"
+                        step="any"
+                        value={latitude}
+                        onChange={(e) => setLatitude(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
 
-                  <Form.Group controlId="formLongitude">
-                    <Form.Label>Longitude</Form.Label>
-                    <Form.Control
-                      type="number"
-                      step="any"
-                      value={longitude}
-                      onChange={(e) => setLongitude(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
-                </>
-              )}
-<br/>
-              <Button variant="primary" type="submit">
-                Mark Attendance
-              </Button>
-            </Form>
-          </Card.Body>
-        </Card>
-      </Col>
-    </Row>
-  </Container>
+                    <Form.Group controlId="formLongitude">
+                      <Form.Label>Longitude</Form.Label>
+                      <Form.Control
+                        type="number"
+                        step="any"
+                        value={longitude}
+                        onChange={(e) => setLongitude(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                  </>
+                )}
+                <br />
+                <Button variant="primary" type="submit">
+                  Mark Attendance
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
