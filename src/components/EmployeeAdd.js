@@ -906,13 +906,15 @@ export default class EmployeeAdd extends Component {
                               onChange={(startDate) =>
                                 this.setState({ startDate })
                               }
+                              showMonthDropdown
+                              showYearDropdown
                               dropdownMode="select"
                               timeFormat="HH:mm"
                               name="startDate"
                               timeCaption="time"
                               dateFormat="yyyy-MM-dd"
                               className="form-control ml-1"
-                              placeholderText="Select Date Of Birth"
+                              placeholderText="Select Starting Date"
                               autoComplete="off"
                               required
                             />

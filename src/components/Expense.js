@@ -136,6 +136,8 @@ export default class Expense extends Component {
                         <DatePicker
                           className="form-control ml-1"
                           placeholderText="Pick Date"
+                          showMonthDropdown
+                          showYearDropdown
                           selected={this.state.purchaseDate}
                           onChange={(newDate) =>
                             this.setState({ purchaseDate: newDate })

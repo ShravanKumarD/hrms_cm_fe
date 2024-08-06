@@ -111,6 +111,8 @@ export default class Expense extends Component {
                           onChange={(newDate) =>
                             this.setState({ purchaseDate: newDate })
                           }
+                          showMonthDropdown
+                          showYearDropdown
                           required
                         />
                       </Form.Row>

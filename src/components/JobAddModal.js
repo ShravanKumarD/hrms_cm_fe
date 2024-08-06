@@ -202,6 +202,8 @@ export default class JobAddModal extends Component {
                 dateFormat="yyyy-MM-dd"
                 className="form-control ml-1"
                 placeholderText="Select Start Date"
+                showMonthDropdown
+                showYearDropdown
                 autoComplete="off"
                 required
               />
@@ -216,6 +218,8 @@ export default class JobAddModal extends Component {
                 className="form-control ml-1"
                 placeholderText="Select Start Date"
                 autoComplete="off"
+                showMonthDropdown
+                showYearDropdown
                 required
               />
             </Form.Group>

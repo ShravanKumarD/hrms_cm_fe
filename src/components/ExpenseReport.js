@@ -114,6 +114,8 @@ export default class ExpenseReport extends Component {
                         onChange={(newDate) =>
                           this.setState({ selectedDate: newDate })
                         }
+                        showMonthDropdown
+                        showYearDropdown
                         showMonthYearPicker
                         dateFormat="MMM yyyy"
                       />

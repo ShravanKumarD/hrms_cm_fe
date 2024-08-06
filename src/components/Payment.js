@@ -349,6 +349,8 @@ export default class Payment extends Component {
                           }
                           dateFormat="MM/yyy"
                           showMonthYearPicker
+                          showMonthDropdown
+                          showYearDropdown
                           required
                         />
                       </Form.Row>
