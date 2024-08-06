@@ -29,7 +29,7 @@ export default class JobList extends Component {
       });
     }
     let deptId = JSON.parse(localStorage.getItem("user")).departmentId;
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
       url: "/api/departments/" + deptId,

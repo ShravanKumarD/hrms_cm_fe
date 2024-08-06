@@ -19,7 +19,7 @@ const ExpenseChartsPage = () => {
   }, [expenseYear]);
 
   const fetchData = () => {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
       url: `api/expenses/year/${expenseYear}`,

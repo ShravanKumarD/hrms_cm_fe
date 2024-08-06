@@ -291,7 +291,7 @@ export default class EmployeeAdd extends Component {
   }
 
   componentDidMount() {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
       url: "/api/departments",
@@ -339,7 +339,7 @@ export default class EmployeeAdd extends Component {
     };
 
     e.preventDefault();
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "post",
       url: "/api/users",
@@ -364,7 +364,7 @@ export default class EmployeeAdd extends Component {
           userId: userId,
         };
 
-        axios.defaults.baseURL = "http://13.232.177.171";
+        axios.defaults.baseURL = API_BASE_URL;
         axios({
           method: "post",
           url: "/api/personalInformations",
@@ -380,7 +380,7 @@ export default class EmployeeAdd extends Component {
               userId: userId,
             };
 
-            axios.defaults.baseURL = "http://13.232.177.171";
+            axios.defaults.baseURL = API_BASE_URL;
             axios({
               method: "post",
               url: "api/financialInformations",
@@ -397,7 +397,7 @@ export default class EmployeeAdd extends Component {
                   userId: userId,
                   file: this.state.file,
                 };
-                axios.defaults.baseURL = "http://13.232.177.171";
+                axios.defaults.baseURL = API_BASE_URL;
                 axios({
                   method: "post",
                   url: "api/jobs/",
@@ -994,7 +994,7 @@ export default class EmployeeAdd extends Component {
                       </Form.Group>
                     </Card.Body>
                   </Card> */}
-                </div>      
+                </div>
                 <div className="col-sm-6">
                   {/* <Card className="secondary-card">
                     <Card.Header>Upload Hike Letter</Card.Header>
@@ -1061,4 +1061,3 @@ export default class EmployeeAdd extends Component {
     );
   }
 }
-  

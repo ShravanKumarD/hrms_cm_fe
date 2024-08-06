@@ -15,7 +15,7 @@ export default class JobDeleteModal extends Component {
   onDelete = (event) => {
     event.preventDefault();
 
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "delete",
       url: "api/jobs/" + this.props.data.id,

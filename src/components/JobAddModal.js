@@ -30,7 +30,7 @@ export default class JobAddModal extends Component {
   }
 
   fetchDepartments = () => {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
       url: "api/departments",
@@ -104,7 +104,7 @@ export default class JobAddModal extends Component {
       userId: this.state.selectedUser,
     };
 
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "post",
       url: `/api/jobs`,

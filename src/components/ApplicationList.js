@@ -25,7 +25,7 @@ export default class ApplicationList extends Component {
   }
 
   componentDidMount() {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
       url: "/api/applications",
@@ -52,7 +52,7 @@ export default class ApplicationList extends Component {
     return (event) => {
       event.preventDefault();
 
-      axios.defaults.baseURL = "http://13.232.177.171";
+      axios.defaults.baseURL = API_BASE_URL;
       axios({
         method: "put",
         url: "/api/applications/" + app.id,
@@ -77,7 +77,7 @@ export default class ApplicationList extends Component {
     return (event) => {
       event.preventDefault();
 
-      axios.defaults.baseURL = "http://13.232.177.171";
+      axios.defaults.baseURL = API_BASE_URL;
       axios({
         method: "put",
         url: "/api/applications/" + app.id,

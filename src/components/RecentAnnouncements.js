@@ -8,7 +8,7 @@ const RecentAnnouncements = () => {
 
   useEffect(() => {
     let isMounted = true;
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
       url: "/api/departmentAnnouncements/recent",

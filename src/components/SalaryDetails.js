@@ -13,10 +13,19 @@ import AlertModal from "./AlertModal";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
-
 const months = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 export default class SalaryDetails extends Component {
@@ -38,20 +47,20 @@ export default class SalaryDetails extends Component {
       allowanceOther: 0,
       deductionTax: 0,
       deductionOther: 0,
-      deductionTotal:0,
+      deductionTotal: 0,
       pf: 0,
       tds: 0,
       pt: 0,
       hasError: false,
       errMsg: "",
       completed: false,
-      month:'',
-      date_of_joining:''
+      month: "",
+      date_of_joining: "",
     };
   }
 
   componentDidMount() {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
       url: "/api/departments",
@@ -102,14 +111,14 @@ export default class SalaryDetails extends Component {
       });
   };
   pushChanges = () => {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
       url: "api/financialInformations/user/" + this.state.selectedUser,
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then((res) => {
-        console.log(res,"lkwehfuieruf");
+        console.log(res, "lkwehfuieruf");
         this.setState((prevState) => ({
           ...prevState,
           financialId: res.data[0].id,
@@ -122,7 +131,7 @@ export default class SalaryDetails extends Component {
   };
 
   fetchData = () => {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
       url: "api/departments/" + this.state.selectedDepartment,
@@ -144,7 +153,7 @@ export default class SalaryDetails extends Component {
   };
 
   fetchDataAll = () => {
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
       url: "api/departments/",
@@ -220,7 +229,7 @@ export default class SalaryDetails extends Component {
     this.state.users.map((user) => {
       if (user.id == event.target.value) {
         this.setState({ selectedUser: event.target.value }, () => {
-          axios.defaults.baseURL = "http://13.232.177.171";
+          axios.defaults.baseURL = API_BASE_URL;
           axios({
             method: "get",
             url: "api/financialInformations/user/" + this.state.selectedUser,
@@ -250,44 +259,42 @@ export default class SalaryDetails extends Component {
     });
   };
 
-handleChange = (event) => {
-  const { name, value } = event.target;
-  this.setState({ [name]: value });
-  const numericValue = value === '' ? 0 : Number(value);
-  if (isNaN(numericValue)) {
-    this.setState({ [name]: 0 });
-  } else {
-    this.setState({ [name]: numericValue });
+  handleChange = (event) => {
+    const { name, value } = event.target;
+    this.setState({ [name]: value });
+    const numericValue = value === "" ? 0 : Number(value);
+    if (isNaN(numericValue)) {
+      this.setState({ [name]: 0 });
+    } else {
+      this.setState({ [name]: numericValue });
+    }
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.selectedUser) {
+      axios.defaults.baseURL = API_BASE_URL;
+      axios({
+        method: "get",
+        url: "api/users/" + this.state.financialId,
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+        .then((res) => {
+          this.setState({ name: res.data.fullName });
+          this.setState({ designation: res.data.jobs[0].jobTitle });
+          this.setState({ address: res.data.user_personal_info.address });
+        })
+        .catch((error) => {
+          console.error("There was an error!", error);
+        });
+    }
   }
-};
-
-
-componentDidUpdate(prevProps, prevState) {
-  if (this.state.selectedUser) {
-    axios.defaults.baseURL = "http://13.232.177.171";
-    axios({
-      method: "get",
-      url: "api/users/" + this.state.financialId,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-    .then((res) => {
-      this.setState({name:res.data.fullName })
-      this.setState({designation:res.data.jobs[0].jobTitle})
-      this.setState({address:res.data.user_personal_info.address})
-    })
-    .catch((error) => {
-      console.error("There was an error!", error);
-    });
-  }
-}
-
 
   onSubmit = (event) => {
     event.preventDefault();
 
     let data = {
-      month:this.state.month,
-      date_of_joining:this.state.formattedDate  ,
+      month: this.state.month,
+      date_of_joining: this.state.formattedDate,
       employmentType: this.state.employmentType,
       salaryBasic: this.state.salaryBasic,
       salaryGross: this.salaryGross,
@@ -339,29 +346,27 @@ componentDidUpdate(prevProps, prevState) {
         this.state.pt,
     };
     const salary_slip = {
-userId:this.state.financialId,
-designation:this.state.designation,
-month:this.state.month,
-date_of_joining:this.state.date_of_joining,
-tds:this.state.tds,
-address: this.state.address,
-total_deductions:this.state.deductionTotal,
-      name: this.state.name,  
-      designation: this.state.designation,  
+      userId: this.state.financialId,
+      designation: this.state.designation,
+      month: this.state.month,
+      date_of_joining: this.state.date_of_joining,
+      tds: this.state.tds,
+      address: this.state.address,
+      total_deductions: this.state.deductionTotal,
+      name: this.state.name,
+      designation: this.state.designation,
       basic_salary: this.state.salaryBasic,
       hra: this.state.allowanceHouseRent,
       conveyance_allowance: this.state.allowanceFuel,
       special_allowance: this.state.allowanceSpecial,
       medical_allowance: this.state.allowanceMedical,
-      total_earnings: this.state.salaryGross,  
+      total_earnings: this.state.salaryGross,
       professional_tax: this.state.pt,
       employee_pf: this.state.pf,
       other_deductions: this.state.deductionOther,
     };
-    
 
-
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "post",
       url: "api/salary-slip",
@@ -369,7 +374,7 @@ total_deductions:this.state.deductionTotal,
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then((res) => {
-       console.log(res,'data sent');
+        console.log(res, "data sent");
       })
       .catch((err) => {
         this.setState({ hasError: true, errMsg: err.response.data.message });
@@ -399,8 +404,36 @@ total_deductions:this.state.deductionTotal,
     };
   }
   validateForm = () => {
-    const { name, address, designation, salaryBasic, allowanceHouseRent, allowanceFuel, allowanceSpecial, allowanceMedical, salaryGross, pt, pf, deductionOther, totalDeductions } = this.state;
-    if (!name || !address || !designation || !salaryBasic || !allowanceHouseRent || !allowanceFuel || !allowanceSpecial || !allowanceMedical || !salaryGross || !pt || !pf || !deductionOther || !totalDeductions) {
+    const {
+      name,
+      address,
+      designation,
+      salaryBasic,
+      allowanceHouseRent,
+      allowanceFuel,
+      allowanceSpecial,
+      allowanceMedical,
+      salaryGross,
+      pt,
+      pf,
+      deductionOther,
+      totalDeductions,
+    } = this.state;
+    if (
+      !name ||
+      !address ||
+      !designation ||
+      !salaryBasic ||
+      !allowanceHouseRent ||
+      !allowanceFuel ||
+      !allowanceSpecial ||
+      !allowanceMedical ||
+      !salaryGross ||
+      !pt ||
+      !pf ||
+      !deductionOther ||
+      !totalDeductions
+    ) {
       alert("Please fill out all required fields.");
       return false;
     }
@@ -408,7 +441,9 @@ total_deductions:this.state.deductionTotal,
   };
 
   render() {
-    const formattedDate = moment(this.state.date_of_joining).format('YYYY-MM-DD');
+    const formattedDate = moment(this.state.date_of_joining).format(
+      "YYYY-MM-DD"
+    );
     let salaryGross =
       this.state.salaryBasic +
       this.state.allowanceHouseRent +
@@ -522,39 +557,41 @@ total_deductions:this.state.deductionTotal,
                 </Card>
               </div>
               <div className="col-sm-6">
-                    <Card className="main-card">
-                      <Card.Header>Employment Details</Card.Header>
-                      <Card.Body>
-                        <div>
-                        <Form.Group controlId="monthSelect">
-                <Form.Label>Select Month</Form.Label>
-                <Form.Control 
-                  as="select" 
-                  value={this.state.selectedMonth} 
-                  onChange={this.handleMonthChange}
-                >
-                  <option value="">Select a month</option>
-                  {months.map((month, index) => (
-                    <option key={index} value={month}>{month}</option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-                          <Form.Group>
-                            <Form.Label className="required">
-                              Date of Joining
-                            </Form.Label>
-                         
-<Form.Control
-  type="date"
-  value={formattedDate}
-  onChange={this.handleChange}
-  name="date_of_joining"
-/>
-                          </Form.Group>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                </div>
+                <Card className="main-card">
+                  <Card.Header>Employment Details</Card.Header>
+                  <Card.Body>
+                    <div>
+                      <Form.Group controlId="monthSelect">
+                        <Form.Label>Select Month</Form.Label>
+                        <Form.Control
+                          as="select"
+                          value={this.state.selectedMonth}
+                          onChange={this.handleMonthChange}
+                        >
+                          <option value="">Select a month</option>
+                          {months.map((month, index) => (
+                            <option key={index} value={month}>
+                              {month}
+                            </option>
+                          ))}
+                        </Form.Control>
+                      </Form.Group>
+                      <Form.Group>
+                        <Form.Label className="required">
+                          Date of Joining
+                        </Form.Label>
+
+                        <Form.Control
+                          type="date"
+                          value={formattedDate}
+                          onChange={this.handleChange}
+                          name="date_of_joining"
+                        />
+                      </Form.Group>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </div>
             </div>
             <div className="row">
               <div className="col-sm-6">

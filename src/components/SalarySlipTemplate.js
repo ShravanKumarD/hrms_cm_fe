@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Button, Card, Row, Col, Form } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from "react";
+import { Button, Card, Row, Col, Form } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import img from "./../assets/samcint_logo.jpeg";
 import pdfMake from "pdfmake/build/pdfmake";
@@ -10,14 +10,15 @@ import htmlToPdfmake from "html-to-pdfmake";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const SalarySlipTemplate = React.forwardRef((props, ref) => {
-  const { userData, salarySlipData,selectedMonth } = props;
-console.log(selectedMonth,"userData")
+  const { userData, salarySlipData, selectedMonth } = props;
+  console.log(selectedMonth, "userData");
 
-if (!userData || !salarySlipData) {
-  return <div>Data not available</div>;
-}
+  if (!userData || !salarySlipData) {
+    return <div>Data not available</div>;
+  }
 
-  const netPay = salarySlipData.total_earnings - salarySlipData.total_deductions;
+  const netPay =
+    salarySlipData.total_earnings - salarySlipData.total_deductions;
   return (
     <div
       ref={ref}
@@ -30,24 +31,21 @@ if (!userData || !salarySlipData) {
       }}
     >
       <div style={{ textAlign: "center", marginBottom: "20px" }}>
-      <img
-                    style={{ height: "40px",width:"150px" }}
-                    src={img}
-                    alt="Company Logo"
-                  />
-                  <p>
-                    &nbsp;
-                  </p>
+        <img
+          style={{ height: "40px", width: "150px" }}
+          src={img}
+          alt="Company Logo"
+        />
+        <p>&nbsp;</p>
         <h2>SAMCINT SOLUTIONS PVT LTD</h2>
         <p>
-          Kailashnath Arcade, #201 2nd Floor, Samcint Solutions Pvt. Ltd.,
-          Near Madhapur Metro station, opposite to HDFC Bank Lane, Hyderabad –
-          500033
+          Kailashnath Arcade, #201 2nd Floor, Samcint Solutions Pvt. Ltd., Near
+          Madhapur Metro station, opposite to HDFC Bank Lane, Hyderabad – 500033
         </p>
         <p>+91- 9663347744</p>
       </div>
-      <hr/>
-      <h3 style={{textAlign:"center", fontSize:"18px"}}>
+      <hr />
+      <h3 style={{ textAlign: "center", fontSize: "18px" }}>
         Salary slip for the month of April - 2024
       </h3>
       <div style={{ marginBottom: "20px" }}>
@@ -58,14 +56,15 @@ if (!userData || !salarySlipData) {
           <strong>Address:</strong> {userData.user_personal_info.address}
         </p>
         <p>
-  <strong>Designation:</strong> {userData.jobs?.[0]?.jobTitle ?? "Not provided"}
-</p>
+          <strong>Designation:</strong>{" "}
+          {userData.jobs?.[0]?.jobTitle ?? "Not provided"}
+        </p>
 
         <p>
           <strong>Month:</strong> {salarySlipData.month}
         </p>
         <p>
-          <strong>DOJ:</strong> {salarySlipData.date_of_joining.split('T')[0]}
+          <strong>DOJ:</strong> {salarySlipData.date_of_joining.split("T")[0]}
         </p>
       </div>
       <table
@@ -97,36 +96,38 @@ if (!userData || !salarySlipData) {
               Basic Salary
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {/* 33,333 */}{salarySlipData.basic_salary}
+              {/* 33,333 */}
+              {salarySlipData.basic_salary}
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>TDS</td>
-            <td style={{ border: "1px solid #000", padding: "8px" }}>{salarySlipData.tds}</td>
+            <td style={{ border: "1px solid #000", padding: "8px" }}>
+              {salarySlipData.tds}
+            </td>
           </tr>
           <tr>
             <td style={{ border: "1px solid #000", padding: "8px" }}>H.R.A</td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-             {salarySlipData.hra}
+              {salarySlipData.hra}
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
               Professional tax
             </td>
-            <td style={{ border: "1px solid #000", padding: "8px" }}>{salarySlipData.professional_tax}</td>
+            <td style={{ border: "1px solid #000", padding: "8px" }}>
+              {salarySlipData.professional_tax}
+            </td>
           </tr>
           <tr>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
               Conveyance Allowance
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-             {salarySlipData.
-conveyance_allowance
-}
+              {salarySlipData.conveyance_allowance}
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
               Employee PF
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {salarySlipData.
-employee_pf}
+              {salarySlipData.employee_pf}
             </td>
           </tr>
           <tr>
@@ -134,20 +135,19 @@ employee_pf}
               Special Allowance
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {salarySlipData.
-special_allowance}
+              {salarySlipData.special_allowance}
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>Others</td>
-            <td style={{ border: "1px solid #000", padding: "8px" }}>{salarySlipData.
-other_deductions}</td>
+            <td style={{ border: "1px solid #000", padding: "8px" }}>
+              {salarySlipData.other_deductions}
+            </td>
           </tr>
           <tr>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
               Medical Allowance
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-            {salarySlipData.
-medical_allowance}
+              {salarySlipData.medical_allowance}
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}></td>
             <td style={{ border: "1px solid #000", padding: "8px" }}></td>
@@ -159,20 +159,21 @@ medical_allowance}
               <strong>Total Earnings</strong>
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-             {salarySlipData.
-total_earnings}
+              {salarySlipData.total_earnings}
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
               <strong>Total Deductions</strong>
             </td>
-            <td style={{ border: "1px solid #000", padding: "8px" }}>{salarySlipData.
-total_deductions}</td>
+            <td style={{ border: "1px solid #000", padding: "8px" }}>
+              {salarySlipData.total_deductions}
+            </td>
           </tr>
         </tfoot>
       </table>
       <div style={{ textAlign: "right", marginBottom: "20px" }}>
         <p>
-          <strong>Net Pay:</strong>{netPay}
+          <strong>Net Pay:</strong>
+          {netPay}
         </p>
       </div>
       <div>
@@ -180,58 +181,59 @@ total_deductions}</td>
           <strong>For SAMCINT SOLUTIONS PVT LTD</strong>
         </p>
         <p>
-          This is a system generated payslip and does not require any
-          signature
+          This is a system generated payslip and does not require any signature
         </p>
       </div>
     </div>
   );
 });
 
-const SalarySlipModule = ({selectedMonth}) => {
-  console.log(selectedMonth,"selectedMonth jhhh")
+const SalarySlipModule = ({ selectedMonth }) => {
+  console.log(selectedMonth, "selectedMonth jhhh");
   const [showSlip, setShowSlip] = useState(false);
   const slipRef = useRef(null);
   const [userData, setUserData] = useState(null);
   const [salarySlipData, setSalarySlipData] = useState(null);
   const location = useLocation();
-  const[month,setMonth]=useState(null);
+  const [month, setMonth] = useState(null);
 
   const toggleSlip = () => {
     setShowSlip((prevShowSlip) => !prevShowSlip);
   };
-  
+
   useEffect(() => {
-    setMonth(selectedMonth)
+    setMonth(selectedMonth);
     const fetchUserData = async () => {
       try {
-        axios.defaults.baseURL = "http://13.232.177.171";
+        axios.defaults.baseURL = API_BASE_URL;
         const userId = location.state.selectedUser.id;
-  
+
         const userRes = await axios.get(`/api/users/${userId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const userData = userRes.data;
         console.log(userData, "user");
         setUserData(userData);
-  
+
         const salarySlipRes = await axios.get(`/api/salary-slip`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const salarySlipData = salarySlipRes.data;
-        console.log(salarySlipData.month=month, "salary_slip dat");
-        const filteredData = salarySlipData.filter(slip => slip.month == month);
-        if(!filteredData){
-          return "no salary slips found"
+        console.log((salarySlipData.month = month), "salary_slip dat");
+        const filteredData = salarySlipData.filter(
+          (slip) => slip.month == month
+        );
+        if (!filteredData) {
+          return "no salary slips found";
         }
         setSalarySlipData(filteredData[0]);
       } catch (error) {
         console.error(error);
       }
     };
-  
+
     fetchUserData();
-  }, [selectedMonth, month]); 
+  }, [selectedMonth, month]);
 
   const downloadPDF = () => {
     if (slipRef.current) {
@@ -267,9 +269,9 @@ const SalarySlipModule = ({selectedMonth}) => {
             <Row>
               <Col>
                 <SalarySlipTemplate
-               userData={userData} // Change prop name
-               salarySlipData={salarySlipData}
-               selectedMonth={selectedMonth}
+                  userData={userData} // Change prop name
+                  salarySlipData={salarySlipData}
+                  selectedMonth={selectedMonth}
                   ref={slipRef}
                 />
               </Col>

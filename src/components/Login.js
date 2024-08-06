@@ -7,7 +7,7 @@ import Logo from "../assets/samcint_logo_2.png";
 export default class Login extends Component {
   constructor(props) {
     super(props);
-    this.state = {    
+    this.state = {
       username: "",
       password: "",
       checkPassword: "",
@@ -45,7 +45,7 @@ export default class Login extends Component {
       password: this.state.password,
     };
 
-    axios.defaults.baseURL = "http://13.232.177.171";
+    axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "post",
       url: "/login",
@@ -74,7 +74,7 @@ export default class Login extends Component {
         <div className="register-logo">
           <a href="/">
             {this.state.done ? <Redirect to="/" /> : <></>}
-            <img src={Logo} style={{width:"200px"}}alt="company-logo"/>
+            <img src={Logo} style={{ width: "200px" }} alt="company-logo" />
             {/* <b>HR</b>MS{" "}
             <small style={{ fontSize: "10px" }}>by Samcint Solutions</small> */}
           </a>
