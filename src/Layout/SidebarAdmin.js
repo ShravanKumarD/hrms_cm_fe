@@ -22,9 +22,11 @@ export default class SidebarAdmin extends Component {
     return (
       <aside className="main-sidebar sidebar-dark-primary elevation-4">
         {/* Brand Logo */}
-        <img src={Logo} className="logo-main" alt="company-logo"/>
+        <img src={Logo} className="logo-main" alt="company-logo" />
         <a href="/" className="brand-link">
-          <span className="brand-text font-weight-light ml-1"><strong>ADMIN</strong></span>
+          <span className="brand-text font-weight-light ml-1">
+            <strong>ADMIN</strong>
+          </span>
         </a>
         {/* Sidebar */}
         <div className="sidebar">
@@ -162,6 +164,33 @@ export default class SidebarAdmin extends Component {
                   </li>
                 </ul>
               </li>
+              <li className="nav-item has-treeview">
+                <NavLink
+                  to="/fake-url"
+                  className="nav-link"
+                  activeClassName="nav-link"
+                >
+                  <i className="nav-icon fas fa-file-alt" />
+                  <p>
+                    Documents
+                    <i className="right fas fa-angle-left" />
+                  </p>
+                </NavLink>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <NavLink to="/employee-add" className="nav-link">
+                      <i className="fas fa-file-upload nav-icon" />
+                      <p>Add Document</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/employee-list" className="nav-link">
+                      <i className="fas fa-file-alt nav-icon" />
+                      <p>Document List</p>
+                    </NavLink>
+                  </li>
+                </ul>
+              </li>{" "}
               <li className="nav-item">
                 <NavLink to="/job-list" className="nav-link">
                   <i className="nav-icon fas fa-briefcase" />
@@ -236,7 +265,7 @@ export default class SidebarAdmin extends Component {
               </li>
             </ul>
           </nav>
-          <div style={{marginTop:'100px'}}></div>
+          <div style={{ marginTop: "100px" }}></div>
           {/* /.sidebar-menu */}
         </div>
         {/* /.sidebar */}

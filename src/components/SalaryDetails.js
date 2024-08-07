@@ -55,8 +55,8 @@ export default class SalaryDetails extends Component {
       hasError: false,
       errMsg: "",
       completed: false,
-      date_of_joining: '',
-      selectedMonth:''
+      date_of_joining: "",
+      selectedMonth: "",
     };
   }
 
@@ -273,7 +273,7 @@ export default class SalaryDetails extends Component {
   // };
   handleChange = (event) => {
     const { name, value } = event.target;
-    
+
     if (name === "date_of_joining") {
       this.setState({ [name]: value });
     } else {
@@ -285,10 +285,10 @@ export default class SalaryDetails extends Component {
       }
     }
   };
-  
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.selectedUser) {
+    // this runs too much can u make it run only when the selected user changes
+    if (this.state.selectedUser !== prevState.selectedUser) {
       axios.defaults.baseURL = API_BASE_URL;
       axios({
         method: "get",
@@ -371,7 +371,7 @@ export default class SalaryDetails extends Component {
 
   //   axios.defaults.baseURL = API_BASE_URL;
   //   // url: "api/financialInformations/" + financialId
-    
+
   //   axios({
   //     method: "post",
   //     url: "api/salary-slip/" + financialId,
@@ -387,11 +387,11 @@ export default class SalaryDetails extends Component {
   //       window.scrollTo(0, 0);
   //     });
   // };
-  onSubmit = (event) => {
+  onSubmit = async (event) => {
     event.preventDefault();
+
     const {
-      financialId,
-         name,
+      name,
       address,
       designation,
       selectedMonth,
@@ -409,8 +409,9 @@ export default class SalaryDetails extends Component {
       pf,
       tds,
       pt,
+      selectedUser, // Assuming this is the user ID
     } = this.state;
-  
+
     const salaryGross =
       salaryBasic +
       allowanceHouseRent +
@@ -419,94 +420,68 @@ export default class SalaryDetails extends Component {
       allowanceFuel +
       allowancePhoneBill +
       allowanceOther;
-  
-    const deductionTotal =
-      deductionTax +
-      deductionOther +
-      pf +
-      tds +
-      pt;
-  
+
+    const deductionTotal = deductionTax + deductionOther + pf + tds + pt;
+
     const salaryNet = salaryGross - deductionTotal;
-  
+
     const data = {
-      name:this.state.name, 
-      userId:this.state.selectedUser,
-      address:this.state.address,
-      designation:this.state.designation,
-      month:selectedMonth,
-      date_of_joining,
       employmentType,
-      basic_salary:salaryBasic,
-      hra:allowanceHouseRent,
-      medical_allowance:allowanceMedical,
-      special_allowance:allowanceSpecial,
-      conveyance_allowance:allowanceFuel,
+      salaryBasic,
+      salaryGross,
+      salaryNet,
+      allowanceHouseRent,
+      allowanceMedical,
+      allowanceSpecial,
+      allowanceFuel,
       allowancePhoneBill,
       allowanceOther,
+      allowanceTotal:
+        allowanceHouseRent +
+        allowanceMedical +
+        allowanceSpecial +
+        allowanceFuel +
+        allowancePhoneBill +
+        allowanceOther,
+      deductionProvidentFund: pf,
       deductionTax,
-      other_deductions:deductionOther,
-      employee_pf: pf,
+      pt,
+      pf,
       tds,
-      professional_tax:pt,
-      total_earnings:salaryGross,
-      total_deductions:  deductionTotal,
-      salaryNet,
-
-
-      // name, 
-      // userId,
-      // address,
-      // designation,
-      // month,
-      // date_of_joining,
-      // basic_salary,
-      // hra,
-      // conveyance_allowance,
-      // special_allowance,
-      // medical_allowance,
-      // total_earnings,??
-      // tds,
-      // professional_tax,
-      // employee_pf,
-      // other_deductions,
-      // total_deductions,
+      deductionOther,
+      deductionTotal,
+      bankName: this.state.bankName, // Ensure this.state has bankName
+      accountName: this.state.accountName, // Ensure this.state has accountName
+      accountNumber: this.state.accountNumber, // Ensure this.state has accountNumber
+      iban: this.state.iban, // Ensure this.state has iban
+      userId: selectedUser,
     };
-  
+
     console.log("Submitting data:", data); // Log the data being submitted
-  
+
     axios.defaults.baseURL = API_BASE_URL;
-  
-    axios({
-      method: "post",
-      url: `api/salary-slip`,
-      data,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then((res) => {
-        console.log("Response from salary slip API:", res);
-        
-        // Make the second request only if the first one is successful
-        return axios({
-          method: "post",
-          url: `api/financialInformations/${financialId}`,
-          data,
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-      })
-      .then((res) => {
-        console.log("Response from financial informations API:", res);
-        this.setState({ completed: true });
-        window.scrollTo(0, 0);
-      })
-      .catch((err) => {
-        console.error("Error in submission:", err);
-        console.error("Error details:", err.response?.data?.message);
-        this.setState({ hasError: true, errMsg: err.response?.data?.message });
-        window.scrollTo(0, 0);
+
+    try {
+      const financialInfoResponse = await axios({
+        method: "post",
+        url: `api/financialInformations/createOrUpdate`,
+        data,
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+      console.log(
+        "Response from financial informations API:",
+        financialInfoResponse
+      );
+
+      this.setState({ completed: true });
+      window.scrollTo(0, 0);
+    } catch (err) {
+      console.error("Error in submission:", err);
+      console.error("Error details:", err.response?.data?.message);
+      this.setState({ hasError: true, errMsg: err.response?.data?.message });
+      window.scrollTo(0, 0);
+    }
   };
-  
 
   onEdit(job) {
     return (event) => {
@@ -673,31 +648,33 @@ export default class SalaryDetails extends Component {
                   <Card.Header>Employment Details</Card.Header>
                   <Card.Body>
                     <div>
-                    <Form.Group controlId="monthSelect">
-          <Form.Label>Select Month</Form.Label>
-          <Form.Control
-            as="select"
-            value={this.state.selectedMonth}
-            onChange={this.handleMonthChange}
-          >
-            <option value="">Select a month</option>
-            {months.map((month, index) => (
-              <option key={index} value={month}>
-                {month}
-              </option>
-            ))}
-          </Form.Control>
-        </Form.Group>
-                  
-   <Form.Group>
-                      <Form.Label className="required">Date of Joining</Form.Label>
-                      <Form.Control
-                        type="date"
-                        name="date_of_joining"
-                        value={formattedDate}
-                        onChange={this.handleChange}
-                      />
-                    </Form.Group>
+                      <Form.Group controlId="monthSelect">
+                        <Form.Label>Select Month</Form.Label>
+                        <Form.Control
+                          as="select"
+                          value={this.state.selectedMonth}
+                          onChange={this.handleMonthChange}
+                        >
+                          <option value="">Select a month</option>
+                          {months.map((month, index) => (
+                            <option key={index} value={month}>
+                              {month}
+                            </option>
+                          ))}
+                        </Form.Control>
+                      </Form.Group>
+
+                      <Form.Group>
+                        <Form.Label className="required">
+                          Date of Joining
+                        </Form.Label>
+                        <Form.Control
+                          type="date"
+                          name="date_of_joining"
+                          value={formattedDate}
+                          onChange={this.handleChange}
+                        />
+                      </Form.Group>
                     </div>
                   </Card.Body>
                 </Card>
