@@ -292,7 +292,7 @@ export default class SalaryDetails extends Component {
       axios.defaults.baseURL = API_BASE_URL;
       axios({
         method: "get",
-        url: "api/users/" + this.state.financialId,
+        url: "api/users/" + this.state.selectedUser,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
         .then((res) => {
@@ -391,7 +391,7 @@ export default class SalaryDetails extends Component {
     event.preventDefault();
     const {
       financialId,
-      name,
+         name,
       address,
       designation,
       selectedMonth,
@@ -430,24 +430,47 @@ export default class SalaryDetails extends Component {
     const salaryNet = salaryGross - deductionTotal;
   
     const data = {
+      name:this.state.name, 
+      userId:this.state.selectedUser,
+      address:this.state.address,
+      designation:this.state.designation,
       month:selectedMonth,
       date_of_joining,
       employmentType,
-      salaryBasic,
-      allowanceHouseRent,
-      allowanceMedical,
-      allowanceSpecial,
-      allowanceFuel,
+      basic_salary:salaryBasic,
+      hra:allowanceHouseRent,
+      medical_allowance:allowanceMedical,
+      special_allowance:allowanceSpecial,
+      conveyance_allowance:allowanceFuel,
       allowancePhoneBill,
       allowanceOther,
       deductionTax,
-      deductionOther,
-      pf,
+      other_deductions:deductionOther,
+      employee_pf: pf,
       tds,
-      pt,
-      salaryGross,
-      deductionTotal,
+      professional_tax:pt,
+      total_earnings:salaryGross,
+      total_deductions:  deductionTotal,
       salaryNet,
+
+
+      // name, 
+      // userId,
+      // address,
+      // designation,
+      // month,
+      // date_of_joining,
+      // basic_salary,
+      // hra,
+      // conveyance_allowance,
+      // special_allowance,
+      // medical_allowance,
+      // total_earnings,??
+      // tds,
+      // professional_tax,
+      // employee_pf,
+      // other_deductions,
+      // total_deductions,
     };
   
     console.log("Submitting data:", data); // Log the data being submitted
@@ -456,7 +479,7 @@ export default class SalaryDetails extends Component {
   
     axios({
       method: "post",
-      url: `api/salary-slip/${financialId}`,
+      url: `api/salary-slip`,
       data,
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
