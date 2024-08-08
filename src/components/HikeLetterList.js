@@ -7,6 +7,7 @@ import { ThemeProvider, createTheme } from "@material-ui/core/styles";
 import HikeLetterAddModal from "./HikeLetterAddModal";
 import HikeLetterEditModal from "./HikeLetterEditModal";
 import HikeLetterDeleteModal from "./HikeLetterDeleteModal";
+import HikeLetterPreviewModal from "./HikeLetterPreviewModal"; // Import the preview modal
 import API_BASE_URL from "../env";
 
 const HikeLetterList = () => {
@@ -15,6 +16,7 @@ const HikeLetterList = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false); // State for preview modal
 
   const fetchData = useCallback(async () => {
     try {
@@ -44,6 +46,11 @@ const HikeLetterList = () => {
     setShowEditModal(true);
   };
 
+  const handlePreview = (letter) => {
+    setSelectedHikeLetter(letter);
+    setShowPreviewModal(true); // Show preview modal
+  };
+
   const handleAdd = () => {
     setShowAddModal(true);
   };
@@ -57,6 +64,7 @@ const HikeLetterList = () => {
     setShowEditModal(false);
     setShowAddModal(false);
     setShowDeleteModal(false);
+    setShowPreviewModal(false); // Close preview modal
   };
 
   const theme = createTheme({
@@ -112,6 +120,16 @@ const HikeLetterList = () => {
                               <i className="fas fa-edit"></i> Edit
                             </Button>
                           </div>
+                          <div className="col pl-3">
+                            <Button
+                              size="sm"
+                              variant="primary"
+                              onClick={() => handlePreview(rowData)}
+                            >
+                              <i className="fas fa-eye"></i> Preview
+                            </Button>
+                          </div>
+
                           <div className="col pr-5">
                             <Button
                               size="sm"
@@ -158,6 +176,13 @@ const HikeLetterList = () => {
               onHide={closeModal}
               hikeLetterId={selectedHikeLetter.id} // Pass hikeLetterId to the modal
               onDeleteSuccess={fetchData} // Refetch data after deletion
+            />
+          )}
+          {showPreviewModal && (
+            <HikeLetterPreviewModal
+              show={showPreviewModal}
+              onHide={closeModal}
+              data={selectedHikeLetter} // Pass selected hike letter data to the preview modal
             />
           )}
         </div>

@@ -11,6 +11,9 @@ import API_BASE_URL from "../env";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const HikeLetterTemplate = ({
+  userId,
+  name,
+  place,
   effective_date,
   new_salary,
   previous_salary,
@@ -39,53 +42,52 @@ const HikeLetterTemplate = ({
     }
   };
 
-  const saveRecord = async () => {
-    const payload = {
-      userId: user.id,
-      date: latestDate,
-      name: user.fullName,
-      place: user.user_personal_info.city,
-      effective_date,
-      new_salary,
-      previous_salary,
-      hr_name,
-    };
+  // const saveRecord = async () => {
+  //   const payload = {
+  //     userId: user.id,
+  //     date: latestDate,
+  //     name: user.fullName,
+  //     place: user.user_personal_info.city,
+  //     effective_date,
+  //     new_salary,
+  //     previous_salary,
+  //     hr_name,
+  //   };
 
-    try {
-      axios.defaults.baseURL = API_BASE_URL;
-      const response = await axios.post("/api/hikeLetters", payload, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+  //   try {
+  //     axios.defaults.baseURL = API_BASE_URL;
+  //     const response = await axios.post("/api/hikeLetters", payload, {
+  //       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  //     });
 
-      if (response.status === 201) {
-        alert("Record saved successfully!");
-      } else {
-        console.error(`Unexpected response status: ${response.status}`);
-        alert("Failed to save the record. Please try again.");
-      }
-    } catch (error) {
-      if (error.response) {
-        console.error(`Error response data: ${error.response.data}`);
-        console.error(`Error response status: ${error.response.status}`);
-        console.error(`Error response headers: ${error.response.headers}`);
-        alert(
-          `Failed to save the record. Server responded with status: ${error.response.status}`
-        );
-      } else if (error.request) {
-        console.error(`Error request: ${error.request}`);
-        alert("Failed to save the record. No response from the server.");
-      } else {
-        console.error(`Error message: ${error.message}`);
-        alert("Failed to save the record. An error occurred.");
-      }
-    }
-  };
+  //     if (response.status === 201) {
+  //       alert("Record saved successfully!");
+  //     } else {
+  //       console.error(`Unexpected response status: ${response.status}`);
+  //       alert("Failed to save the record. Please try again.");
+  //     }
+  //   } catch (error) {
+  //     if (error.response) {
+  //       console.error(`Error response data: ${error.response.data}`);
+  //       console.error(`Error response status: ${error.response.status}`);
+  //       console.error(`Error response headers: ${error.response.headers}`);
+  //       alert(
+  //         `Failed to save the record. Server responded with status: ${error.response.status}`
+  //       );
+  //     } else if (error.request) {
+  //       console.error(`Error request: ${error.request}`);
+  //       alert("Failed to save the record. No response from the server.");
+  //     } else {
+  //       console.error(`Error message: ${error.message}`);
+  //       alert("Failed to save the record. An error occurred.");
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         axios.defaults.baseURL = API_BASE_URL;
-        const userId = location.state.selectedUser.id;
 
         const userRes = await axios.get(`/api/users/${userId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -98,7 +100,7 @@ const HikeLetterTemplate = ({
     };
 
     fetchUserData();
-  }, [location.state.selectedUser.id]);
+  }, [userId]);
 
   return (
     <div>
@@ -113,9 +115,9 @@ const HikeLetterTemplate = ({
             <Col>
               <Button onClick={downloadPDF}>Download PDF</Button>
             </Col>
-            <Col>
+            {/* <Col>
               <Button onClick={saveRecord}>Save Record</Button>
-            </Col>
+            </Col> */}
           </Row>
           {showLetter && (
             <Row>
@@ -150,8 +152,8 @@ const HikeLetterTemplate = ({
                   </h1>
                   <p>&nbsp;</p>
                   <p>Date: {latestDate}</p>
-                  <p>Name: {user.fullName} </p>
-                  <p>Place: {user.user_personal_info?.city}</p>
+                  <p>Name: {name} </p>
+                  <p>Place: {place}</p>
 
                   <p>
                     Dear {user.fullName}, we are pleased to inform you that your

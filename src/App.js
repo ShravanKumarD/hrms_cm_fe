@@ -25,8 +25,8 @@ import DocumentList from "./components/DocumentList";
 import DocumentAdd from "./components/DocumentAdd";
 import DocumentView from "./components/DocumentView";
 import DocumentEdit from "./components/DocumentEdit";
-import HikeLetterList from "./components/documents/HikeLetterList";
-import HikeLetterAdd from "./components/documents/HikeLetterAddModal";
+import HikeLetterList from "./components/HikeLetterList";
+import HikeLetterAdd from "./components/HikeLetterAddModal";
 import DepartmentList from "./components/DepartmentList";
 import ApplicationList from "./components/ApplicationList";
 import ApplicationListManager from "./components/manager/ApplicationList";
@@ -131,8 +131,16 @@ const AdminContainer = () => (
         <Route exact path="/document-view" component={withAuth(DocumentView)} />
         <Route exact path="/document-edit" component={withAuth(DocumentEdit)} />
         <Route exact path="/departments" component={withAuth(DepartmentList)} />
-        <Route exact path="/hike-letter-list" component={withAuth(HikeLetterList)} />
-        <Route exact path="/hike-letter-add" component={withAuth(HikeLetterAdd)} />
+        <Route
+          exact
+          path="/hike-letter-list"
+          component={withAuth(HikeLetterList)}
+        />
+        <Route
+          exact
+          path="/hike-letter-add"
+          component={withAuth(HikeLetterAdd)}
+        />
         <Route exact path="/job-list" component={withAuth(JobList)} />
         <Route
           exact
