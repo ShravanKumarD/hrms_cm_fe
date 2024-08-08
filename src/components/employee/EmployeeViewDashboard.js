@@ -99,7 +99,7 @@ export default class EmployeeViewEmployee extends Component {
           <div>
             <Col lg={12}>
               <Row className="pt-4">
-                <Col lg={3}>
+                <Col lg={6}>
                   <img
                     className="img-circle elevation-1 bp-2"
                     src={process.env.PUBLIC_URL + "/user-128.png"}
@@ -131,7 +131,7 @@ export default class EmployeeViewEmployee extends Component {
                 </Col>
               </Row>
               <Row>
-                <Col sm={6}>
+                <Col sm={12}>
                   <Card className="secondary-card emp-view">
                     <Card.Header>Personal Details</Card.Header>
                     <Card.Body>
@@ -164,7 +164,7 @@ export default class EmployeeViewEmployee extends Component {
                     </Card.Body>
                   </Card>
                 </Col>
-                <Col sm={6}>
+                <Col sm={12}>
                   <Card className="secondary-card emp-view">
                     <Card.Header>Contact Details</Card.Header>
                     <Card.Body>
@@ -203,7 +203,7 @@ export default class EmployeeViewEmployee extends Component {
                 </Col>
               </Row>
               <Row>
-                <Col cm={6}>
+                <Col cm={12}>
                   <Card className="secondary-card">
                     <Card.Header>Bank Information</Card.Header>
                     <Card.Body>
