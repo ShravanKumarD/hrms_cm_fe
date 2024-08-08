@@ -13,10 +13,12 @@ import API_BASE_URL from "../env";
 const HikeLetterList = () => {
   const [hikeLetters, setHikeLetters] = useState([]);
   const [selectedHikeLetter, setSelectedHikeLetter] = useState(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showPreviewModal, setShowPreviewModal] = useState(false); // State for preview modal
+  const [showModal, setShowModal] = useState({
+    edit: false,
+    add: false,
+    delete: false,
+    preview: false,
+  });
 
   const fetchData = useCallback(async () => {
     try {
@@ -41,30 +43,21 @@ const HikeLetterList = () => {
     fetchData();
   }, [fetchData]);
 
-  const handleEdit = (letter) => {
+  const handleModalShow = (modalType, letter = null) => {
     setSelectedHikeLetter(letter);
-    setShowEditModal(true);
-  };
-
-  const handlePreview = (letter) => {
-    setSelectedHikeLetter(letter);
-    setShowPreviewModal(true); // Show preview modal
-  };
-
-  const handleAdd = () => {
-    setShowAddModal(true);
-  };
-
-  const handleDelete = (letter) => {
-    setSelectedHikeLetter(letter);
-    setShowDeleteModal(true);
+    setShowModal((prevState) => ({
+      ...prevState,
+      [modalType]: true,
+    }));
   };
 
   const closeModal = () => {
-    setShowEditModal(false);
-    setShowAddModal(false);
-    setShowDeleteModal(false);
-    setShowPreviewModal(false); // Close preview modal
+    setShowModal({
+      edit: false,
+      add: false,
+      delete: false,
+      preview: false,
+    });
   };
 
   const theme = createTheme({
@@ -77,6 +70,17 @@ const HikeLetterList = () => {
     },
   });
 
+  const ActionButton = ({ variant, icon, label, onClick }) => (
+    <Button
+      size="sm"
+      variant={variant}
+      onClick={onClick}
+      className="mx-1 mb-1" // Add mb-2 for bottom margin
+    >
+      <i className={`fas fa-${icon}`}></i> {label}
+    </Button>
+  );
+
   return (
     <div className="container-fluid pt-2">
       <div className="row">
@@ -84,7 +88,7 @@ const HikeLetterList = () => {
           <h4>
             <Button
               variant="link"
-              onClick={handleAdd}
+              onClick={() => handleModalShow("add")}
               className="p-0"
               style={{ color: "blue", cursor: "pointer" }}
             >
@@ -110,36 +114,26 @@ const HikeLetterList = () => {
                     {
                       title: "Action",
                       render: (rowData) => (
-                        <Form className="row">
-                          <div className="col pl-5">
-                            <Button
-                              size="sm"
-                              variant="info"
-                              onClick={() => handleEdit(rowData)}
-                            >
-                              <i className="fas fa-edit"></i> Edit
-                            </Button>
-                          </div>
-                          <div className="col pl-3">
-                            <Button
-                              size="sm"
-                              variant="primary"
-                              onClick={() => handlePreview(rowData)}
-                            >
-                              <i className="fas fa-eye"></i> Preview
-                            </Button>
-                          </div>
-
-                          <div className="col pr-5">
-                            <Button
-                              size="sm"
-                              variant="danger"
-                              onClick={() => handleDelete(rowData)}
-                            >
-                              <i className="fas fa-trash"></i> Delete
-                            </Button>
-                          </div>
-                        </Form>
+                        <div className="text-center">
+                          <ActionButton
+                            variant="info"
+                            icon="edit"
+                            label="Edit"
+                            onClick={() => handleModalShow("edit", rowData)}
+                          />
+                          <ActionButton
+                            variant="primary"
+                            icon="eye"
+                            label="Preview"
+                            onClick={() => handleModalShow("preview", rowData)}
+                          />
+                          <ActionButton
+                            variant="danger"
+                            icon="trash"
+                            label="Delete"
+                            onClick={() => handleModalShow("delete", rowData)}
+                          />
+                        </div>
                       ),
                     },
                   ]}
@@ -157,30 +151,30 @@ const HikeLetterList = () => {
           </Card>
           {showModal.edit && (
             <HikeLetterEditModal
-              show={showEditModal}
+              show={showModal.edit}
               onHide={closeModal}
               data={selectedHikeLetter}
               onUpdateSuccess={fetchData} // Refetch data after update
             />
           )}
-          {showAddModal && (
+          {showModal.add && (
             <HikeLetterAddModal
-              show={showAddModal}
+              show={showModal.add}
               onHide={closeModal}
               onAddSuccess={fetchData} // Refetch data after addition
             />
           )}
-          {showDeleteModal && (
+          {showModal.delete && (
             <HikeLetterDeleteModal
-              show={showDeleteModal}
+              show={showModal.delete}
               onHide={closeModal}
               hikeLetterId={selectedHikeLetter.id} // Pass hikeLetterId to the modal
               onDeleteSuccess={fetchData} // Refetch data after deletion
             />
           )}
-          {showPreviewModal && (
+          {showModal.preview && (
             <HikeLetterPreviewModal
-              show={showPreviewModal}
+              show={showModal.preview}
               onHide={closeModal}
               data={selectedHikeLetter} // Pass selected hike letter data to the preview modal
             />
