@@ -16,6 +16,7 @@ export default class JobAddModal extends Component {
       jobTitle: "",
       startDate: null,
       endDate: null,
+      employmentType: "",
       departments: [],
       users: [],
       selectedDepartment: null,
@@ -103,6 +104,7 @@ export default class JobAddModal extends Component {
       startDate: this.state.startDate,
       endDate: this.state.endDate,
       userId: this.state.selectedUser,
+      employmentType: this.state.employmentType,
     };
 
     axios.defaults.baseURL = API_BASE_URL;
@@ -179,6 +181,23 @@ export default class JobAddModal extends Component {
             ) : (
               <></>
             )}
+             <Form.Group controlId="formEmploymentType">
+                          <Form.Label className="text-muted required">
+                            Employment Type
+                          </Form.Label>
+                          <Form.Control
+                            as="select"
+                            value={this.state.employmentType}
+                            onChange={this.handleChange}
+                            name="employmentType"
+                            required
+                          >
+                            <option value="">Select Employment Type</option>
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Contract">Contract</option>
+                          </Form.Control>
+                        </Form.Group>
             <Form.Group controlId="formJobTitle">
               <Form.Label className="mb-2 required">Job Title</Form.Label>
               <Form.Control
@@ -198,7 +217,8 @@ export default class JobAddModal extends Component {
                 onChange={(startDate) =>
                   this.setState({ startDate: startDate })
                 }
-                minDate={Date.now()}
+                // minDate={Date.now()}
+                minDate={null} 
                 dateFormat="yyyy-MM-dd"
                 className="form-control ml-1"
                 placeholderText="Select Start Date"
@@ -209,18 +229,18 @@ export default class JobAddModal extends Component {
               />
             </Form.Group>
             <Form.Group controlId="fromEndDate">
-              <Form.Label className="mb-2 required">Job End Date</Form.Label>
+              <Form.Label className="mb-2">Job End Date</Form.Label>
               <DatePicker
                 selected={this.state.endDate}
                 onChange={(endDate) => this.setState({ endDate: endDate })}
-                minDate={Date.now()}
+                minDate={null}
                 dateFormat="yyyy-MM-dd"
                 className="form-control ml-1"
                 placeholderText="Select Start Date"
                 autoComplete="off"
                 showMonthDropdown
                 showYearDropdown
-                required
+                // required
               />
             </Form.Group>
             <Button variant="success" type="submit" className="mt-2">
