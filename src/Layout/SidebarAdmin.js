@@ -172,21 +172,39 @@ export default class SidebarAdmin extends Component {
                 >
                   <i className="nav-icon fas fa-file-alt" />
                   <p>
-                    Documents
+                    Document Management
                     <i className="right fas fa-angle-left" />
                   </p>
                 </NavLink>
                 <ul className="nav nav-treeview">
                   <li className="nav-item">
-                    <NavLink to="/document-add" className="nav-link">
-                      <i className="fas fa-file-upload nav-icon" />
-                      <p>Add Document</p>
+                    <NavLink to="/salary-slip" className="nav-link">
+                      <i className="fas fa-file-invoice-dollar nav-icon" />
+                      <p>Salary Slip</p>
                     </NavLink>
                   </li>
                   <li className="nav-item">
-                    <NavLink to="/document-list" className="nav-link">
+                    <NavLink to="/offer-letter" className="nav-link">
+                      <i className="fas fa-file-signature nav-icon" />
+                      <p>Offer Letter</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/hike-letter-list" className="nav-link">
                       <i className="fas fa-file-alt nav-icon" />
-                      <p>Document List</p>
+                      <p>Hike Letter</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/relieving-letter" className="nav-link">
+                      <i className="fas fa-file-export nav-icon" />
+                      <p>Relieving Letter</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/resignation-letter" className="nav-link">
+                      <i className="fas fa-file-upload nav-icon" />
+                      <p>Resignation Letter</p>
                     </NavLink>
                   </li>
                 </ul>
