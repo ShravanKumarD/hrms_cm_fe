@@ -178,7 +178,7 @@ export default class SidebarAdmin extends Component {
                 </NavLink>
                 <ul className="nav nav-treeview">
                   <li className="nav-item">
-                    <NavLink to="/salary-slip" className="nav-link">
+                    <NavLink to="/salary-slip-list" className="nav-link">
                       <i className="fas fa-file-invoice-dollar nav-icon" />
                       <p>Salary Slip</p>
                     </NavLink>
