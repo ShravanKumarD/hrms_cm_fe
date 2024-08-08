@@ -4,8 +4,6 @@ import moment from "moment";
 import { Button, Modal } from "react-bootstrap";
 import "./startwork.css";
 import API_BASE_URL from "../env";
-
-
 const quotes = [
   {
     author: "Albert Einstein",
@@ -40,7 +38,6 @@ const quotes = [
     quote: "The way to get started is to quit talking and begin doing.",
   },
 ];
-
 const StartWork = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [startTime, setStartTime] = useState(null);
@@ -57,6 +54,7 @@ const StartWork = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState("");
   const [totalTime, setTotalTime] = useState(0);
+  const [flag,setFlag]=useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -163,6 +161,7 @@ const StartWork = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
+      setFlag(true);
     } catch (error) {
       console.error("There was an error marking the end time!", error);
     }
@@ -190,7 +189,7 @@ const StartWork = () => {
           </blockquote>
         </div>
         <br />
-        <div className="text-center mb-4">
+        {/* <div className="text-center mb-4">
           {!isStarted ? (
             <button className="btn btn-success btn-lg" onClick={handleStart}>
               <strong> Start Work</strong>
@@ -200,7 +199,29 @@ const StartWork = () => {
               End Work
             </button>
           )}
-        </div>
+        </div> */}
+          <div className="text-center mb-4">
+      {!isStarted ? (
+        <button
+          className="btn btn-success btn-lg"
+          onClick={handleStart}
+          disabled={flag}
+        >
+          <strong>Start Work</strong>
+        </button>
+      ) : (
+        flag ? (
+          <div></div>
+        ) : (
+          <button className="btn btn-danger btn-lg" onClick={handleEnd}>
+            End Work
+          </button>
+        )
+      )}
+    </div>
+
+
+
         {startTime && (
           <div className="text-center mb-4">
             <h4>Work started at: {startTime.toLocaleTimeString()}</h4>
