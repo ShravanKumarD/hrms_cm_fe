@@ -4,6 +4,7 @@ import moment from "moment";
 import { Button, Modal } from "react-bootstrap";
 import "./startwork.css";
 import API_BASE_URL from "../env";
+
 const quotes = [
   {
     author: "Albert Einstein",
@@ -38,6 +39,7 @@ const quotes = [
     quote: "The way to get started is to quit talking and begin doing.",
   },
 ];
+
 const StartWork = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [startTime, setStartTime] = useState(null);
@@ -54,7 +56,8 @@ const StartWork = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState("");
   const [totalTime, setTotalTime] = useState(0);
-  const [flag,setFlag]=useState(false);
+  const [flag, setFlag] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -91,10 +94,24 @@ const StartWork = () => {
   useEffect(() => {
     const savedStartTime = localStorage.getItem("startTime");
     const savedIsStarted = localStorage.getItem("isStarted") === "true";
+    const savedEndTime = localStorage.getItem("endTime");
 
     if (savedStartTime) {
       setStartTime(new Date(savedStartTime));
       setIsStarted(savedIsStarted);
+    }
+
+    if (savedEndTime) {
+      const endTime = new Date(savedEndTime);
+      const currentTime = new Date();
+      const hoursDiff = Math.abs(currentTime - endTime) / 36e5;
+
+      if (hoursDiff < 6) {
+        setIsDisabled(true);
+        // alert('wait until 6 hours to start work or contact manger')
+      } else {
+        setIsDisabled(false);
+      }
     }
   }, []);
 
@@ -145,6 +162,7 @@ const StartWork = () => {
     setIsStarted(false);
     localStorage.removeItem("startTime");
     localStorage.removeItem("isStarted");
+    localStorage.setItem("endTime", end.toISOString());
 
     try {
       axios.defaults.baseURL = API_BASE_URL;
@@ -189,38 +207,23 @@ const StartWork = () => {
           </blockquote>
         </div>
         <br />
-        {/* <div className="text-center mb-4">
+        <div className="text-center mb-4">
           {!isStarted ? (
-            <button className="btn btn-success btn-lg" onClick={handleStart}>
-              <strong> Start Work</strong>
+            <button
+              className="btn btn-success btn-lg"
+              onClick={handleStart}
+              disabled={isDisabled}
+            >
+              <strong>Start Work</strong>
             </button>
+          ) : flag ? (
+            <div></div>
           ) : (
             <button className="btn btn-danger btn-lg" onClick={handleEnd}>
               End Work
             </button>
           )}
-        </div> */}
-          <div className="text-center mb-4">
-      {!isStarted ? (
-        <button
-          className="btn btn-success btn-lg"
-          onClick={handleStart}
-          disabled={flag}
-        >
-          <strong>Start Work</strong>
-        </button>
-      ) : (
-        flag ? (
-          <div></div>
-        ) : (
-          <button className="btn btn-danger btn-lg" onClick={handleEnd}>
-            End Work
-          </button>
-        )
-      )}
-    </div>
-
-
+        </div>
 
         {startTime && (
           <div className="text-center mb-4">
@@ -235,7 +238,6 @@ const StartWork = () => {
         <Timeline isStarted={isStarted} startTime={startTime} />
       </div>
 
-      {/* Modal for Confirmation */}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>Confirm End Work</Modal.Title>
