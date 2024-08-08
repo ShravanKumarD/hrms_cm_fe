@@ -52,6 +52,7 @@ const EmployeeView = () => {
   const [salarySlip, setSalarySlip] = useState(null);
 
   const navigate = useHistory();
+  const history = useHistory();
   const location = useLocation();
   const slipRef = useRef(null);
 
@@ -105,7 +106,8 @@ const EmployeeView = () => {
           console.error("Error fetching data:", error);
         }
       } else {
-        navigate("/payroll/employee/search");
+        // navigate("/payroll/employee/search");
+        history.push("/payroll/employee/search")
       }
     };
 
@@ -117,7 +119,8 @@ const EmployeeView = () => {
   };
 
   const onEdit = () => {
-    navigate("/payroll/employee/edit", { state: { selectedUser: user } });
+    // navigate("/payroll/employee/edit", { state: { selectedUser: user } });
+    history.push("/employee-edit", { selectedUser: user } );
   };
 
   return (
