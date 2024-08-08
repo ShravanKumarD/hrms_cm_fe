@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button, Alert } from "react-bootstrap";
 import axios from "axios";
-import API_BASE_URL from "../../env";
+import API_BASE_URL from "../env";
 import { useHistory } from "react-router-dom";
 
 const HikeLetterDeleteModal = ({ hikeLetterId, onHide, onDeleteSuccess }) => {

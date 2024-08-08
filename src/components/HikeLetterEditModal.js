@@ -3,7 +3,7 @@ import { Modal, Button, Form, Alert } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
-import API_BASE_URL from "../../env";
+import API_BASE_URL from "../env";
 
 const HikeLetterEditModal = ({ data, onHide, onSuccess, ...props }) => {
   const [hikeLetter, setHikeLetter] = useState({

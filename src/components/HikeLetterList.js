@@ -7,7 +7,7 @@ import { ThemeProvider, createTheme } from "@material-ui/core/styles";
 import HikeLetterAddModal from "./HikeLetterAddModal";
 import HikeLetterEditModal from "./HikeLetterEditModal";
 import HikeLetterDeleteModal from "./HikeLetterDeleteModal";
-import API_BASE_URL from "../../env";
+import API_BASE_URL from "../env";
 
 const HikeLetterList = () => {
   const [hikeLetters, setHikeLetters] = useState([]);
