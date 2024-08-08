@@ -178,13 +178,13 @@ export default class SidebarAdmin extends Component {
                 </NavLink>
                 <ul className="nav nav-treeview">
                   <li className="nav-item">
-                    <NavLink to="/employee-add" className="nav-link">
+                    <NavLink to="/document-add" className="nav-link">
                       <i className="fas fa-file-upload nav-icon" />
                       <p>Add Document</p>
                     </NavLink>
                   </li>
                   <li className="nav-item">
-                    <NavLink to="/employee-list" className="nav-link">
+                    <NavLink to="/document-list" className="nav-link">
                       <i className="fas fa-file-alt nav-icon" />
                       <p>Document List</p>
                     </NavLink>
