@@ -283,7 +283,7 @@ export default class SidebarAdmin extends Component {
               </li>
             </ul>
           </nav>
-          <div style={{ marginTop: "400px" }}></div>
+          <div style={{ marginTop: "200px" }}></div>
           {/* /.sidebar-menu */}
         </div>
         {/* /.sidebar */}

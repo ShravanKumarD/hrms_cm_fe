@@ -133,12 +133,12 @@ export default class SidebarEmployee extends Component {
                   </li>
                 </ul>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <NavLink to="/documents" className="nav-link">
                   <i className="fas fa-file-alt nav-icon" />
                   <p>My Documents</p>
                 </NavLink>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <NavLink exact to="/announcement" className="nav-link">
                   <i className="nav-icon fa fa-bell" />

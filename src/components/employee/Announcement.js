@@ -28,12 +28,14 @@ export default class Announcement extends Component {
 
   componentDidMount() {
     let deptId = JSON.parse(localStorage.getItem("user")).departmentId;
+    console.log(deptId,'dd')
     axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
       url: "/api/departmentAnnouncements/department/" + deptId,
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     }).then((res) => {
+      console.log(res,'resssssojdii')
       this.setState({ announcements: res.data });
     });
   }

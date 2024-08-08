@@ -274,6 +274,7 @@ export default class EmployeeEdit extends Component {
             this.setState({ hasError: true, errMsg: err.data.message });
             window.scrollTo(0, 0);
           });
+          alert('Employee Details Updated!')
       })
       .catch((err) => {
         console.log(err);
