@@ -155,7 +155,7 @@ const HikeLetterList = () => {
               </ThemeProvider>
             </Card.Body>
           </Card>
-          {showEditModal && (
+          {showModal.edit && (
             <HikeLetterEditModal
               show={showEditModal}
               onHide={closeModal}
