@@ -4,7 +4,6 @@ import moment from "moment";
 import { Button, Modal } from "react-bootstrap";
 import "./startwork.css";
 import API_BASE_URL from "../env";
-
 const quotes = [
   {
     author: "Albert Einstein",
@@ -39,7 +38,6 @@ const quotes = [
     quote: "The way to get started is to quit talking and begin doing.",
   },
 ];
-
 const StartWork = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [startTime, setStartTime] = useState(null);
@@ -48,7 +46,7 @@ const StartWork = () => {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [userId, setUserId] = useState(
-    JSON.parse(localStorage.getItem("user"))?.id || ""
+    JSON.parse(localStorage.getItem("user")).id || ""
   );
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [status, setStatus] = useState("Present");
@@ -56,11 +54,13 @@ const StartWork = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState("");
   const [totalTime, setTotalTime] = useState(0);
-  const [flag, setFlag] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [flag,setFlag]=useState(false);
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
     return () => clearInterval(timer);
   }, []);
 
@@ -68,35 +68,33 @@ const StartWork = () => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % quotes.length);
     }, 5000);
+
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLatitude(position.coords.latitude);
-        setLongitude(position.coords.longitude);
-      },
-      (error) => {
-        console.error("Error fetching location:", error);
-      }
-    );
+    const fetchUserLocation = () => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+        },
+        (error) => {
+          console.error("Error fetching location:", error);
+        }
+      );
+    };
+
+    fetchUserLocation();
   }, []);
 
   useEffect(() => {
     const savedStartTime = localStorage.getItem("startTime");
     const savedIsStarted = localStorage.getItem("isStarted") === "true";
-    const savedEndTime = localStorage.getItem("endTime");
 
     if (savedStartTime) {
       setStartTime(new Date(savedStartTime));
       setIsStarted(savedIsStarted);
-    }
-
-    if (savedEndTime) {
-      const endTime = new Date(savedEndTime);
-      const hoursDiff = Math.abs(new Date() - endTime) / 36e5;
-      setIsDisabled(hoursDiff < 6);
     }
   }, []);
 
@@ -147,12 +145,11 @@ const StartWork = () => {
     setIsStarted(false);
     localStorage.removeItem("startTime");
     localStorage.removeItem("isStarted");
-    localStorage.setItem("endTime", end.toISOString());
 
     try {
       axios.defaults.baseURL = API_BASE_URL;
       await axios.put(
-        `/api/attendance/clock-out`,
+        `api/attendance/clock-out`,
         {
           userId,
           date,
@@ -180,7 +177,7 @@ const StartWork = () => {
         <h2 className="text-center mb-4">Start Work</h2>
         <div className="text-center mb-4">
           <h3 className="display-4">
-            Your total work time today is <strong>{totalTime} hours</strong>.
+            Current Time:<strong>{currentTime.toLocaleTimeString()}</strong>
           </h3>
         </div>
         <div className="quote-scroller">
@@ -192,23 +189,38 @@ const StartWork = () => {
           </blockquote>
         </div>
         <br />
-        <div className="text-center mb-4">
+        {/* <div className="text-center mb-4">
           {!isStarted ? (
-            <button
-              className="btn btn-success btn-lg"
-              onClick={handleStart}
-              disabled={isDisabled}
-            >
-              <strong>Start Work</strong>
+            <button className="btn btn-success btn-lg" onClick={handleStart}>
+              <strong> Start Work</strong>
             </button>
-          ) : flag ? (
-            <div></div>
           ) : (
             <button className="btn btn-danger btn-lg" onClick={handleEnd}>
               End Work
             </button>
           )}
-        </div>
+        </div> */}
+          <div className="text-center mb-4">
+      {!isStarted ? (
+        <button
+          className="btn btn-success btn-lg"
+          onClick={handleStart}
+          disabled={flag}
+        >
+          <strong>Start Work</strong>
+        </button>
+      ) : (
+        flag ? (
+          <div></div>
+        ) : (
+          <button className="btn btn-danger btn-lg" onClick={handleEnd}>
+            End Work
+          </button>
+        )
+      )}
+    </div>
+
+
 
         {startTime && (
           <div className="text-center mb-4">
@@ -223,6 +235,7 @@ const StartWork = () => {
         <Timeline isStarted={isStarted} startTime={startTime} />
       </div>
 
+      {/* Modal for Confirmation */}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>Confirm End Work</Modal.Title>
@@ -252,7 +265,7 @@ const Timeline = ({ isStarted, startTime }) => {
       const interval = setInterval(() => {
         const now = new Date();
         const elapsed = now - new Date(startTime);
-        const percent = (elapsed / (1000 * 60 * 60 * 8)) * 100; // 8-hour workday
+        const percent = (elapsed / (1000 * 60 * 60 * 8)) * 100; // 8 hours workday
         setProgress(Math.min(percent, 100));
       }, 1000);
 

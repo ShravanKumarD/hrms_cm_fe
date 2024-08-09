@@ -71,8 +71,8 @@ const OfferLetterEditModal = ({ data, onHide, onSuccess, ...props }) => {
       }
     } catch (err) {
       setShowAlert(true);
-      setErrorMsg(err.response?.data?.message || "An error occurred.");
-    }
+      setErrorMsg(err.response?.data?.message || "You have not made any changes.");
+    } 
   };
 
   return (
