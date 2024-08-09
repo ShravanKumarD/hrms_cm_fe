@@ -10,6 +10,7 @@ import API_BASE_URL from "../env";
 
 export default class SalaryView extends Component {
   constructor(props) {
+    console.log(props,'props')
     super(props);
 
     this.state = {
@@ -17,6 +18,7 @@ export default class SalaryView extends Component {
       currentJobTitle: null,
       falseRedirect: false,
       editRedirect: false,
+      dept:null
     };
   }
 
@@ -32,6 +34,7 @@ export default class SalaryView extends Component {
         .then((res) => {
           console.log(res, "response");
           this.setState({ user: res.data }, () => {
+            console.log(this.state.user,'useruser')
             if (this.state.user.jobs) {
               this.state.user.jobs.forEach((job) => {
                 if (
@@ -109,11 +112,11 @@ export default class SalaryView extends Component {
                   >
                     Employee Salary Detail{" "}
                     <Form className="float-right">
-                      <Button variant="primary" onClick={this.exportToPDF}>
+                      {/* <Button variant="primary" onClick={this.exportToPDF}>
                         Export to PDF
                       </Button>
                       <br />
-                      <br />
+                      <br /> */}
                       <span style={{ cursor: "pointer" }} onClick={this.onEdit}>
                         <i className="far fa-edit"></i> Edit
                       </span>
@@ -121,8 +124,8 @@ export default class SalaryView extends Component {
                   </Card.Header>
 
                   <Card.Body>
-                    <Card.Header style={{ textAlign: "center" }}>
-                      <strong>Samcint solutions pvt. ltd.</strong>
+                    <Card.Header style={{ textAlign: "center",fontSize:'22px' }}>
+                      <strong>Samcint solutions private limited</strong>
                     </Card.Header>
                     <br />
                     <Card.Title>
@@ -131,13 +134,13 @@ export default class SalaryView extends Component {
                     <div>
                       <Col lg={12}>
                         <Row className="pt-4">
-                          <Col lg={3}>
+                          <Col lg={0}>
                             <img
                               className="img-circle elevation-1 bp-2"
                               src={process.env.PUBLIC_URL + "/user-128.png"}
                             ></img>
                           </Col>
-                          <Col className="pt-4" lg={9}>
+                          <Col className="pt-4" lg={7}>
                             <div className="emp-view-list">
                               <ul>
                                 <li>
@@ -145,9 +148,14 @@ export default class SalaryView extends Component {
                                   {this.state.user.id}
                                 </li>
                                 <li>
-                                  <span>Department: </span>{" "}
-                                  {this.state.user.department || "ADMIN"}
-                                </li>
+  <span>Department: </span>
+  {this.state.user.department && this.state.user.department.departmentName ? (
+    this.state.user.department.departmentName
+  ) : (
+    <Redirect to="/employee-list" />
+  )}
+</li>
+
                                 <li>
                                   <span>Job Title: </span>{" "}
                                   {this.state.currentJobTitle}
