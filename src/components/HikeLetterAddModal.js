@@ -7,6 +7,8 @@ import axios from "axios";
 import API_BASE_URL from "../env";
 
 const HikeLetterAdd = (props) => {
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [date, setDate] = useState(null);
   const [name, setName] = useState("");
   const [place, setPlace] = useState("");
@@ -14,8 +16,6 @@ const HikeLetterAdd = (props) => {
   const [newSalary, setNewSalary] = useState("");
   const [previousSalary, setPreviousSalary] = useState("");
   const [hrName, setHrName] = useState("");
-  const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [done, setDone] = useState(false);
@@ -35,6 +35,11 @@ const HikeLetterAdd = (props) => {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const onUserChange = (event) => {
+    console.log(`User selected: ${event.target.value}`);
+    setSelectedUser(event.target.value);
   };
 
   const handleChange = (event) => {
@@ -61,10 +66,6 @@ const HikeLetterAdd = (props) => {
     }
   };
 
-  const onUserChange = (event) => {
-    console.log(`User selected: ${event.target.value}`);
-    setSelectedUser(event.target.value);
-  };
 
   const pushUsers = () => {
     console.log("Mapping users to options...");
@@ -114,6 +115,11 @@ const HikeLetterAdd = (props) => {
           Add Hike Letter
         </Modal.Title>
       </Modal.Header>
+      {showAlert && (
+        <Alert variant="warning" className="m-1">
+          {errorMsg}
+        </Alert>
+      )}
       <Modal.Body>
         <Form onSubmit={onSubmit}>
           <Form.Group>
@@ -130,11 +136,6 @@ const HikeLetterAdd = (props) => {
             </Form.Control>
           </Form.Group>
           {done && <Redirect to="/hike-letter-list" />}
-          {showAlert && (
-            <Alert variant="warning" className="m-1">
-              {errorMsg}
-            </Alert>
-          )}
           <Form.Group controlId="formDate">
             <Form.Label className="mb-2 required">Date</Form.Label>
             <DatePicker

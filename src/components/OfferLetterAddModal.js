@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Col } from "react-bootstrap";
 import axios from "axios";
 import API_BASE_URL from "../env";
 
-const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
+const OfferLetterAddModal = (props) => {
   // Define separate state variables for each form field
-  const [userId, setUserId] = useState("");
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [fullName, setFullName] = useState("");
   const [recipientPlace, setRecipientPlace] = useState("");
   const [role, setRole] = useState("");
@@ -21,13 +22,44 @@ const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
   const [senderName, setSenderName] = useState("Murthy Balaji");
   const [senderTitle, setSenderTitle] = useState("Co Founder");
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      axios.defaults.baseURL = API_BASE_URL;
+      const res = await axios.get("/api/users", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setUsers(res.data);
+      console.log(res.data, "users");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const onUserChange = (event) => {
+    console.log(`User selected: ${event.target.value}`);
+    setSelectedUser(event.target.value);
+  };
+
+  const pushUsers = () => {
+    console.log("Mapping users to options...");
+    return users.map((user) => (
+      <option key={user.id} value={user.id}>
+        {user.fullName}
+      </option>
+    ));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await axios.post(
         `${API_BASE_URL}/api/offerLetters`,
         {
-          userId: userId, // Placeholder; adjust as needed
+          userId: selectedUser,
           full_name: fullName,
           recipient_place: recipientPlace,
           role,
@@ -45,8 +77,8 @@ const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      onSuccess();
-      onHide();
+      props.onSuccess();
+      props.onHide();
     } catch (error) {
       console.error("Error adding offer letter:", error);
       // Handle error (e.g., show error message to user)
@@ -54,21 +86,25 @@ const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
   };
 
   return (
-    <Modal show={show} onHide={onHide} size="lg">
+    <Modal show={props.show} onHide={props.onHide} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>Add New Offer Letter</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
           <Form.Row>
-          <Form.Group as={Col} md="6" controlId="formFullName">
-              <Form.Label>User ID</Form.Label>
+            <Form.Group>
+              <Form.Label className="mb-2 required">Select Employee</Form.Label>
               <Form.Control
-                type="number"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
+                as="select"
+                className="form-control"
+                value={selectedUser || ""}
+                onChange={onUserChange}
                 required
-              />
+              >
+                <option value="">Choose one...</option>
+                {pushUsers()}
+              </Form.Control>
             </Form.Group>
             <Form.Group as={Col} md="6" controlId="formFullName">
               <Form.Label>Full Name</Form.Label>

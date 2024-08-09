@@ -164,19 +164,19 @@ const HikeLetterList = () => {
               onAddSuccess={fetchData} // Refetch data after addition
             />
           )}
+          {showModal.preview && (
+            <HikeLetterPreviewModal
+            show={showModal.preview}
+            onHide={closeModal}
+            data={selectedHikeLetter} // Pass selected hike letter data to the preview modal
+            />
+          )}
           {showModal.delete && (
             <HikeLetterDeleteModal
               show={showModal.delete}
               onHide={closeModal}
               hikeLetterId={selectedHikeLetter.id} // Pass hikeLetterId to the modal
               onDeleteSuccess={fetchData} // Refetch data after deletion
-            />
-          )}
-          {showModal.preview && (
-            <HikeLetterPreviewModal
-              show={showModal.preview}
-              onHide={closeModal}
-              data={selectedHikeLetter} // Pass selected hike letter data to the preview modal
             />
           )}
         </div>

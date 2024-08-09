@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Card, Button, Form, Badge } from "react-bootstrap";
 import axios from "axios";
 import moment from "moment";
@@ -9,19 +9,35 @@ import API_BASE_URL from "../env";
 import OfferLetterEditModal from "./OfferLetterEditModal";
 import OfferLetterAddModal from "./OfferLetterAddModal";
 import OfferLetterDeleteModal from "./OfferLetterDeleteModal";
+import OfferLetterPreviewModal from "./OfferLetterPreviewModal";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+import htmlToPdfmake from "html-to-pdfmake";
+
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const OfferLetterList = () => {
   const [offerLetters, setOfferLetters] = useState([]);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedOfferLetter, setSelectedOfferLetter] = useState(null);
+  const [modalState, setModalState] = useState({
+    showEdit: false,
+    showAdd: false,
+    showDelete: false,
+    showPreview: false,
+    selectedOfferLetter: null,
+  });
+  const previewRef = useRef(null);
 
-  useEffect(() => {
-    fetchOfferLetters();
-  }, []);
+  const theme = createTheme({
+    overrides: {
+      MuiTableCell: {
+        root: {
+          padding: "6px 6px",
+        },
+      },
+    },
+  });
 
-  const fetchOfferLetters = async () => {
+  const fetchOfferLetters = useCallback(async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/offerLetters/`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -38,52 +54,61 @@ const OfferLetterList = () => {
     } catch (error) {
       console.error("Error fetching offer letters:", error);
     }
-  };
+  }, []);
 
-  const handleEdit = (offerLetter) => {
-    setSelectedOfferLetter(offerLetter);
-    setShowEditModal(true);
-  };
-
-  const handleAdd = () => {
-    setShowAddModal(true);
-  };
-
-  const handleDelete = (offerLetter) => {
-    setSelectedOfferLetter(offerLetter);
-    setShowDeleteModal(true);
-  };
-
-  const handleModalClose = () => {
-    setShowEditModal(false);
-    setShowAddModal(false);
-    setShowDeleteModal(false);
-    setSelectedOfferLetter(null);
+  useEffect(() => {
     fetchOfferLetters();
+  }, [fetchOfferLetters]);
+
+  const openModal = (modalType, offerLetter = null) => {
+    setModalState({
+      showEdit: modalType === "edit",
+      showAdd: modalType === "add",
+      showDelete: modalType === "delete",
+      showPreview: modalType === "preview",
+      selectedOfferLetter: offerLetter,
+    });
   };
 
-  const theme = createTheme({
-    overrides: {
-      MuiTableCell: {
-        root: {
-          padding: "6px 6px",
-        },
-      },
-    },
-  });
+  const closeModal = () => {
+    setModalState({
+      showEdit: false,
+      showAdd: false,
+      showDelete: false,
+      showPreview: false,
+      selectedOfferLetter: null,
+    });
+    fetchOfferLetters(); // Refresh the list after any modal closes
+  };
+
+  const downloadPDF = () => {
+    if (previewRef.current) {
+      const offerLetterContent = previewRef.current.innerHTML;
+      const pdfContent = htmlToPdfmake(offerLetterContent);
+      const documentDefinition = { content: pdfContent };
+      pdfMake.createPdf(documentDefinition).download("offer_letter.pdf");
+    } else {
+      console.error("Preview element is not found");
+    }
+  };
+
+  const { showEdit, showAdd, showDelete, showPreview, selectedOfferLetter } =
+    modalState;
 
   return (
     <div className="container-fluid pt-2">
       <div className="row">
         <div className="col-sm-12">
           <h4>
-            <a
-              className="fa fa-plus mb-2 ml-2"
-              onClick={handleAdd}
+            <Button
+              variant="link"
+              className="p-0"
+              onClick={() => openModal("add")}
               style={{ color: "blue", cursor: "pointer" }}
             >
+              <i className="fa fa-plus" />
               Add Offer Letter
-            </a>
+            </Button>
           </h4>
           <Card className="main-card">
             <Card.Header>
@@ -126,7 +151,7 @@ const OfferLetterList = () => {
                             <Button
                               size="sm"
                               variant="info"
-                              onClick={() => handleEdit(rowData)}
+                              onClick={() => openModal("edit", rowData)}
                             >
                               <i className="fas fa-edit"></i> Edit
                             </Button>
@@ -135,9 +160,18 @@ const OfferLetterList = () => {
                             <Button
                               size="sm"
                               variant="danger"
-                              onClick={() => handleDelete(rowData)}
+                              onClick={() => openModal("delete", rowData)}
                             >
                               <i className="fas fa-trash"></i> Delete
+                            </Button>
+                          </div>
+                          <div className="col pr-5">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => openModal("preview", rowData)}
+                            >
+                              <i className="fas fa-eye"></i> Preview
                             </Button>
                           </div>
                         </Form>
@@ -159,19 +193,38 @@ const OfferLetterList = () => {
           </Card>
         </div>
       </div>
-      <OfferLetterEditModal
-        show={showEditModal}
-        onHide={handleModalClose}
-        offerLetter={selectedOfferLetter}
-      />
-      <OfferLetterAddModal show={showAddModal} 
-      onSuccess={fetchOfferLetters}
-      onHide={handleModalClose} />
-      <OfferLetterDeleteModal
-        show={showDeleteModal}
-        onHide={handleModalClose}
-        offerLetter={selectedOfferLetter}
-      />
+      {showEdit && selectedOfferLetter && (
+        <OfferLetterEditModal
+          show={showEdit}
+          onHide={closeModal}
+          data={selectedOfferLetter}
+          onSuccess={fetchOfferLetters}
+        />
+      )}
+      {showAdd && (
+        <OfferLetterAddModal
+          show={showAdd}
+          onSuccess={fetchOfferLetters}
+          onHide={closeModal}
+        />
+      )}
+      {showDelete && selectedOfferLetter && (
+        <OfferLetterDeleteModal
+          show={showDelete}
+          onHide={closeModal}
+          offerLetterId={selectedOfferLetter.id}
+          onDeleteSuccess={fetchOfferLetters}
+        />
+      )}
+      {showPreview && selectedOfferLetter && (
+        <OfferLetterPreviewModal
+          show={showPreview}
+          onHide={closeModal}
+          data={selectedOfferLetter}
+          ref={previewRef}
+          downloadPDF={downloadPDF}
+        />
+      )}
     </div>
   );
 };

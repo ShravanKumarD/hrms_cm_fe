@@ -1,32 +1,31 @@
-import React, { useRef, useState } from "react";
-import { Button, Card, Row, Col, Form,Modal  } from "react-bootstrap";
-import moment from 'moment';
+import React, { useRef, useState, useEffect } from "react";
+import { Button, Card, Row, Col, Form, Modal } from "react-bootstrap";
+import axios from "axios";
 import img from "./../assets/samcint_logo.jpeg";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import htmlToPdfmake from "html-to-pdfmake";
-
-
+import API_BASE_URL from "../env";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-const OfferLetter = () => {
+const OfferLetterTemplate = ({
+  userId,
+  place,
+  todaysDate,
+  position,
+  department,
+  stipend,
+  startDate,
+  hrName,
+}) => {
   const [showSlip, setShowSlip] = useState(false);
   const slipRef = useRef(null);
-  const [formData, setFormData] = useState({
-    todaysDate: '',
-    place: '',
-    name: '',
-    position: '',
-    department: '',
-    stipend: '',
-    startDate: '',
-    hrName: '',
-  });
-  const [showModal, setShowModal] = useState(false);
+  const [user, setUser] = useState({});
+
+  // Separate states for each form field
 
   const toggleSlip = () => {
     setShowSlip((prevShowSlip) => !prevShowSlip);
-    handleShowModal()
   };
 
   const downloadPDF = () => {
@@ -40,28 +39,28 @@ const OfferLetter = () => {
     }
   };
 
-    // Handler to update form data
-    const handleInputChange = (e) => {
-      const { name, value } = e.target;
-      setFormData((prevData) => ({ ...prevData, [name]: value }));
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        axios.defaults.baseURL = API_BASE_URL;
+
+        const userRes = await axios.get(`/api/users/${userId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        const userData = userRes.data;
+        setUser(userData);
+      } catch (error) {
+        console.error(error);
+      }
     };
-  
-    // Handler to open the modal
-    const handleShowModal = () => {
-      setShowModal(true);
-    };
-  
-    // Handler to close the modal
-    const handleCloseModal = () => {
-      setShowModal(false);
-    };
-    
+
+    fetchUserData();
+  }, [userId]);
+
   return (
     <div>
       <Card>
         <Card.Body>
-          <Row>
-          </Row>
           <Row className="mt-3">
             <Col>
               <Button onClick={toggleSlip}>
@@ -88,7 +87,7 @@ const OfferLetter = () => {
                   }}
                 >
                   <img
-                    style={{ height: "40px",width:"150px" }}
+                    style={{ height: "40px", width: "150px" }}
                     src={img}
                     alt="Company Logo"
                   />
@@ -104,36 +103,34 @@ const OfferLetter = () => {
                     <strong>Offer Letter</strong>
                   </h1>
                   <p>&nbsp;</p>
-                  <p>Date: {formData.todaysDate} </p>
-                  <p> {formData.name}</p>
-                  <p>{formData.place}</p>
-                
-
+                  <p>Date: {todaysDate} </p>
+                  <p> {user.fullName}</p>
+                  <p>{place}</p>
                   <p>
-                    Dear {formData.name}, we are delighted to extend an offer to you
-                    for the position of <strong>{formData.position}</strong> at
+                    Dear {user.fullName}, we are delighted to extend an offer to
+                    you for the position of <strong>{position}</strong> at
                     CreditMitra. After carefully considering your qualifications
                     and interview performance, we believe that your skills,
                     enthusiasm, and potential will greatly contribute to our
                     team and provide you with valuable learning opportunities.
                   </p>
-
-                  <h4 style={{fontSize:"16px"}}>
+                  <h4 style={{ fontSize: "16px" }}>
                     <strong>Position Details</strong>
                   </h4>
                   <p>
-                    <strong>Position:</strong> {formData.position}
+                    <strong>Position: </strong> {position}
                   </p>
                   <p>
-                    <strong>Department:</strong> {formData.department}
+                    <strong>Department: </strong> {department}
                   </p>
                   <p>
-                    <strong>Stipend:</strong>{formData.stipend}
+                    <strong>Salary: </strong>
+                    {stipend}
                   </p>
                   <p>
-                    <strong>Start Date:</strong>{formData.startDate}
+                    <strong>Start Date: </strong>
+                    {startDate}
                   </p>
-                  {/* <p><strong>End Date:</strong> 29th June, 2024</p> */}
                   <p>
                     <strong>Work Schedule:</strong> 9:30 am to 6:30 pm, Monday
                     to Friday
@@ -141,7 +138,6 @@ const OfferLetter = () => {
                   <p>
                     <strong>Location:</strong> Hyderabad
                   </p>
-
                   <p>
                     Our team at CreditMitra is looking forward to having you
                     work with us. During your internship, the concentration will
@@ -151,14 +147,13 @@ const OfferLetter = () => {
                     happy to train you to learn new skills which are extremely
                     helpful in the professional setting.
                   </p>
-
                   <p>
                     Once again, congratulations to you on your selection and all
                     the best for your endeavors.
                   </p>
                   <p>&nbsp;</p>
                   <p>Regards,</p>
-                  <p>{formData.hrName}</p>
+                  <p>{hrName}</p>
                   <p>HR Manager</p>
                   <p>Samcint solutions pvt. ltd.</p>
                 </div>
@@ -167,100 +162,8 @@ const OfferLetter = () => {
           )}
         </Card.Body>
       </Card>
-      <div className="container-fluid pt-2">
-
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Position Details</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group>
-              <Form.Label>Today's Date</Form.Label>
-              <Form.Control
-                type="date"
-                name="todaysDate"
-                value={formData.todaysDate}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Place</Form.Label>
-              <Form.Control
-                type="text"
-                name="place"
-                value={formData.place}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Position</Form.Label>
-              <Form.Control
-                type="text"
-                name="position"
-                value={formData.position}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Department</Form.Label>
-              <Form.Control
-                type="text"
-                name="department"
-                value={formData.department}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Stipend</Form.Label>
-              <Form.Control
-                type="text"
-                name="stipend"
-                value={formData.stipend}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Start Date</Form.Label>
-              <Form.Control
-                type="date"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>HR Name</Form.Label>
-              <Form.Control
-                type="text"
-                name="hrName"
-                value={formData.hrName}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleCloseModal}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
     </div>
   );
 };
 
-export default OfferLetter;
+export default OfferLetterTemplate;
