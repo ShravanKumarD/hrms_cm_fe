@@ -8,19 +8,18 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 import htmlToPdfmake from "html-to-pdfmake";
 import API_BASE_URL from "../env";
 
-
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const SalarySlipTemplate = React.forwardRef((props, ref) => {
-  const { userData, salarySlipData, selectedMonth } = props;
-  console.log(selectedMonth, "userData");
+  const { data } = props;
+  console.log(data, "data from SalarySlipTemplate");
 
-  if (!userData || !salarySlipData) {
+  if (!data) {
     return <div>Data not available</div>;
   }
 
-  const netPay =
-    salarySlipData.total_earnings - salarySlipData.total_deductions;
+  const netPay = data.total_earnings - data.total_deductions;
+
   return (
     <div
       ref={ref}
@@ -48,25 +47,23 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
       </div>
       <hr />
       <h3 style={{ textAlign: "center", fontSize: "18px" }}>
-        Salary slip for the month of April - 2024
+        Salary slip for the month of {data.month}
       </h3>
       <div style={{ marginBottom: "20px" }}>
         <p>
-          <strong>Name of Employee:</strong> {userData.fullName}
+          <strong>Name of Employee:</strong> {data.name}
         </p>
         <p>
-          <strong>Address:</strong> {userData.user_personal_info.address}
+          <strong>Address:</strong> {data.address}
         </p>
         <p>
-          <strong>Designation:</strong>{" "}
-          {userData.jobs?.[0]?.jobTitle ?? "Not provided"}
-        </p>
-
-        <p>
-          <strong>Month:</strong> {salarySlipData.month}
+          <strong>Designation:</strong> {data.designation}
         </p>
         <p>
-          <strong>DOJ:</strong> {salarySlipData.date_of_joining.split("T")[0]}
+          <strong>Month:</strong> {data.month}
+        </p>
+        <p>
+          <strong>DOJ:</strong> {data.date_of_joining}
         </p>
       </div>
       <table
@@ -98,24 +95,23 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               Basic Salary
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {/* 33,333 */}
-              {salarySlipData.basic_salary}
+              {data.basic_salary}
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>TDS</td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {salarySlipData.tds}
+              {data.tds}
             </td>
           </tr>
           <tr>
             <td style={{ border: "1px solid #000", padding: "8px" }}>H.R.A</td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {salarySlipData.hra}
+              {data.hra}
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
               Professional tax
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {salarySlipData.professional_tax}
+              {data.professional_tax}
             </td>
           </tr>
           <tr>
@@ -123,13 +119,13 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               Conveyance Allowance
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {salarySlipData.conveyance_allowance}
+              {data.conveyance_allowance}
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
               Employee PF
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {salarySlipData.employee_pf}
+              {data.employee_pf}
             </td>
           </tr>
           <tr>
@@ -137,11 +133,11 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               Special Allowance
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {salarySlipData.special_allowance}
+              {data.special_allowance}
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>Others</td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {salarySlipData.other_deductions}
+              {data.other_deductions}
             </td>
           </tr>
           <tr>
@@ -149,7 +145,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               Medical Allowance
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {salarySlipData.medical_allowance}
+              {data.medical_allowance}
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}></td>
             <td style={{ border: "1px solid #000", padding: "8px" }}></td>
@@ -161,13 +157,13 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               <strong>Total Earnings</strong>
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {salarySlipData.total_earnings}
+              {data.total_earnings}
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
               <strong>Total Deductions</strong>
             </td>
             <td style={{ border: "1px solid #000", padding: "8px" }}>
-              {salarySlipData.total_deductions}
+              {data.total_deductions}
             </td>
           </tr>
         </tfoot>
@@ -190,99 +186,4 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
   );
 });
 
-const SalarySlipModule = ({ selectedMonth }) => {
-  console.log(selectedMonth, "selectedMonth jhhh");
-  const [showSlip, setShowSlip] = useState(false);
-  const slipRef = useRef(null);
-  const [userData, setUserData] = useState(null);
-  const [salarySlipData, setSalarySlipData] = useState(null);
-  const location = useLocation();
-  const [month, setMonth] = useState(null);
-
-  const toggleSlip = () => {
-    setShowSlip((prevShowSlip) => !prevShowSlip);
-  };
-
-  useEffect(() => {
-    setMonth(selectedMonth);
-    const fetchUserData = async () => {
-      try {
-        axios.defaults.baseURL = API_BASE_URL;
-        const userId = location.state.selectedUser.id;
-
-        const userRes = await axios.get(`/api/users/${userId}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        const userData = userRes.data;
-        console.log(userData, "user");
-        setUserData(userData);
-
-        const salarySlipRes = await axios.get(`/api/salary-slip`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        const salarySlipData = salarySlipRes.data;
-        console.log((salarySlipData.month = month), "salary_slip dat");
-        const filteredData = salarySlipData.filter(
-          (slip) => slip.month == month
-        );
-        if (!filteredData) {
-          return "no salary slips found";
-        }
-        setSalarySlipData(filteredData[0]);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchUserData();
-  }, [selectedMonth, month]);
-
-  const downloadPDF = () => {
-    if (slipRef.current) {
-      const salarySlipContent = slipRef.current.innerHTML;
-      const pdfContent = htmlToPdfmake(salarySlipContent);
-      const documentDefinition = { content: pdfContent };
-      pdfMake.createPdf(documentDefinition).download("salary_slip.pdf");
-    } else {
-      console.error("Slip element is not found");
-    }
-  };
-
-  return (
-    <div>
-      <Card>
-        <Card.Body>
-          <Row>
-            <Col>
-              <Form>{/* Your form elements here */}</Form>
-            </Col>
-          </Row>
-          <Row className="mt-3">
-            <Col>
-              <Button onClick={toggleSlip}>
-                {showSlip ? "Hide Salary Slip" : "Show Salary Slip"}
-              </Button>
-            </Col>
-            <Col>
-              <Button onClick={downloadPDF}>Download PDF</Button>
-            </Col>
-          </Row>
-          {showSlip && (
-            <Row>
-              <Col>
-                <SalarySlipTemplate
-                  userData={userData} // Change prop name
-                  salarySlipData={salarySlipData}
-                  selectedMonth={selectedMonth}
-                  ref={slipRef}
-                />
-              </Col>
-            </Row>
-          )}
-        </Card.Body>
-      </Card>
-    </div>
-  );
-};
-
-export default SalarySlipModule;
+export default SalarySlipTemplate;

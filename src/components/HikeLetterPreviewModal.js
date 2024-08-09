@@ -3,7 +3,7 @@ import { Modal, Button } from "react-bootstrap";
 import HikeLetterTemplate from "./HikeLetterTemplate";
 
 const HikeLetterPreviewModal = ({ show, onHide, data }) => {
-  console.log(data);
+    console.log(data);
   return (
     <Modal show={show} onHide={onHide} size="lg" centered>
       <Modal.Header closeButton>
