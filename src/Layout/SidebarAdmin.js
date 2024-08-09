@@ -184,7 +184,7 @@ export default class SidebarAdmin extends Component {
                     </NavLink>
                   </li>
                   <li className="nav-item">
-                    <NavLink to="/offer-letter" className="nav-link">
+                    <NavLink to="/offer-letter-list" className="nav-link">
                       <i className="fas fa-file-signature nav-icon" />
                       <p>Offer Letter</p>
                     </NavLink>
@@ -196,13 +196,13 @@ export default class SidebarAdmin extends Component {
                     </NavLink>
                   </li>
                   <li className="nav-item">
-                    <NavLink to="/relieving-letter" className="nav-link">
+                    <NavLink to="/relieving-letter-list" className="nav-link">
                       <i className="fas fa-file-export nav-icon" />
                       <p>Relieving Letter</p>
                     </NavLink>
                   </li>
                   <li className="nav-item">
-                    <NavLink to="/resignation-letter" className="nav-link">
+                    <NavLink to="/resignation-letter-list" className="nav-link">
                       <i className="fas fa-file-upload nav-icon" />
                       <p>Resignation Letter</p>
                     </NavLink>

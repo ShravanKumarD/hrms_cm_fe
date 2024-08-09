@@ -41,6 +41,7 @@ const SalarySlipList = () => {
 
   useEffect(() => {
     fetchData();
+    console.log(selectedSalarySlip, "selectedSalarySlip");
   }, [fetchData]);
 
   const handleModalShow = (modalType, slip = null) => {
@@ -175,6 +176,7 @@ const SalarySlipList = () => {
               show={showModal.add}
               onHide={closeModal}
               onAddSuccess={fetchData} // Refetch data after addition
+              selectedUserId={selectedSalarySlip?.userId} // Pass the selected user's userId
             />
           )}
           {showModal.delete && (

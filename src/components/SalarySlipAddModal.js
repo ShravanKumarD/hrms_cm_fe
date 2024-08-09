@@ -5,10 +5,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import API_BASE_URL from "../env";
 
-const SalarySlipAddModal = ({ show, onHide, onAddSuccess, ...props }) => {
+const SalarySlipAddModal = ({ selectedUserId, show, onHide, onAddSuccess, ...props }) => {
   const [salarySlip, setSalarySlip] = useState({
     name: "",
-    userId: "",
+    userId: selectedUserId,
     address: "",
     designation: "",
     month: "",

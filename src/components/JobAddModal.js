@@ -182,22 +182,22 @@ export default class JobAddModal extends Component {
               <></>
             )}
              <Form.Group controlId="formEmploymentType">
-                          <Form.Label className="text-muted required">
-                            Employment Type
-                          </Form.Label>
-                          <Form.Control
-                            as="select"
-                            value={this.state.employmentType}
-                            onChange={this.handleChange}
-                            name="employmentType"
-                            required
-                          >
-                            <option value="">Select Employment Type</option>
-                            <option value="Full-time">Full-time</option>
-                            <option value="Part-time">Part-time</option>
-                            <option value="Contract">Contract</option>
-                          </Form.Control>
-                        </Form.Group>
+                <Form.Label className="text-muted required">
+                  Employment Type
+                </Form.Label>
+                <Form.Control
+                  as="select"
+                  value={this.state.employmentType}
+                  onChange={this.handleChange}
+                  name="employmentType"
+                  required
+                >
+                  <option value="">Select Employment Type</option>
+                  <option value="Full-time">Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Contract">Contract</option>
+                </Form.Control>
+              </Form.Group>
             <Form.Group controlId="formJobTitle">
               <Form.Label className="mb-2 required">Job Title</Form.Label>
               <Form.Control
