@@ -48,7 +48,7 @@ const StartWork = () => {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [userId, setUserId] = useState(
-    JSON.parse(localStorage.getItem("user")).id || ""
+    JSON.parse(localStorage.getItem("user"))?.id || ""
   );
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [status, setStatus] = useState("Present");
@@ -60,10 +60,7 @@ const StartWork = () => {
   const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -71,24 +68,19 @@ const StartWork = () => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % quotes.length);
     }, 5000);
-
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    const fetchUserLocation = () => {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
-        },
-        (error) => {
-          console.error("Error fetching location:", error);
-        }
-      );
-    };
-
-    fetchUserLocation();
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+      },
+      (error) => {
+        console.error("Error fetching location:", error);
+      }
+    );
   }, []);
 
   useEffect(() => {
@@ -103,15 +95,8 @@ const StartWork = () => {
 
     if (savedEndTime) {
       const endTime = new Date(savedEndTime);
-      const currentTime = new Date();
-      const hoursDiff = Math.abs(currentTime - endTime) / 36e5;
-
-      if (hoursDiff < 6) {
-        setIsDisabled(true);
-        // alert('wait until 6 hours to start work or contact manger')
-      } else {
-        setIsDisabled(false);
-      }
+      const hoursDiff = Math.abs(new Date() - endTime) / 36e5;
+      setIsDisabled(hoursDiff < 6);
     }
   }, []);
 
@@ -167,7 +152,7 @@ const StartWork = () => {
     try {
       axios.defaults.baseURL = API_BASE_URL;
       await axios.put(
-        `api/attendance/clock-out`,
+        `/api/attendance/clock-out`,
         {
           userId,
           date,
@@ -195,7 +180,7 @@ const StartWork = () => {
         <h2 className="text-center mb-4">Start Work</h2>
         <div className="text-center mb-4">
           <h3 className="display-4">
-            Current Time:<strong>{currentTime.toLocaleTimeString()}</strong>
+            Your total work time today is <strong>{totalTime} hours</strong>.
           </h3>
         </div>
         <div className="quote-scroller">
@@ -267,7 +252,7 @@ const Timeline = ({ isStarted, startTime }) => {
       const interval = setInterval(() => {
         const now = new Date();
         const elapsed = now - new Date(startTime);
-        const percent = (elapsed / (1000 * 60 * 60 * 8)) * 100; // 8 hours workday
+        const percent = (elapsed / (1000 * 60 * 60 * 8)) * 100; // 8-hour workday
         setProgress(Math.min(percent, 100));
       }, 1000);
 
