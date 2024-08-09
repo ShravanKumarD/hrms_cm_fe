@@ -164,7 +164,9 @@ const OfferLetterList = () => {
         onHide={handleModalClose}
         offerLetter={selectedOfferLetter}
       />
-      <OfferLetterAddModal show={showAddModal} onHide={handleModalClose} />
+      <OfferLetterAddModal show={showAddModal} 
+      onSuccess={fetchOfferLetters}
+      onHide={handleModalClose} />
       <OfferLetterDeleteModal
         show={showDeleteModal}
         onHide={handleModalClose}

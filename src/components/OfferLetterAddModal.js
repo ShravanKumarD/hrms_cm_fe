@@ -4,36 +4,47 @@ import axios from "axios";
 import API_BASE_URL from "../env";
 
 const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
-  const [formData, setFormData] = useState({
-    userId: 1,
-    full_name: "",
-    recipient_place: "",
-    role: "",
-    department: "",
-    salary: "",
-    start_date: "",
-    end_date: "",
-    location: "Hyderabad",
-    work_schedule: "9:30 am to 6:30 pm, Monday to Friday",
-    company_name: "CreditMitra",
-    sender_name: "Murthy Balaji",
-    sender_title: "Co Founder",
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  // Define separate state variables for each form field
+  const [userId, setUserId] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [recipientPlace, setRecipientPlace] = useState("");
+  const [role, setRole] = useState("");
+  const [department, setDepartment] = useState("");
+  const [salary, setSalary] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [location, setLocation] = useState("Hyderabad");
+  const [workSchedule, setWorkSchedule] = useState(
+    "9:30 am to 6:30 pm, Monday to Friday"
+  );
+  const [companyName, setCompanyName] = useState("CreditMitra");
+  const [senderName, setSenderName] = useState("Murthy Balaji");
+  const [senderTitle, setSenderTitle] = useState("Co Founder");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_BASE_URL}/api/offerLetters`, formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      await axios.post(
+        `${API_BASE_URL}/api/offerLetters`,
+        {
+          userId: userId, // Placeholder; adjust as needed
+          full_name: fullName,
+          recipient_place: recipientPlace,
+          role,
+          department,
+          salary,
+          start_date: startDate,
+          end_date: endDate,
+          location,
+          work_schedule: workSchedule,
+          company_name: companyName,
+          sender_name: senderName,
+          sender_title: senderTitle,
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       onSuccess();
       onHide();
     } catch (error) {
@@ -50,13 +61,21 @@ const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
           <Form.Row>
+          <Form.Group as={Col} md="6" controlId="formFullName">
+              <Form.Label>User ID</Form.Label>
+              <Form.Control
+                type="number"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+                required
+              />
+            </Form.Group>
             <Form.Group as={Col} md="6" controlId="formFullName">
               <Form.Label>Full Name</Form.Label>
               <Form.Control
                 type="text"
-                name="full_name"
-                value={formData.full_name}
-                onChange={handleChange}
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 required
               />
             </Form.Group>
@@ -64,9 +83,8 @@ const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
               <Form.Label>Recipient Place</Form.Label>
               <Form.Control
                 type="text"
-                name="recipient_place"
-                value={formData.recipient_place}
-                onChange={handleChange}
+                value={recipientPlace}
+                onChange={(e) => setRecipientPlace(e.target.value)}
                 required
               />
             </Form.Group>
@@ -77,9 +95,8 @@ const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
               <Form.Label>Role</Form.Label>
               <Form.Control
                 type="text"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
                 required
               />
             </Form.Group>
@@ -87,9 +104,8 @@ const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
               <Form.Label>Department</Form.Label>
               <Form.Control
                 type="text"
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
                 required
               />
             </Form.Group>
@@ -100,9 +116,8 @@ const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
               <Form.Label>Salary</Form.Label>
               <Form.Control
                 type="number"
-                name="salary"
-                value={formData.salary}
-                onChange={handleChange}
+                value={salary}
+                onChange={(e) => setSalary(e.target.value)}
                 required
               />
             </Form.Group>
@@ -110,9 +125,8 @@ const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
               <Form.Label>Start Date</Form.Label>
               <Form.Control
                 type="date"
-                name="start_date"
-                value={formData.start_date}
-                onChange={handleChange}
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
                 required
               />
             </Form.Group>
@@ -123,18 +137,16 @@ const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
               <Form.Label>End Date (if applicable)</Form.Label>
               <Form.Control
                 type="date"
-                name="end_date"
-                value={formData.end_date}
-                onChange={handleChange}
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
               />
             </Form.Group>
             <Form.Group as={Col} md="6" controlId="formLocation">
               <Form.Label>Location</Form.Label>
               <Form.Control
                 type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
               />
             </Form.Group>
           </Form.Row>
@@ -143,9 +155,8 @@ const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
             <Form.Label>Work Schedule</Form.Label>
             <Form.Control
               type="text"
-              name="work_schedule"
-              value={formData.work_schedule}
-              onChange={handleChange}
+              value={workSchedule}
+              onChange={(e) => setWorkSchedule(e.target.value)}
             />
           </Form.Group>
 
@@ -154,27 +165,24 @@ const OfferLetterAddModal = ({ show, onHide, onSuccess }) => {
               <Form.Label>Company Name</Form.Label>
               <Form.Control
                 type="text"
-                name="company_name"
-                value={formData.company_name}
-                onChange={handleChange}
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
               />
             </Form.Group>
             <Form.Group as={Col} md="4" controlId="formSenderName">
               <Form.Label>Sender Name</Form.Label>
               <Form.Control
                 type="text"
-                name="sender_name"
-                value={formData.sender_name}
-                onChange={handleChange}
+                value={senderName}
+                onChange={(e) => setSenderName(e.target.value)}
               />
             </Form.Group>
             <Form.Group as={Col} md="4" controlId="formSenderTitle">
               <Form.Label>Sender Title</Form.Label>
               <Form.Control
                 type="text"
-                name="sender_title"
-                value={formData.sender_title}
-                onChange={handleChange}
+                value={senderTitle}
+                onChange={(e) => setSenderTitle(e.target.value)}
               />
             </Form.Group>
           </Form.Row>
