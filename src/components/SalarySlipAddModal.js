@@ -118,10 +118,12 @@ const SalarySlipAdd = ({
       setDone(true);
       if (onAddSuccess) {
         onAddSuccess(); // Callback to handle success
+        window.scrollTo(0, 0);
       }
     } catch (err) {
       setShowAlert(true);
       setErrorMsg(err.response?.data?.message || "An error occurred.");
+      window.scrollTo(0, 0);
     }
   };
 
@@ -139,6 +141,16 @@ const SalarySlipAdd = ({
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
+      {done && (
+          <Alert variant="success" className="m-1">
+            Salary slip added successfully!
+          </Alert>
+        )}
+        {showAlert && (
+          <Alert variant="danger" className="m-1">
+            {"Please select a Employee to create salary slip"}
+          </Alert>
+        )}
         <Form.Group>
           <Form.Label className="mb-2 required">Select Employee</Form.Label>
           <Form.Control
@@ -152,17 +164,6 @@ const SalarySlipAdd = ({
             {pushUsers()}
           </Form.Control>
         </Form.Group>
-
-        {done && (
-          <Alert variant="success" className="m-1">
-            Salary slip added successfully!
-          </Alert>
-        )}
-        {showAlert && (
-          <Alert variant="danger" className="m-1">
-            {errorMsg}
-          </Alert>
-        )}
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="formName">
             <Form.Label className="mb-2 required">Name</Form.Label>
