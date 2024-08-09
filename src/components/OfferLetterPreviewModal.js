@@ -41,6 +41,7 @@ const OfferLetterPreviewModal = ({ show, onHide, data }) => {
           stipend={data.salary}
           startDate={formattedStartDate}
           hrName={data.sender_name}
+          sender_title={data.sender_title}
         />
       </Modal.Body>
       <Modal.Footer>

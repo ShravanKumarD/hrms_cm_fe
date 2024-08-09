@@ -17,6 +17,7 @@ const OfferLetterTemplate = ({
   stipend,
   startDate,
   hrName,
+  sender_title
 }) => {
   const [showSlip, setShowSlip] = useState(false);
   const slipRef = useRef(null);
@@ -154,7 +155,7 @@ const OfferLetterTemplate = ({
                   <p>&nbsp;</p>
                   <p>Regards,</p>
                   <p>{hrName}</p>
-                  <p>HR Manager</p>
+                  <p>{sender_title}</p>
                   <p>Samcint solutions pvt. ltd.</p>
                 </div>
               </Col>
