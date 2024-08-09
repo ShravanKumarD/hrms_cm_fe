@@ -7,9 +7,9 @@ import API_BASE_URL from "../env";
 
 const SalarySlipEditModal = ({ show, onHide, data }) => {
   const [formData, setFormData] = useState({
-    id: null,
-    name: "",
-    userId: null,
+    id: data.id,
+    name: data.name,
+    userId: data.userId,
     address: "",
     designation: "",
     month: "",
@@ -66,7 +66,7 @@ const SalarySlipEditModal = ({ show, onHide, data }) => {
     axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "put",
-      url: `/api/salary-slips/${formData.id}`,
+      url: `/api/salary-slip/${formData.id}`,
       data: formData,
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
@@ -96,16 +96,6 @@ const SalarySlipEditModal = ({ show, onHide, data }) => {
               type="text"
               name="name"
               value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formUserId">
-            <Form.Label>User ID</Form.Label>
-            <Form.Control
-              type="number"
-              name="userId"
-              value={formData.userId}
               onChange={handleChange}
               required
             />
