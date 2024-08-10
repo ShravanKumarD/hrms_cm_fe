@@ -8,7 +8,7 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 import SalarySlipTemplate from "./SalarySlipTemplate";
 import OfferLetterTemplate from "./OfferLetterTemplate";
 import HikeLetterTemplate from "./HikeLetterTemplate";
-import RelievingLetterTemplate from "./RelieveingLetterTemplate";
+import RelievingLetterTemplate from "./RelievingLetterTemplate";
 import API_BASE_URL from "../env";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;

@@ -28,6 +28,7 @@ import DocumentEdit from "./components/DocumentEdit";
 import OfferLetterList from "./components/OfferLetterList";
 import HikeLetterList from "./components/HikeLetterList";
 import SalarySlipList from "./components/SalarySlipList";
+import RelievingLetterList from "./components/RelievingLetterList";
 import DepartmentList from "./components/DepartmentList";
 import ApplicationList from "./components/ApplicationList";
 import ApplicationListManager from "./components/manager/ApplicationList";
@@ -146,6 +147,11 @@ const AdminContainer = () => (
           exact
           path="/offer-letter-list"
           component={withAuth(OfferLetterList)}
+        />
+        <Route
+          exact
+          path="/relieving-letter-list"
+          component={withAuth(RelievingLetterList)}
         />
         <Route exact path="/job-list" component={withAuth(JobList)} />
         <Route
