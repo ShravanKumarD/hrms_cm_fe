@@ -1,22 +1,38 @@
-// src/components/MarkAttendance.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
 import API_BASE_URL from "../env";
 
-
 const MarkAttendance = () => {
   const [userId, setUserId] = useState("");
+  const [users, setUsers] = useState([]); // Added state for users
   const [date, setDate] = useState("");
   const [status, setStatus] = useState("Present");
   const [clockinTime, setClockInTime] = useState("");
   const [clockoutTime, setClockOutTime] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+
+  useEffect(() => {
+    // Fetch users from API on component mount
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/users`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      axios.defaults.baseURL = API_BASE_URL; // Set the base URL
+      axios.defaults.baseURL = API_BASE_URL;
       const response = await axios.post(
         "/api/attendance/mark",
         {
@@ -40,6 +56,14 @@ const MarkAttendance = () => {
     }
   };
 
+  const pushUsers = () => {
+    return users.map((user) => (
+      <option key={user.id} value={user.id}>
+        {user.fullName}
+      </option>
+    ));
+  };
+
   return (
     <Container className="pt-4">
       <Row className="justify-content-center">
@@ -52,14 +76,18 @@ const MarkAttendance = () => {
             <Card.Body>
               <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formUserId">
-                  <Form.Label>User ID</Form.Label>
+                  <Form.Label>Select User</Form.Label>
                   <Form.Control
-                    type="text"
+                    as="select"
                     value={userId}
                     onChange={(e) => setUserId(e.target.value)}
-                    placeholder="Enter User ID"
                     required
-                  />
+                  >
+                    <option value="" disabled>
+                      Select User
+                    </option>
+                    {pushUsers()}
+                  </Form.Control>
                 </Form.Group>
 
                 <Form.Group controlId="formDate">

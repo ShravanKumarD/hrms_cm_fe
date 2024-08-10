@@ -172,7 +172,7 @@ const AdminContainer = () => (
         />
         <Route
           exact
-          path="/attendance/list"
+          path="/attendance-list"
           component={withAuth(AttendanceList)}
         />
         <Route
@@ -255,7 +255,7 @@ const ManagerContainer = () => (
         />
         <Route
           exact
-          path="/attendance/list"
+          path="/attendance-list"
           component={withAuth(AttendanceList)}
         />
         <Route

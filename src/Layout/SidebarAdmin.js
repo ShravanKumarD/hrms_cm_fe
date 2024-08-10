@@ -97,7 +97,7 @@ export default class SidebarAdmin extends Component {
                     </NavLink>
                   </li>
                   <li className="nav-item">
-                    <NavLink to="/attendance/list" className="nav-link">
+                    <NavLink to="/attendance-list" className="nav-link">
                       <i className="fas fa-list nav-icon" />
                       <p>Attendance List</p>
                     </NavLink>
