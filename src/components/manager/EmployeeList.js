@@ -26,7 +26,8 @@ export default class EmployeeList extends Component {
     axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
-      url: "/api/users/department/" + deptId,
+      // url: "/api/users/department/" + deptId,
+      url: "/api/users",
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then((res) => {

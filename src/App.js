@@ -263,6 +263,27 @@ const ManagerContainer = () => (
           path="/attendance/timesheet"
           component={withAuth(Timesheet)}
         />
+          <Route
+          exact
+          path="/hike-letter-list"
+          component={withAuth(HikeLetterList)}
+        />
+        <Route
+          exact
+          path="/salary-slip-list"
+          component={withAuth(SalarySlipList)}
+        />
+        <Route
+          exact
+          path="/offer-letter-list"
+          component={withAuth(OfferLetterList)}
+        />
+        <Route
+          exact
+          path="/relieving-letter-list"
+          component={withAuth(RelievingLetterList)}
+        />
+          <Route exact path="/employee-add" component={withAuth(EmployeeAdd)} />
         <Route exact path="/documents" component={withAuth(MyDocuments)} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />

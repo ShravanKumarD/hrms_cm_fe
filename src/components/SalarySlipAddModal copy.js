@@ -13,11 +13,11 @@ const SalarySlipAdd = ({
   ...props
 }) => {
   const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(selectedUserId || "");
+  const [selectedUser, setSelectedUser] = useState(null);
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [designation, setDesignation] = useState("");
-  const [month, setMonth] = useState(new Date().getMonth());
+  const [month, setMonth] = useState("January");
   const [year, setYear] = useState(new Date().getFullYear());
   const [dateOfJoining, setDateOfJoining] = useState(new Date());
   const [basicSalary, setBasicSalary] = useState(0);
@@ -31,16 +31,16 @@ const SalarySlipAdd = ({
   const [employeePf, setEmployeePf] = useState(0);
   const [otherDeductions, setOtherDeductions] = useState(0);
   const [totalDeductions, setTotalDeductions] = useState(0);
-  const [daysWorked, setDaysWorked] = useState(0); // New state for days worked
 
   const [showAlert, setShowAlert] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [done, setDone] = useState(false);
+  const[userFinancialInfo,setUserFinancialInfo]=useState({})
 
   useEffect(() => {
     fetchUsers();
-    if (selectedUserId) fetchUserFinanceDetails(selectedUserId);
-  }, [selectedUserId]);
+    fetchUserFinanceDetails();
+  }, []);
 
   const fetchUsers = async () => {
     try {
@@ -49,67 +49,66 @@ const SalarySlipAdd = ({
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setUsers(res.data);
+      console.log(res.data, "users");
     } catch (err) {
       console.error(err);
     }
   };
-
   const fetchUserFinanceDetails = async (userId) => {
+    console.log('helolo wporld',userId)
     try {
-      const res = await axios.get(`/api/users/${userId}`, {
+      console.log(selectedUser,selectedUserId,"selectedUserselectedUserselectedUserselectedUser")
+      axios.defaults.baseURL = API_BASE_URL;
+      const res = await axios.get("api/users/" + userId, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      setName(res.data.fullName);
-      setAddress(res.data.user_personal_info.address);
-      setDesignation(res.data.jobs[0].jobTitle);
-      setBasicSalary(res.data.user_financial_info.salaryBasic);
-      setHra(res.data.user_financial_info.allowanceHouseRent);
-      setConveyanceAllowance(res.data.user_financial_info.allowanceFuel);
-      setSpecialAllowance(res.data.user_financial_info.allowanceSpecial);
-      setMedicalAllowance(res.data.user_financial_info.allowanceMedical);
-      setTotalEarnings(res.data.user_financial_info.salaryGross);
-      setTds(res.data.user_financial_info.tds);
-      setProfessionalTax(res.data.user_financial_info.pt);
-      setEmployeePf(res.data.user_financial_info.pf);
+      console.log(res.data, "fetchUserFinanceDetails");
+      setUserFinancialInfo(res.data)
+      setTds(res.data.tds)
+      console.log(tds,'userFinancialInfouserFinancialInfouserFinancialInfouserFinancialInfo')
     } catch (err) {
       console.error(err);
     }
   };
-
   const onUserChange = (event) => {
-    const userId = event.target.value;
-    setSelectedUser(userId);
-    fetchUserFinanceDetails(userId);
+    console.log(`User selected: ${event.target.value}`);
+    setSelectedUser(event.target.value);
+    fetchUserFinanceDetails(event.target.value)
   };
 
-  const pushUsers = () => users.map(user => (
-    <option key={user.id} value={user.id}>
-      {user.fullName}
-    </option>
-  ));
+  const pushUsers = () => {
+    console.log("Mapping users to options...");
+    return users.map((user) => (
+      <option key={user.id} value={user.id}>
+        {user.fullName}
+      </option>
+    ));
+  };
 
   const months = [
-    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
-  const years = Array.from({ length: 10 }, (v, i) => new Date().getFullYear() - i);
-
-  const calculateTotalEarnings = () => {
-    const totalDaysInMonth = 30; // Assuming 30 days for the month
-    const dailySalary = basicSalary / totalDaysInMonth;
-    const earningsFromDaysWorked = dailySalary * daysWorked;
-    const total = earningsFromDaysWorked + Number(hra) + Number(conveyanceAllowance) + Number(specialAllowance) + Number(medicalAllowance);
-    setTotalEarnings(total);
-  };
-
-  useEffect(() => {
-    calculateTotalEarnings();
-  }, [daysWorked, basicSalary, hra, conveyanceAllowance, specialAllowance, medicalAllowance]);
+  const years = Array.from(
+    new Array(10),
+    (val, index) => new Date().getFullYear() - index
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const formattedMonthYear = `${month + 1}, ${year}`;
+      const formattedMonthYear = `${month}, ${year}`;
       const salarySlip = {
         name,
         userId: selectedUser,
@@ -130,10 +129,10 @@ const SalarySlipAdd = ({
         total_deductions: Number(totalDeductions),
       };
 
-     let res =  await axios.post(`${API_BASE_URL}/api/salary-slip`, salarySlip, {
+      await axios.post(`${API_BASE_URL}/api/salary-slip`, salarySlip, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-console.log(res,'resssssss')
+
       setDone(true);
       if (onAddSuccess) {
         onAddSuccess(); // Callback to handle success
@@ -160,85 +159,93 @@ console.log(res,'resssssss')
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        {done && (
+          <Alert variant="success" className="m-1">
+            Salary slip added successfully!
+          </Alert>
+        )}
+        {showAlert && (
+          <Alert variant="danger" className="m-1">
+            {"Please select a Employee to create salary slip"}
+          </Alert>
+        )}
+        <Form.Group>
+          <Form.Label className="mb-2 required">Select Employee</Form.Label>
+          <Form.Control
+            as="select"
+            className="form-control"
+            value={selectedUser}
+            onChange={onUserChange}
+            required
+          >
+            <option value="">Choose one...</option>
+            {pushUsers()}
+          </Form.Control>
+        </Form.Group>
         <Form onSubmit={handleSubmit}>
-          <Form.Group>
-            <Form.Label className="mb-2 required">Select Employee</Form.Label>
-            <Form.Control
-              as="select"
-              value={selectedUser}
-              onChange={onUserChange}
-              required
-            >
-              <option value="">Choose one...</option>
-              {pushUsers()}
-            </Form.Control>
-          </Form.Group>
-
           <Form.Group controlId="formName">
-            <Form.Label className="mb-2 required">Employee Name</Form.Label>
+            <Form.Label className="mb-2 required">Name</Form.Label>
             <Form.Control
               type="text"
+              name="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Employee name"
               required
             />
           </Form.Group>
 
           <Form.Group controlId="formAddress">
-            <Form.Label className="mb-2 required">Employee Address</Form.Label>
+            <Form.Label className="mb-2 required">Address</Form.Label>
             <Form.Control
               type="text"
+              name="address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Employee address"
               required
             />
           </Form.Group>
-
           <Form.Group controlId="formDesignation">
             <Form.Label className="mb-2 required">Designation</Form.Label>
             <Form.Control
               type="text"
+              name="designation"
               value={designation}
               onChange={(e) => setDesignation(e.target.value)}
-              placeholder="Employee designation"
               required
             />
           </Form.Group>
-
           <Form.Group controlId="formMonth">
             <Form.Label className="mb-2 required">Month</Form.Label>
             <Form.Control
               as="select"
+              name="month"
               value={month}
-              onChange={(e) => setMonth(Number(e.target.value))}
+              onChange={(e) => setMonth(e.target.value)}
               required
             >
-              {months.map((monthName, index) => (
-                <option key={index} value={index}>
-                  {monthName}
+              {months.map((month) => (
+                <option key={month} value={month}>
+                  {month}
                 </option>
               ))}
             </Form.Control>
           </Form.Group>
-
           <Form.Group controlId="formYear">
             <Form.Label className="mb-2 required">Year</Form.Label>
             <Form.Control
               as="select"
+              name="year"
               value={year}
-              onChange={(e) => setYear(Number(e.target.value))}
+              onChange={(e) => setYear(e.target.value)}
               required
             >
-              {years.map((yr) => (
-                <option key={yr} value={yr}>
-                  {yr}
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
                 </option>
               ))}
             </Form.Control>
           </Form.Group>
-
           <Form.Group controlId="formDateOfJoining">
             <Form.Label className="mb-2 required">Date of Joining</Form.Label>
             <DatePicker
@@ -249,139 +256,121 @@ console.log(res,'resssssss')
               required
             />
           </Form.Group>
-          <Form.Group controlId="formDaysWorked">
-            <Form.Label className="mb-2 required">Days Worked</Form.Label>
-            <Form.Control
-              type="number"
-              value={daysWorked}
-              onChange={(e) => setDaysWorked(e.target.value)}
-              required
-            />
-          </Form.Group>
-
           <Form.Group controlId="formBasicSalary">
             <Form.Label className="mb-2 required">Basic Salary</Form.Label>
             <Form.Control
               type="number"
+              name="basic_salary"
               value={basicSalary}
               onChange={(e) => setBasicSalary(e.target.value)}
               required
             />
           </Form.Group>
-
           <Form.Group controlId="formHra">
             <Form.Label className="mb-2 required">HRA</Form.Label>
             <Form.Control
               type="number"
+              name="hra"
               value={hra}
               onChange={(e) => setHra(e.target.value)}
               required
             />
           </Form.Group>
-
           <Form.Group controlId="formConveyanceAllowance">
-            <Form.Label className="mb-2 required">Conveyance Allowance</Form.Label>
+            <Form.Label className="mb-2 required">
+              Conveyance Allowance
+            </Form.Label>
             <Form.Control
               type="number"
+              name="conveyance_allowance"
               value={conveyanceAllowance}
               onChange={(e) => setConveyanceAllowance(e.target.value)}
               required
             />
           </Form.Group>
-
           <Form.Group controlId="formSpecialAllowance">
             <Form.Label className="mb-2 required">Special Allowance</Form.Label>
             <Form.Control
               type="number"
+              name="special_allowance"
               value={specialAllowance}
               onChange={(e) => setSpecialAllowance(e.target.value)}
               required
             />
           </Form.Group>
-
           <Form.Group controlId="formMedicalAllowance">
             <Form.Label className="mb-2 required">Medical Allowance</Form.Label>
             <Form.Control
               type="number"
+              name="medical_allowance"
               value={medicalAllowance}
               onChange={(e) => setMedicalAllowance(e.target.value)}
               required
             />
           </Form.Group>
-
-          <Form.Group controlId="formTds">
-            <Form.Label className="mb-2 required">TDS</Form.Label>
-            <Form.Control
-              type="number"
-              value={tds}
-              onChange={(e) => setTds(e.target.value)}
-              required
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formProfessionalTax">
-            <Form.Label className="mb-2 required">Professional Tax</Form.Label>
-            <Form.Control
-              type="number"
-              value={professionalTax}
-              onChange={(e) => setProfessionalTax(e.target.value)}
-              required
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formEmployeePf">
-            <Form.Label className="mb-2 required">Employee PF</Form.Label>
-            <Form.Control
-              type="number"
-              value={employeePf}
-              onChange={(e) => setEmployeePf(e.target.value)}
-              required
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formOtherDeductions">
-            <Form.Label className="mb-2 required">Other Deductions</Form.Label>
-            <Form.Control
-              type="number"
-              value={otherDeductions}
-              onChange={(e) => setOtherDeductions(e.target.value)}
-              required
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formTotalDeductions">
-            <Form.Label className="mb-2 required">Total Deductions</Form.Label>
-            <Form.Control
-              type="number"
-              value={totalDeductions}
-              onChange={(e) => setTotalDeductions(e.target.value)}
-              required
-            />
-          </Form.Group>
-
           <Form.Group controlId="formTotalEarnings">
             <Form.Label className="mb-2 required">Total Earnings</Form.Label>
             <Form.Control
               type="number"
+              name="total_earnings"
               value={totalEarnings}
               onChange={(e) => setTotalEarnings(e.target.value)}
               required
             />
           </Form.Group>
-
+          <Form.Group controlId="formTds">
+            <Form.Label className="mb-2 required">TDS</Form.Label>
+            <Form.Control
+              type="number"
+              name="tds"
+              value={tds}
+              onChange={(e) => setTds(e.target.value)}
+              required
+            />
+          </Form.Group>
+          <Form.Group controlId="formProfessionalTax">
+            <Form.Label className="mb-2 required">Professional Tax</Form.Label>
+            <Form.Control
+              type="number"
+              name="professional_tax"
+              value={professionalTax}
+              onChange={(e) => setProfessionalTax(e.target.value)}
+              required
+            />
+          </Form.Group>
+          <Form.Group controlId="formEmployeePf">
+            <Form.Label className="mb-2 required">Employee PF</Form.Label>
+            <Form.Control
+              type="number"
+              name="employee_pf"
+              value={employeePf}
+              onChange={(e) => setEmployeePf(e.target.value)}
+              required
+            />
+          </Form.Group>
+          <Form.Group controlId="formOtherDeductions">
+            <Form.Label className="mb-2 required">Other Deductions</Form.Label>
+            <Form.Control
+              type="number"
+              name="other_deductions"
+              value={otherDeductions}
+              onChange={(e) => setOtherDeductions(e.target.value)}
+              required
+            />
+          </Form.Group>
+          <Form.Group controlId="formTotalDeductions">
+            <Form.Label className="mb-2 required">Total Deductions</Form.Label>
+            <Form.Control
+              type="number"
+              name="total_deductions"
+              value={totalDeductions}
+              onChange={(e) => setTotalDeductions(e.target.value)}
+              required
+            />
+          </Form.Group>
           <Button variant="success" type="submit" className="mt-2">
             Add Salary Slip
           </Button>
-          {done && (
-          <Alert variant="success" className="m-1">
-            Salary slip added successfully!
-          </Alert>
-        )}
-        {showAlert && (
-          <Alert variant="danger" className="m-1">
-            {errorMsg}
-          </Alert>
-        )}
         </Form>
       </Modal.Body>
       <Modal.Footer>

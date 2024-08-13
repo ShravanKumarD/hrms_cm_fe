@@ -47,17 +47,20 @@ export default class EmployeeViewEmployee extends Component {
     })
       .then((res) => {
         let user = res.data;
+        console.log(user,"djhgsdhgfwshghj")
         this.setState({ user: user }, () => {
           if (user.jobs) {
             let jobs = user.jobs;
-            jobs.map((job) => {
-              if (
-                new Date(job.startDate) <= Date.now() &&
-                new Date(job.endDate) >= Date.now()
-              ) {
-                this.setState({ job: job });
-              }
-            });
+            // jobs.map((job) => {
+            //   if (
+            //     new Date(job.startDate) <= Date.now() &&
+            //     new Date(job.endDate) >= Date.now()
+            //   ) {
+            //     console.log(job,this.state.job,"job")
+            //     this.setState({ job: job });
+            //   }
+            // });
+            console.log(user.jobs)
           }
           if (user.department) {
             this.setState({ department: user.department });
@@ -74,6 +77,7 @@ export default class EmployeeViewEmployee extends Component {
             this.setState({ userFinancialInfo: user.user_financial_info });
           }
         });
+        
       })
       .catch((err) => {
         console.log(err);

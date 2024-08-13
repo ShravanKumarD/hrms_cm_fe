@@ -572,6 +572,7 @@ export default class EmployeeAdd extends Component {
                             <option value="">Choose...</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
+                            {/* <option value="others">Others</option> */}
                           </Form.Control>
                         </Form.Group>
 
@@ -588,13 +589,13 @@ export default class EmployeeAdd extends Component {
                           >
                             <option value="">Choose...</option>
                             <option value="married">Married</option>
-                            <option value="single">Single</option>
+                            <option value="single">Unmarried</option>
                           </Form.Control>
                         </Form.Group>
 
                         <Form.Group controlId="formFatherName">
                           <Form.Label className="text-muted required">
-                            Father's name
+                            Father's name/Spouse's name
                           </Form.Label>
                           <Form.Control
                             type="text"

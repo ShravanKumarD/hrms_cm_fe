@@ -102,14 +102,14 @@ export default class SidebarManager extends Component {
                   </li>
                 </ul>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <NavLink exact to="/employee-list" className="nav-link">
                   <i className="nav-icon fas fa-users" />
                   <p>
                     My Employees
                   </p>
                 </NavLink>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <NavLink to="/job-list" className="nav-link">
                   <i className="nav-icon fas fa-briefcase" />
@@ -141,6 +141,78 @@ export default class SidebarManager extends Component {
                   </li>
                 </ul>
               </li>
+              <li className="nav-item has-treeview">
+                <NavLink
+                  to="/fake-url"
+                  className="nav-link"
+                  activeClassName="nav-link"
+                >
+                  <i className="nav-icon fa fa-user" />
+                  <p>
+                    Employee
+                    <i className="right fas fa-angle-left" />
+                  </p>
+                </NavLink>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <NavLink to="/employee-add" className="nav-link">
+                      <i className="fa fa-user-plus nav-icon" />
+                      <p>Add Employee</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/employee-list" className="nav-link">
+                      <i className="fas fa-users nav-icon" />
+                      <p>Employee List</p>
+                    </NavLink>
+                  </li>
+                </ul>
+              </li>
+              <li className="nav-item has-treeview">
+                <NavLink
+                  to="/fake-url"
+                  className="nav-link"
+                  activeClassName="nav-link"
+                >
+                  <i className="nav-icon fas fa-file-alt" />
+                  <p>
+                    Document Management
+                    <i className="right fas fa-angle-left" />
+                  </p>
+                </NavLink>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <NavLink to="/salary-slip-list" className="nav-link">
+                      <i className="fas fa-file-invoice-dollar nav-icon" />
+                      <p>Salary Slip</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/offer-letter-list" className="nav-link">
+                      <i className="fas fa-file-signature nav-icon" />
+                      <p>Offer Letter</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/hike-letter-list" className="nav-link">
+                      <i className="fas fa-file-alt nav-icon" />
+                      <p>Hike Letter</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/relieving-letter-list" className="nav-link">
+                      <i className="fas fa-file-export nav-icon" />
+                      <p>Relieving Letter</p>
+                    </NavLink>
+                  </li>
+                  {/* <li className="nav-item">
+                    <NavLink to="/resignation-letter-list" className="nav-link">
+                      <i className="fas fa-file-upload nav-icon" />
+                      <p>Resignation Letter</p>
+                    </NavLink>
+                  </li> */}
+                </ul>
+              </li>{" "}
               <li className="nav-item has-treeview">
                 <NavLink to="/fake-url" className="nav-link" activeClassName="nav-link">
                   <i className="nav-icon fas fa-money-bill" />
