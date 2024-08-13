@@ -30,16 +30,17 @@ export default class ApplicationList extends Component {
     axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
-      url: "/api/applications/department/" + deptId,
+      url: "/api/applications" ,
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then((res) => {
+        console.log(res,'ress')
         res.data.map((app) => {
           app.startDate = moment(app.startDate).format("YYYY-MM-DD");
           app.endDate = moment(app.endDate).format("YYYY-MM-DD");
         });
         this.setState({ applications: res.data }, () => {
-          console.log("applications", this.state.aplications);
+          console.log("applications", this.state.applications);
         });
       })
       .catch((err) => {

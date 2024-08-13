@@ -24,6 +24,7 @@ const OfferLetterAddModal = (props) => {
 
   useEffect(() => {
     fetchUsers();
+    fetchUserFinanceDetails();
   }, []);
 
   const fetchUsers = async () => {
@@ -38,10 +39,30 @@ const OfferLetterAddModal = (props) => {
       console.error(err);
     }
   };
+  const fetchUserFinanceDetails = async (userId) => {
+    try {
+      const res = await axios.get(`/api/users/${userId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      console.log(res,"dfgyuwegyueun")
+      setFullName(res.data.fullName);
+      // setAddress(res.data.user_personal_info.address);
+      setRole(res.data.jobs[0].jobTitle);
+      setRecipientPlace(res.data.user_personal_info.city)
+      setDepartment(res.data.department.departmentName) 
+      setSalary(res.data.user_finiacial_info.salaryGross)
+      // setStartDate()
+      // setEndDate()
+      setLocation(res.data.user_personal_info.city)
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const onUserChange = (event) => {
     console.log(`User selected: ${event.target.value}`);
     setSelectedUser(event.target.value);
+    fetchUserFinanceDetails(event.target.value);
   };
 
   const pushUsers = () => {
@@ -94,13 +115,13 @@ const OfferLetterAddModal = (props) => {
         <Form onSubmit={handleSubmit}>
           <Form.Row>
             <Form.Group>
-              <Form.Label className="mb-2 required">Select Employee</Form.Label>
+              <Form.Label className="mb-2 ">Select Employee</Form.Label>
               <Form.Control
                 as="select"
                 className="form-control"
                 value={selectedUser || ""}
                 onChange={onUserChange}
-                required
+                // required
               >
                 <option value="">Choose one...</option>
                 {pushUsers()}
@@ -112,6 +133,7 @@ const OfferLetterAddModal = (props) => {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                 placeholder="Enter Full name"
                 required
               />
             </Form.Group>
@@ -121,6 +143,7 @@ const OfferLetterAddModal = (props) => {
                 type="text"
                 value={recipientPlace}
                 onChange={(e) => setRecipientPlace(e.target.value)}
+                placeholder="Enter place"
                 required
               />
             </Form.Group>
@@ -133,6 +156,7 @@ const OfferLetterAddModal = (props) => {
                 type="text"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
+                 placeholder="Enter role"
                 required
               />
             </Form.Group>
@@ -142,6 +166,7 @@ const OfferLetterAddModal = (props) => {
                 type="text"
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
+                 placeholder="Enter department name"
                 required
               />
             </Form.Group>
@@ -154,6 +179,7 @@ const OfferLetterAddModal = (props) => {
                 type="number"
                 value={salary}
                 onChange={(e) => setSalary(e.target.value)}
+                 placeholder="$"
                 required
               />
             </Form.Group>

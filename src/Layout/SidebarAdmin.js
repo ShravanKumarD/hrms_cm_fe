@@ -201,12 +201,12 @@ export default class SidebarAdmin extends Component {
                       <p>Relieving Letter</p>
                     </NavLink>
                   </li>
-                  <li className="nav-item">
+                  {/* <li className="nav-item">
                     <NavLink to="/resignation-letter-list" className="nav-link">
                       <i className="fas fa-file-upload nav-icon" />
                       <p>Resignation Letter</p>
                     </NavLink>
-                  </li>
+                  </li> */}
                 </ul>
               </li>{" "}
               <li className="nav-item">

@@ -7,9 +7,9 @@ import API_BASE_URL from "../env";
 
 const SalarySlipEditModal = ({ show, onHide, data }) => {
   const [formData, setFormData] = useState({
-    id: data.id,
-    name: data.name,
-    userId: data.userId,
+    id: "",
+    name: "",
+    userId: "",
     address: "",
     designation: "",
     month: "",
@@ -57,20 +57,46 @@ const SalarySlipEditModal = ({ show, onHide, data }) => {
   }, [data]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prevData) => {
+      const updatedValue = parseFloat(value) || 0; // Convert to number, default to 0 if NaN
+  
+      // Update the formData with the new value
+      const updatedData = { ...prevData, [name]: updatedValue };
+  
+      // Recalculate totals
+      const totalEarnings = [
+        updatedData.basic_salary,
+        updatedData.hra,
+        updatedData.conveyance_allowance,
+        updatedData.special_allowance,
+        updatedData.medical_allowance,
+      ].reduce((acc, curr) => acc + curr, 0);
+  
+      const totalDeductions = [
+        updatedData.tds,
+        updatedData.professional_tax,
+        updatedData.employee_pf,
+        updatedData.other_deductions,
+      ].reduce((acc, curr) => acc + curr, 0);
+  
+      return {
+        ...updatedData,
+        total_earnings: totalEarnings,
+        total_deductions: totalDeductions,
+      };
+    });
   };
-
+  
   const handleSubmit = (e) => {
     e.preventDefault();
 
     axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "put",
-      url: `/api/salary-slip/${formData.id}`,
-      data: formData,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then((res) => {
+    axios
+      .put(`/api/salary-slip/${formData.id}`, formData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then(() => {
         setDone(true);
       })
       .catch((err) => {
@@ -86,171 +112,59 @@ const SalarySlipEditModal = ({ show, onHide, data }) => {
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-          {done && (
-            <Alert variant="success">Salary Slip updated successfully!</Alert>
-          )}
+          {done && <Alert variant="success">Salary Slip updated successfully!</Alert>}
           {showAlert && <Alert variant="warning">{errorMessage}</Alert>}
-          <Form.Group controlId="formName">
-            <Form.Label>Name</Form.Label>
-            <Form.Control
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formAddress">
-            <Form.Label>Address</Form.Label>
-            <Form.Control
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formDesignation">
-            <Form.Label>Designation</Form.Label>
-            <Form.Control
-              type="text"
-              name="designation"
-              value={formData.designation}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formMonth">
-            <Form.Label>Month</Form.Label>
-            <Form.Control
-              type="text"
-              name="month"
-              value={formData.month}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
+          {[
+            { label: "Name", name: "name" },
+            { label: "Address", name: "address" },
+            { label: "Designation", name: "designation" },
+            { label: "Month", name: "month" }
+          ].map(({ label, name }) => (
+            <Form.Group key={name} controlId={`form${name}`}>
+              <Form.Label>{label}</Form.Label>
+              <Form.Control
+                type="text"
+                name={name}
+                value={formData[name]}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+          ))}
           <Form.Group controlId="formDateOfJoining">
             <Form.Label>Date of Joining</Form.Label>
             <DatePicker
               selected={formData.date_of_joining}
-              onChange={(date) =>
-                setFormData({ ...formData, date_of_joining: date })
-              }
+              onChange={(date) => setFormData({ ...formData, date_of_joining: date })}
               className="form-control"
               required
             />
           </Form.Group>
-          <Form.Group controlId="formBasicSalary">
-            <Form.Label>Basic Salary</Form.Label>
-            <Form.Control
-              type="number"
-              name="basic_salary"
-              value={formData.basic_salary}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formHRA">
-            <Form.Label>HRA</Form.Label>
-            <Form.Control
-              type="number"
-              name="hra"
-              value={formData.hra}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formConveyanceAllowance">
-            <Form.Label>Conveyance Allowance</Form.Label>
-            <Form.Control
-              type="number"
-              name="conveyance_allowance"
-              value={formData.conveyance_allowance}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formSpecialAllowance">
-            <Form.Label>Special Allowance</Form.Label>
-            <Form.Control
-              type="number"
-              name="special_allowance"
-              value={formData.special_allowance}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formMedicalAllowance">
-            <Form.Label>Medical Allowance</Form.Label>
-            <Form.Control
-              type="number"
-              name="medical_allowance"
-              value={formData.medical_allowance}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formTotalEarnings">
-            <Form.Label>Total Earnings</Form.Label>
-            <Form.Control
-              type="number"
-              name="total_earnings"
-              value={formData.total_earnings}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formTDS">
-            <Form.Label>TDS</Form.Label>
-            <Form.Control
-              type="number"
-              name="tds"
-              value={formData.tds}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formProfessionalTax">
-            <Form.Label>Professional Tax</Form.Label>
-            <Form.Control
-              type="number"
-              name="professional_tax"
-              value={formData.professional_tax}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formEmployeePF">
-            <Form.Label>Employee PF</Form.Label>
-            <Form.Control
-              type="number"
-              name="employee_pf"
-              value={formData.employee_pf}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formOtherDeductions">
-            <Form.Label>Other Deductions</Form.Label>
-            <Form.Control
-              type="number"
-              name="other_deductions"
-              value={formData.other_deductions}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formTotalDeductions">
-            <Form.Label>Total Deductions</Form.Label>
-            <Form.Control
-              type="number"
-              name="total_deductions"
-              value={formData.total_deductions}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
+          {[
+            { label: "Basic Salary", name: "basic_salary" },
+            { label: "HRA", name: "hra" },
+            { label: "Conveyance Allowance", name: "conveyance_allowance" },
+            { label: "Special Allowance", name: "special_allowance" },
+            { label: "Medical Allowance", name: "medical_allowance" },
+            { label: "TDS", name: "tds" },
+            { label: "Professional Tax", name: "professional_tax" },
+            { label: "Employee PF", name: "employee_pf" },
+            { label: "Other Deductions", name: "other_deductions" },
+            { label: "Total Earnings", name: "total_earnings", disabled: true },
+            { label: "Total Deductions", name: "total_deductions", disabled: true }
+          ].map(({ label, name, disabled }) => (
+            <Form.Group key={name} controlId={`form${name}`}>
+              <Form.Label>{label}</Form.Label>
+              <Form.Control
+                type="number"
+                name={name}
+                value={formData[name]}
+                onChange={handleChange}
+                disabled={disabled}
+                required={!disabled}
+              />
+            </Form.Group>
+          ))}
           <Button variant="success" type="submit" className="mt-2">
             Submit
           </Button>
