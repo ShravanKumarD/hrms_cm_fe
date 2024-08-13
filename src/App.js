@@ -160,11 +160,11 @@ const AdminContainer = () => (
           component={withAuth(ApplicationList)}
         />
         <Route exact path="/application" component={withAuth(Application)} />
-        <Route
+        {/* <Route
           exact
           path="/attendance/mark"
           component={withAuth(MarkAttendance)}
-        />
+        /> */}
         <Route
           exact
           path="/attendance/startwork"
@@ -243,11 +243,11 @@ const ManagerContainer = () => (
           path="/announcement"
           component={withAuth(AnnouncementManager)}
         />
-        <Route
+        {/* <Route
           exact
           path="/attendance/mark"
           component={withAuth(MarkAttendance)}
-        />
+        /> */}
         <Route
           exact
           path="/attendance/startwork"
@@ -263,7 +263,7 @@ const ManagerContainer = () => (
           path="/attendance/timesheet"
           component={withAuth(Timesheet)}
         />
-          <Route
+        <Route
           exact
           path="/hike-letter-list"
           component={withAuth(HikeLetterList)}
@@ -283,7 +283,7 @@ const ManagerContainer = () => (
           path="/relieving-letter-list"
           component={withAuth(RelievingLetterList)}
         />
-          <Route exact path="/employee-add" component={withAuth(EmployeeAdd)} />
+        <Route exact path="/employee-add" component={withAuth(EmployeeAdd)} />
         <Route exact path="/documents" component={withAuth(MyDocuments)} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />

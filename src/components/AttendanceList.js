@@ -32,22 +32,20 @@ const AttendanceList = () => {
         baseURL: API_BASE_URL,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+      console.log("Records:" + response);
 
       const formattedAttendances = response.data.map((attendance) => {
+        console.log("Attendance:" + attendance.date);
+        console.log("Clock IN:" + attendance.clockinTime);
+        console.log("Clock OUT:" + attendance.clockoutTime);
         // Formatting date to '10th Aug 2024'
         const date = moment(attendance.date).format("Do MMM YYYY");
 
-        // Parsing clock-in and clock-out times to 12-hour format with AM/PM
         const clockinTime = attendance.clockinTime
-          ? moment(attendance.clockinTime, "HH:mm:ss").isValid()
-            ? moment(attendance.clockinTime, "HH:mm:ss").format("h:mm A")
-            : "Invalid Time Format"
+          ? moment(attendance.clockinTime).format("hh:mm A")
           : "";
-
         const clockoutTime = attendance.clockoutTime
-          ? moment(attendance.clockoutTime, "HH:mm:ss").isValid()
-            ? moment(attendance.clockoutTime, "HH:mm:ss").format("h:mm A")
-            : "Invalid Time Format"
+          ? moment(attendance.clockoutTime).format("hh:mm A")
           : "";
 
         return {
@@ -178,10 +176,20 @@ const AttendanceList = () => {
               <ThemeProvider theme={theme}>
                 <MaterialTable
                   columns={[
-                    { title: "ID", field: "id" },
-                    { title: "User ID", field: "userId" },
+                    // { title: "ID", field: "id" },
+                    // { title: "User ID", field: "userId" },
                     { title: "Name", field: "user.fullName" },
                     { title: "Date", field: "date" },
+
+                    { title: "Clock In Time", field: "clockinTime" },
+                    // { title: "Clock In Latitude", field: "latitudeClockin" },
+                    // { title: "Clock In Longitude", field: "longitudeClockin" },
+                    { title: "Clock Out Time", field: "clockoutTime" },
+                    // { title: "Clock Out Latitude", field: "latitudeClockout" },
+                    // {
+                    //   title: "Clock Out Longitude",
+                    //   field: "longitudeClockout",
+                    // },
                     {
                       title: "Status",
                       field: "status",
@@ -195,15 +203,6 @@ const AttendanceList = () => {
                           {rowData.status}
                         </span>
                       ),
-                    },
-                    { title: "Clock In Time", field: "clockinTime" },
-                    { title: "Clock In Latitude", field: "latitudeClockin" },
-                    { title: "Clock In Longitude", field: "longitudeClockin" },
-                    { title: "Clock Out Time", field: "clockoutTime" },
-                    { title: "Clock Out Latitude", field: "latitudeClockout" },
-                    {
-                      title: "Clock Out Longitude",
-                      field: "longitudeClockout",
                     },
                     {
                       title: "Action",
@@ -239,7 +238,7 @@ const AttendanceList = () => {
                     pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
                     exportButton: true,
                     exportPdf: () => exportPDF(),
-                    filtering: true,
+                    // filtering: true,
                     sorting: true,
                     columnsButton: true,
                   }}
