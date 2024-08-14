@@ -4,6 +4,9 @@ import img from "./../assets/samcint_logo.jpeg";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import htmlToPdfmake from "html-to-pdfmake";
+import html2canvas from "html2canvas";
+import waterMark from "./../assets/10.png";
+
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -34,15 +37,22 @@ const RelievingLetterTemplate = ({
 
   const downloadPDF = () => {
     if (letterRef.current) {
-      const relievingLetterContent = letterRef.current.innerHTML;
-      const pdfContent = htmlToPdfmake(relievingLetterContent);
-      const documentDefinition = { content: pdfContent };
-      pdfMake.createPdf(documentDefinition).download("relieving_letter.pdf");
+      html2canvas(letterRef.current, { scale: 2 }).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = pdfMake.createPdf({
+          content: [
+            {
+              image: imgData,
+              width: 500,
+            },
+          ],
+        });
+        pdf.download("relievingLetter.pdf");
+      });
     } else {
       console.error("Letter element is not found");
     }
   };
-
   return (
     <div>
       <Card>
@@ -72,6 +82,22 @@ const RelievingLetterTemplate = ({
                     border: "1px solid #000",
                   }}
                 >
+                       <div
+                    style={{
+                      position: "absolute",
+                      top: "30%",
+                      left: "10%",
+                      width: "60%",
+                      height: "50%",
+                      backgroundImage: `url(${waterMark})`,
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "center",
+                      backgroundSize: "cover",
+                      opacity: 0.2,
+                      pointerEvents: "none",
+                      zIndex: 1, // Keep it behind the text but in front of the background
+                    }}
+                  />
                   <img
                     style={{ height: "40px", width: "150px" }}
                     src={img}

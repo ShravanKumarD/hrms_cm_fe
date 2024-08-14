@@ -221,7 +221,7 @@ const Timeline = ({ todayAttendance }) => {
           : moment();
         const duration = moment.duration(endTime.diff(startTime));
         const hoursWorked = duration.asHours();
-        const percent = (hoursWorked / 8) * 100; // Assuming 8-hour workday
+        const percent = (hoursWorked / 15) * 100; // Assuming 8-hour workday
         setProgress(Math.min(percent, 100));
       };
 

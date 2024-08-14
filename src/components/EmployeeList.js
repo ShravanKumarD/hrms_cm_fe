@@ -107,11 +107,11 @@ const EmployeeList = () => {
                     field: "jobs",
                     render: (rowData) =>
                       rowData.jobs
-                        .filter(
-                          (job) =>
-                            new Date(job.startDate).setHours(0) <= Date.now() &&
-                            new Date(job.endDate).setHours(24) >= Date.now()
-                        )
+                        // .filter(
+                        //   (job) =>
+                        //     // new Date(job.startDate).setHours(0) <= Date.now() &&
+                        //     // new Date(job.endDate).setHours(24) >= Date.now()
+                        // )
                         .map((job) => job.jobTitle)
                         .join(", "),
                   },
