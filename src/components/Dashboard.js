@@ -6,6 +6,7 @@ import ExpenseChartsPage from "./ExpenseChartsPage";
 import PaymentChartsPage from "./PaymentChartsPage";
 import RecentApplications from "./RecentApplications";
 import RecentAnnouncements from "./RecentAnnouncements";
+import LightweightStartWork from "./LightweightStartWork";
 import axios from "axios";
 
 const Dashboard = () => {
@@ -109,6 +110,7 @@ const Dashboard = () => {
               <h3 className="panel-title">Recent Applications</h3>
             </div>
             <RecentApplications />
+            <LightweightStartWork />
           </div>
         </div>
         {/* Expense Report & Recent Applications */}

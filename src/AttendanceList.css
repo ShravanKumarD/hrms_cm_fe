@@ -1,4 +1,69 @@
 /* src/AttendanceList.css */
+
+.attendance-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: "Arial", sans-serif;
+}
+
+.attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.attendance-header h1 {
+  font-size: 2rem;
+  color: #333;
+}
+
+.new-application-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.new-application-btn:hover {
+  background-color: #45a049;
+}
+
+.calendar-wrapper {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+/* FullCalendar customizations */
+.fc-theme-standard {
+  font-family: "Arial", sans-serif;
+}
+
+.fc-header-toolbar {
+  margin-bottom: 1.5rem !important;
+}
+
+.fc-button-primary {
+  background-color: #007bff !important;
+  border-color: #007bff !important;
+}
+
+.fc-button-primary:hover {
+  background-color: #0056b3 !important;
+  border-color: #0056b3 !important;
+}
+
+.fc-day-today {
+  background-color: #f0f8ff !important;
+}
+
 .fc-event {
   display: block;
   width: 100%;
@@ -8,14 +73,34 @@
   text-align: center;
   padding: 10px 0;
   color: white;
+  border-radius: 3px;
+  font-size: 0.85rem;
 }
 
 .fc-event.present {
-  background: green;
-  color: white;
+  background-color: #4caf50;
 }
 
 .fc-event.absent {
-  background-color: red;
-  color: white;
+  background-color: #f44336;
+}
+
+.status-text {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+.present {
+  background-color: rgba(0, 255, 0, 0.1);
+}
+
+.absent {
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+.leave {
+  background-color: rgba(255, 255, 0, 0.1);
 }
