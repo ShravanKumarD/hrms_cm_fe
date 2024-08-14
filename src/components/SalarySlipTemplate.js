@@ -72,11 +72,11 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
             <div
               style={{
                 position: "absolute",
-                top: "50%",
-                left: "50%",
+                top: '55%',
+                left:'50%',
                 transform: "translate(-50%, -50%)",
-                width: "100%",
-                height: "50%",
+                width: "65%",
+                height: "65%",
                 backgroundImage: `url(${waterMark})`,
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center",
@@ -95,10 +95,13 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               />
               <p>&nbsp;</p>
               <h2>SAMCINT SOLUTIONS PVT LTD</h2>
-              <p>
+              {/* <p>
                 Kailashnath Arcade, #201 2nd Floor, Samcint Solutions Pvt. Ltd., Near
                 Madhapur Metro station, opposite to HDFC Bank Lane, Hyderabad – 500033
-              </p>
+              </p> */}
+              <p>      4th Floor, B-Wing, Purva Summit, White field Road, Hitec city ,
+              Kondapur,
+              <br /> Telangana- 500081</p>
               <p>+91- 9663347744</p>
             </div>
             <hr />
@@ -238,12 +241,12 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
                 This is a system generated payslip and does not require any signature
               </p>
             </div>
-            <hr />
+            {/* <hr />
             <p style={{ textAlign: "center" }}>
               4th Floor, B-Wing , Purva Summit, White field Road, Hitec city ,
               Kondapur,
               <br /> Telangana- 500081
-            </p>
+            </p> */}
           </div>
         )}
       </Card.Body>

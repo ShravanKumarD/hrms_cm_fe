@@ -31,24 +31,32 @@ const OfferLetterTemplate = ({
     setShowSlip((prevShowSlip) => !prevShowSlip);
   };
 
-  const downloadPDF = () => {
-    if (slipRef.current) {
-      html2canvas(slipRef.current, { scale: 2 }).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = pdfMake.createPdf({
-          content: [
-            {
-              image: imgData,
-              width: 500,
-            },
-          ],
-        });
-        pdf.download("SalarySlip.pdf");
-      });
-    } else {
-      console.error("Slip element is not found");
-    }
-  };
+const downloadPDF = () => {
+  if (slipRef.current) {
+    html2canvas(slipRef.current, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+
+      // Define PDF document
+      const docDefinition = {
+        pageSize: 'A4',
+        content: [
+          {
+            image: imgData,
+            width: 500,
+            height: 750
+          },
+        ],
+        pageMargins: [40, 60, 40, 60], // Adjust margins as needed
+      };
+
+      const pdf = pdfMake.createPdf(docDefinition);
+      pdf.download("offerLetter_samcint.pdf");
+    });
+  } else {
+    console.error("Slip element is not found");
+  }
+};
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -103,15 +111,15 @@ const OfferLetterTemplate = ({
                     style={{
                       content: '""',
                       position: "absolute",
-                      top: 10,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
+                      top: 140,
+                      left:100,
+                      width: "65%",
+                      height: "65%",
                       backgroundImage: `url(${waterMark})`,
                       backgroundRepeat: "no-repeat",
                       backgroundPosition: "center",
                       backgroundSize: "contain",
-                      opacity: 0.2,
+                      opacity: 0.1,
                       zIndex: -1,
                     }}
                   ></div>
