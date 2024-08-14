@@ -146,35 +146,71 @@ const OfferLetterList = () => {
                     {
                       title: "Action",
                       render: (rowData) => (
+                        // <Form className="row">
+                        //   <div className="col pl-5">
+                        //     <Button
+                        //       size="sm"
+                        //       variant="info"
+                        //       onClick={() => openModal("edit", rowData)}
+                        //     >
+                        //       <i className="fas fa-edit"></i> Edit
+                        //     </Button>
+                        //   </div>
+
+
+                        //   <div className="col pr-5">
+                        //     <Button
+                        //       size="sm"
+                        //       variant="danger"
+                        //       onClick={() => openModal("delete", rowData)}
+                        //     >
+                        //       <i className="fas fa-trash"></i> Delete
+                        //     </Button>
+                        //   </div>
+                        
+                        //   <div className="col pr-5">
+                        //     <Button
+                        //       size="sm"
+                        //       variant="secondary"
+                        //       onClick={() => openModal("preview", rowData)}
+                        //     >
+                        //       <i className="fas fa-eye"></i> Preview
+                        //     </Button>
+                        //   </div>
+                        // </Form>
                         <Form className="row">
-                          <div className="col pl-5">
-                            <Button
-                              size="sm"
-                              variant="info"
-                              onClick={() => openModal("edit", rowData)}
-                            >
-                              <i className="fas fa-edit"></i> Edit
-                            </Button>
-                          </div>
-                          <div className="col pr-5">
-                            <Button
-                              size="sm"
-                              variant="danger"
-                              onClick={() => openModal("delete", rowData)}
-                            >
-                              <i className="fas fa-trash"></i> Delete
-                            </Button>
-                          </div>
-                          <div className="col pr-5">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => openModal("preview", rowData)}
-                            >
-                              <i className="fas fa-eye"></i> Preview
-                            </Button>
-                          </div>
-                        </Form>
+  <div className="col d-flex justify-content-center">
+    <Button
+      size="sm"
+      variant="info"
+      onClick={() => openModal("edit", rowData)}
+    >
+      <i className="fas fa-edit"></i> Edit
+    </Button>
+  </div>
+
+  <div className="col d-flex justify-content-center">
+    <Button
+      size="sm"
+      variant="secondary"
+      onClick={() => openModal("preview", rowData)}
+    >
+      <i className="fas fa-eye"></i> Preview
+    </Button>
+  </div>
+  <div className="col d-flex justify-content-center">
+    <Button
+      size="sm"
+      variant="danger"
+      onClick={() => openModal("delete", rowData)}
+    >
+      <i className="fas fa-trash"></i> Delete
+    </Button>
+  </div>
+
+
+</Form>
+
                       ),
                     },
                   ]}
