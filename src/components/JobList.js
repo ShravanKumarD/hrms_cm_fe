@@ -27,29 +27,69 @@ export default class JobList extends Component {
     };
   }
 
+  // componentDidMount() {
+  //   if (this.props.location.state) {
+  //     this.setState({
+  //       selectedDepartment: this.props.location.state.selectedDepartment,
+  //     });
+  //   }
+  //   axios.defaults.baseURL = API_BASE_URL;
+  //   axios({
+  //     method: "get",
+  //     url: "/api/departments",
+  //     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  //   })
+  //     .then((res) => {
+  //       this.setState({ departments: res.data }, () => {
+  //         if (this.state.selectedDepartment) {
+  //           this.fetchData();
+  //         }
+  //       });
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }
   componentDidMount() {
-    if (this.props.location.state) {
-      this.setState({
-        selectedDepartment: this.props.location.state.selectedDepartment,
-      });
-    }
+    const selectedDepartment = this.props.location.state
+        ? this.props.location.state.selectedDepartment
+        : null;
+
     axios.defaults.baseURL = API_BASE_URL;
     axios({
-      method: "get",
-      url: "/api/departments",
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        method: "get",
+        url: "/api/departments",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
-      .then((res) => {
-        this.setState({ departments: res.data }, () => {
-          if (this.state.selectedDepartment) {
-            this.fetchData();
-          }
+        .then((res) => {
+            this.setState({ departments: res.data, selectedDepartment }, () => {
+                // If no department is selected, fetch data for all departments
+                if (!this.state.selectedDepartment) {
+                    this.setState({ selectedDepartment: "all" }, () => {
+                        this.fetchDataAll();
+                    });
+                } else {
+                    this.fetchData();
+                }
+            });
+        })
+        .catch((err) => {
+            console.log(err);
         });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+}
+
+handleChange = (event) => {
+    const selectedDepartment = event.target.value;
+
+    this.setState({ selectedDepartment }, () => {
+        if (selectedDepartment === "all" || !selectedDepartment) {
+            this.fetchDataAll();
+        } else {
+            this.fetchData();
+        }
+    });
+};
+
 
   fetchData = () => {
     axios.defaults.baseURL = API_BASE_URL;
