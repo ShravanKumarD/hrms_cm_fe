@@ -1,31 +1,32 @@
 import React, { Component } from "react";
-import { loadTree } from '../menuTreeHelper';
-import {NavLink} from 'react-router-dom';
+import { loadTree } from "../menuTreeHelper";
+import { NavLink } from "react-router-dom";
 import Logo from "../assets/samcintlogowhite.png";
 
 export default class SidebarEmployee extends Component {
-
   constructor(props) {
     super(props);
 
     this.state = {
-      user: {}
-    }
+      user: {},
+    };
   }
 
   componentDidMount() {
-    let userData = JSON.parse(localStorage.getItem('user'))
-    this.setState({user: userData})
+    let userData = JSON.parse(localStorage.getItem("user"));
+    this.setState({ user: userData });
     loadTree();
   }
 
   render() {
     return (
-      <aside className="main-sidebar sidebar-dark-primary elevation-4" >
+      <aside className="main-sidebar sidebar-dark-primary elevation-4">
         {/* Brand Logo */}
-        <img src={Logo} className="logo-main" alt="company-logo"/>
+        <img src={Logo} className="logo-main" alt="company-logo" />
         <a href="/" className="brand-link">
-          <span className="brand-text font-weight-light ml-1"><span>EMPLOYEE</span></span>
+          <span className="brand-text font-weight-light ml-1">
+            <span>EMPLOYEE</span>
+          </span>
         </a>
         {/* Sidebar */}
         <div className="sidebar">
@@ -33,7 +34,7 @@ export default class SidebarEmployee extends Component {
           <div className="user-panel mt-3 pb-3 mb-3 d-flex">
             <div className="image">
               <img
-                src={process.env.PUBLIC_URL + '/user-64.png'}
+                src={process.env.PUBLIC_URL + "/user-64.png"}
                 className="img-circle elevation-2"
                 alt="User Image"
               />
@@ -94,24 +95,20 @@ export default class SidebarEmployee extends Component {
                       <p>Start Work</p>
                     </NavLink>
                   </li>
-                  <li className="nav-item">
+                  {/* <li className="nav-item">
                     <NavLink to="/attendance/list" className="nav-link">
                       <i className="fas fa-list nav-icon" />
                       <p>Attendance List</p>
                     </NavLink>
-                  </li>
+                  </li> */}
                 </ul>
               </li>
-              <li className="nav-item">
-                <NavLink exact to="/salary-view" className="nav-link">
-                  <i className="nav-icon fas fa-rupee-sign" />
-                  <p>
-                    My Salary Details
-                  </p>
-                </NavLink>
-              </li>
               <li className="nav-item has-treeview">
-                <NavLink to="/fake-url" className="nav-link" activeClassName="nav-link">
+                <NavLink
+                  to="/fake-url"
+                  className="nav-link"
+                  activeClassName="nav-link"
+                >
                   <i className="nav-icon fa fa-rocket" />
                   <p>
                     Applications
@@ -133,6 +130,12 @@ export default class SidebarEmployee extends Component {
                   </li>
                 </ul>
               </li>
+              <li className="nav-item">
+                <NavLink exact to="/salary-view" className="nav-link">
+                  <i className="nav-icon fas fa-rupee-sign" />
+                  <p>My Salary Details</p>
+                </NavLink>
+              </li>
               {/* <li className="nav-item">
                 <NavLink to="/documents" className="nav-link">
                   <i className="fas fa-file-alt nav-icon" />
@@ -142,9 +145,7 @@ export default class SidebarEmployee extends Component {
               <li className="nav-item">
                 <NavLink exact to="/announcement" className="nav-link">
                   <i className="nav-icon fa fa-bell" />
-                  <p>
-                    Announcements
-                  </p>
+                  <p>Announcements</p>
                 </NavLink>
               </li>
             </ul>
