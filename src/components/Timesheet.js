@@ -12,6 +12,7 @@ import LightweightStartWork from "./LightweightStartWork";
 import ApplicationModal from "./ApplicationModal";
 import API_BASE_URL from "../env";
 import { Modal } from "react-bootstrap";
+import TimesheetTooltip from "../components-mini/TimesheetInfoTooltip";
 
 const Timesheet = () => {
   const [applications, setApplications] = useState([]);
@@ -217,6 +218,7 @@ const Timesheet = () => {
     <div className="attendance-container">
       <header className="attendance-header">
         <h1>Attendance Calendar</h1>
+        <TimesheetTooltip />
         <button
           onClick={() => history.push("/application")}
           className="new-application-btn"

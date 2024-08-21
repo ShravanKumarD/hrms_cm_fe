@@ -97,12 +97,12 @@ const WorkTimes = ({ startTime, endTime }) => (
   <>
     {startTime && (
       <div className="text-center mb-4">
-        <h4>Work started at: {startTime.toLocaleTimeString()}</h4>
+        <h4>Start Time is {startTime.toLocaleTimeString()}</h4>
       </div>
     )}
     {endTime && (
       <div className="text-center mb-4">
-        <h4>Work ended at: {endTime.toLocaleTimeString()}</h4>
+        <h4>End time is {endTime.toLocaleTimeString()}</h4>
       </div>
     )}
   </>

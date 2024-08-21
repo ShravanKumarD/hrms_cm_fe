@@ -135,14 +135,15 @@ const WorkControls = ({
 
 const WorkTimes = ({ startTime, endTime }) => (
   <>
+    {console.log("End Time is", endTime)}
     {startTime && (
       <div className="text-center mb-4">
-        <h4>Work started at: {startTime.toLocaleTimeString()}</h4>
+        <h4>Start Time is {startTime.toLocaleTimeString()}</h4>
       </div>
     )}
     {endTime && (
       <div className="text-center mb-4">
-        <h4>Work ended at: {endTime.toLocaleTimeString()}</h4>
+        <h4>End Time is {endTime}</h4>
       </div>
     )}
   </>
@@ -422,14 +423,6 @@ const StartWork = () => {
   };
 
   const handleEnd = () => {
-    const end = new Date();
-    const endTimeString = moment(end).format("HH:mm:ss");
-    const duration = (end - workState.startTime) / 1000 / 60 / 60; // Duration in hours
-    setWorkState({
-      ...workState,
-      endTime: endTimeString,
-      totalTime: duration.toFixed(2),
-    });
     setModal({ show: true, action: "end" });
   };
 
@@ -437,7 +430,8 @@ const StartWork = () => {
     try {
       const end = new Date();
       const dateString = moment(end).format("YYYY-MM-DD HH:mm:ss");
-      setWorkState({ ...workState, endTime: end, isStarted: false });
+      const endTimeString = moment(end).format("HH:mm:ss");
+      setWorkState({ ...workState, endTime: endTimeString, isStarted: false });
       localStorage.removeItem("startTime");
       localStorage.removeItem("isStarted");
 
@@ -447,7 +441,7 @@ const StartWork = () => {
         {
           userId,
           date,
-          clockoutTime: dateString,
+          clockoutTime: endTimeString,
           latitudeClockout: location.latitude,
           longitudeClockout: location.longitude,
         },

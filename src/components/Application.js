@@ -102,23 +102,31 @@ const Application = () => {
             </Form.Group>
             <Form.Group controlId="formStartDate">
               <Form.Label>Start Date</Form.Label>
-              <DatePicker
-                selected={startDate}
-                className="form-control"
-                onChange={(date) => setStartDate(date)}
-                required
-                placeholderText="Select start date"
-              />
+              <div>
+                <DatePicker
+                  selected={startDate}
+                  className="form-control"
+                  showMonthDropdown
+                  showYearDropdown
+                  onChange={(date) => setStartDate(date)}
+                  required
+                  placeholderText="Select start date"
+                />
+              </div>
             </Form.Group>
             <Form.Group controlId="formEndDate">
               <Form.Label>End Date</Form.Label>
-              <DatePicker
-                selected={endDate}
-                className="form-control"
-                onChange={(date) => setEndDate(date)}
-                required
-                placeholderText="Select end date"
-              />
+              <div>
+                <DatePicker
+                  selected={endDate}
+                  className="form-control"
+                  showMonthDropdown
+                  showYearDropdown
+                  onChange={(date) => setEndDate(date)}
+                  required
+                  placeholderText="Select end date"
+                />
+              </div>
             </Form.Group>
             <Form.Group controlId="formReason">
               <Form.Label>

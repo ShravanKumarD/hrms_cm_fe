@@ -74,8 +74,10 @@ const ApplicationModal = ({ show, onHide, date }) => {
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header style={{ alignItems: "center" }} closeButton>
-        <Modal.Title>Make Application </Modal.Title>
-        <ApplicationInfoTooltip placement="right" />
+        <Modal.Title>Make Application</Modal.Title>
+        <span style={{ marginLeft: "10px" }}>
+          <ApplicationInfoTooltip placement="right" />
+        </span>
       </Modal.Header>
       <Modal.Body>
         {hasError && (
@@ -105,24 +107,36 @@ const ApplicationModal = ({ show, onHide, date }) => {
               {/* <option value="Short Leave">Short Leave</option> */}
             </Form.Control>
           </Form.Group>
-          <Form.Group>
+          <Form.Group controlId="formStartDate">
             <Form.Label>Start Date</Form.Label>
-            <DatePicker
-              selected={startDate}
-              className="form-control ml-1"
-              onChange={(date) => setStartDate(date)}
-              required
-            />
+
+            <div>
+              <DatePicker
+                selected={startDate}
+                className="form-control"
+                showMonthDropdown
+                showYearDropdown
+                onChange={(date) => setStartDate(date)}
+                required
+                placeholderText="Select start date"
+              />
+            </div>
           </Form.Group>
-          <Form.Group>
+          <Form.Group controlId="formEndDate">
             <Form.Label>End Date</Form.Label>
-            <DatePicker
-              selected={endDate}
-              className="form-control ml-1"
-              onChange={(date) => setEndDate(date)}
-              required
-            />
+            <div>
+              <DatePicker
+                selected={endDate}
+                className="form-control"
+                showMonthDropdown
+                showYearDropdown
+                onChange={(date) => setEndDate(date)}
+                required
+                placeholderText="Select end date"
+              />
+            </div>
           </Form.Group>
+
           <Form.Group>
             <Form.Label>
               Reason <span className="text-muted">(Comments)</span>

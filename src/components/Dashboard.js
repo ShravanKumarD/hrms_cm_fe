@@ -8,6 +8,7 @@ import RecentApplications from "./RecentApplications";
 import RecentAnnouncements from "./RecentAnnouncements";
 import LightweightStartWork from "./LightweightStartWork";
 import axios from "axios";
+import HoursWorkedLastWeek from "../components-mini/HoursWorkedLastWeek";
 
 const Dashboard = () => {
   const [totalEmployees, setTotalEmployees] = useState(0);
@@ -141,6 +142,7 @@ const Dashboard = () => {
               <h3 className="panel-title">Recent Announcements</h3>
             </div>
             <RecentAnnouncements />
+            <HoursWorkedLastWeek />
           </div>
         </div>
       </div>
