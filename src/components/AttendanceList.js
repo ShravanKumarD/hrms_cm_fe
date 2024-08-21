@@ -32,12 +32,13 @@ const AttendanceList = () => {
         baseURL: API_BASE_URL,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      console.log("Records:" + response);
+      console.log("Records:" + response.data);
 
       const formattedAttendances = response.data.map((attendance) => {
         console.log("Attendance:" + attendance.date);
         console.log("Clock IN:" + attendance.clockinTime);
         console.log("Clock OUT:" + attendance.clockoutTime);
+        console.log("Hours:" + attendance.totalHours);
         // Formatting date to '10th Aug 2024'
         const date = moment(attendance.date).format("Do MMM YYYY");
 
@@ -134,6 +135,7 @@ const AttendanceList = () => {
                 "Status",
                 "Clock In",
                 "Clock Out",
+                "Hours",
               ],
               ...attendances.map((att) => [
                 att.id,
@@ -143,6 +145,7 @@ const AttendanceList = () => {
                 att.status,
                 att.clockinTime,
                 att.clockoutTime,
+                att.totalHours,
               ]),
             ],
           },
@@ -162,24 +165,135 @@ const AttendanceList = () => {
 
   // Function to handle download of today's attendance
   const downloadTodaysAttendance = () => {
-    const today = moment().format("Do MMM YYYY");
+    const today = moment().startOf("day");
+
+    // Filter today's attendance based on the date
     const todaysAttendance = attendances.filter((attendance) =>
-      moment(attendance.clockinTime).isSame(today, "day")
+      moment(attendance.date, "Do MMM YYYY").isSame(today, "day")
     );
 
-    // Convert to CSV or any other format as needed
+    // If no attendance records for today, return early
+    if (todaysAttendance.length === 0) {
+      alert("No attendance records found for today.");
+      return;
+    }
+
+    // Prepare CSV content with Name, Date, Clock In Time, Clock Out Time, and Status
     const csvContent =
       "data:text/csv;charset=utf-8," +
+      "Date,Name,Hours Worked,Clock In Time,Clock Out Time,Status\n" + // CSV header
       todaysAttendance
-        .map((e) => `${e.clockinTime},${e.clockoutTime},${e.status}`)
+        .map(
+          (e) =>
+            `${e.user.fullName},${e.date},${e.totalHours},${e.clockinTime},${e.clockoutTime},${e.status}`
+        )
         .join("\n");
 
+    // Encode the CSV content
     const encodedUri = encodeURI(csvContent);
+
+    // Create a download link and trigger it
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `attendance_${today}.csv`);
-    document.body.appendChild(link); // Required for FF
+    link.setAttribute(
+      "download",
+      `attendance_${today.format("DD-MM-YYYY")}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+  };
 
+  const downloadThisMonthsAttendance = () => {
+    const startOfMonth = moment().startOf("month");
+    const endOfMonth = moment().endOf("month");
+
+    // Filter attendance records for the current month
+    const thisMonthsAttendance = attendances.filter((attendance) =>
+      moment(attendance.date, "Do MMM YYYY").isBetween(
+        startOfMonth,
+        endOfMonth,
+        null,
+        "[]"
+      )
+    );
+
+    // If no attendance records for the current month, return early
+    if (thisMonthsAttendance.length === 0) {
+      alert("No attendance records found for this month.");
+      return;
+    }
+
+    // Prepare CSV content with Name, Date, Clock In Time, Clock Out Time, and Status
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      "Name,Date,Clock In Time,Clock Out Time,Status\n" + // CSV header
+      thisMonthsAttendance
+        .map(
+          (e) =>
+            `${e.user.fullName},${e.date},${e.clockinTime},${e.clockoutTime},${e.status}`
+        )
+        .join("\n");
+
+    // Encode the CSV content
+    const encodedUri = encodeURI(csvContent);
+
+    // Create a download link and trigger it
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute(
+      "download",
+      `attendance_${startOfMonth.format("YYYY-MM")}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+  };
+
+  const downloadThisYearsAttendance = () => {
+    const startOfYear = moment().startOf("year");
+    const endOfYear = moment().endOf("year");
+
+    // Filter and sort attendance records for the current year by date
+    const thisYearsAttendance = attendances
+      .filter((attendance) =>
+        moment(attendance.date, "Do MMM YYYY").isBetween(
+          startOfYear,
+          endOfYear,
+          null,
+          "[]"
+        )
+      )
+      .sort((a, b) =>
+        moment(a.date, "Do MMM YYYY").diff(moment(b.date, "Do MMM YYYY"))
+      );
+
+    // If no attendance records for the current year, return early
+    if (thisYearsAttendance.length === 0) {
+      alert("No attendance records found for this year.");
+      return;
+    }
+
+    // Prepare CSV content with Date as the first column
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      "Date,Name,Clock In Time,Clock Out Time,Status\n" + // CSV header with Date first
+      thisYearsAttendance
+        .map(
+          (e) =>
+            `${e.date},${e.user.fullName},${e.clockinTime},${e.clockoutTime},${e.status}`
+        )
+        .join("\n");
+
+    // Encode the CSV content
+    const encodedUri = encodeURI(csvContent);
+
+    // Create a download link and trigger it
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute(
+      "download",
+      `attendance_${startOfYear.format("YYYY")}.csv`
+    );
+    document.body.appendChild(link);
     link.click();
   };
 
@@ -214,6 +328,7 @@ const AttendanceList = () => {
                     // { title: "Clock In Latitude", field: "latitudeClockin" },
                     // { title: "Clock In Longitude", field: "longitudeClockin" },
                     { title: "Clock Out Time", field: "clockoutTime" },
+                    { title: "Hours", field: "totalHours" },
                     // { title: "Clock Out Latitude", field: "latitudeClockout" },
                     // {
                     //   title: "Clock Out Longitude",
@@ -274,10 +389,22 @@ const AttendanceList = () => {
                   title="Attendance Records"
                   actions={[
                     {
-                      icon: () => <i className="fas fa-download"></i>,
+                      icon: () => <i className="fas fa-file-download"></i>,
                       tooltip: "Download Today's Attendance",
                       isFreeAction: true,
                       onClick: () => downloadTodaysAttendance(),
+                    },
+                    {
+                      icon: () => <i className="fas fa-calendar-alt"></i>,
+                      tooltip: "Download Month's Attendance",
+                      isFreeAction: true,
+                      onClick: () => downloadThisMonthsAttendance(),
+                    },
+                    {
+                      icon: () => <i className="fas fa-calendar-check"></i>,
+                      tooltip: "Download Year's Attendance",
+                      isFreeAction: true,
+                      onClick: () => downloadThisYearsAttendance(),
                     },
                   ]}
                 />
