@@ -33,11 +33,17 @@ export default class ApplicationList extends Component {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     }).then((res) => {
       res.data.map((app) => {
-        app.startDate = moment(app.startDate).format("YYYY-MM-DD");
-        app.endDate = moment(app.endDate).format("YYYY-MM-DD");
+        app.startDate = moment(app.startDate, [
+          "YYYY-MM-DD HH:mm:ss",
+          "HH:mm:ss",
+        ]).format("Do MMM YYYY");
+        app.endDate = moment(app.endDate, [
+          "YYYY-MM-DD HH:mm:ss",
+          "HH:mm:ss",
+        ]).format("Do MMM YYYY");
       });
       this.setState({ applications: res.data }, () => {
-        console.log("applications", this.state.aplications);
+        console.log("applications", this.state.applications);
       });
     });
   }

@@ -72,23 +72,6 @@ const useAttendance = () => {
   };
 };
 
-// Subcomponents
-const CurrentTimeDisplay = ({ currentTime }) => (
-  <div className="text-center mb-4">
-    <h3 className="display-4" style={{ fontSize: "1.5rem" }}>
-      Current Time:
-      <strong>
-        {currentTime.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-          second: "numeric",
-          hour12: true,
-        })}
-      </strong>
-    </h3>
-  </div>
-);
-
 const WorkControls = ({
   isStarted,
   onStart,
@@ -129,24 +112,56 @@ const Timeline = ({ todayAttendance }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (todayAttendance && todayAttendance.clockinTime) {
+    console.log(todayAttendance);
+    if (
+      todayAttendance &&
+      todayAttendance.clockinTime &&
+      todayAttendance.clockoutTime
+    ) {
       const updateProgress = () => {
-        const startTime = moment(todayAttendance.clockinTime);
-        const endTime = todayAttendance.clockoutTime
-          ? moment(todayAttendance.clockoutTime)
-          : moment();
-        const duration = moment.duration(endTime.diff(startTime));
-        const hoursWorked = duration.asHours();
-        const percent = (hoursWorked / 8) * 100; // Assuming 8-hour workday
-        setProgress(Math.min(percent, 100));
+        const hoursWorked = todayAttendance.totalHours || 0;
+        console.log(hoursWorked + " hours worked");
+
+        setProgress((hoursWorked / 9) * 100); // Assuming 9 hours workday
       };
 
       updateProgress();
+
+      console.log("Progress:" + progress);
+
+      const interval = setInterval(updateProgress, 60000); // Update every minute
+
+      return () => clearInterval(interval);
+    } else if (
+      todayAttendance &&
+      todayAttendance.clockinTime &&
+      !todayAttendance.clockoutTime
+    ) {
+      const updateProgress = () => {
+        console.log(todayAttendance.clockinTime, "clockinMoment"); // 11:46:38
+        const timeString = todayAttendance.clockinTime;
+        // now in moment - clockinTime (11:46:38) = hoursWorked
+        console.log(moment(), "rn");
+        const hoursWorked = moment().diff(
+          moment(timeString, "HH:mm:ss"),
+          "hours",
+          true
+        );
+
+        console.log(hoursWorked + " hours worked");
+
+        setProgress((hoursWorked / 9) * 100); // Assuming 9 hours workday
+      };
+
+      updateProgress();
+
+      console.log("Progress:" + progress);
+
       const interval = setInterval(updateProgress, 60000); // Update every minute
 
       return () => clearInterval(interval);
     }
-  }, [todayAttendance]);
+  }, [todayAttendance, progress]);
 
   if (!todayAttendance || !todayAttendance.clockinTime) return null;
 
@@ -179,7 +194,11 @@ const Timeline = ({ todayAttendance }) => {
       </div>
       <div className="text-center mt-3">
         <h5>
-          {progress === 100
+          {progress === 0
+            ? todayAttendance.clockoutTime
+              ? "0%"
+              : "Work just started (0%)"
+            : progress === 100
             ? "Full Day"
             : `${Math.floor(progress)}% of workday completed`}
         </h5>
@@ -253,6 +272,7 @@ const LightweightStartWork = () => {
     try {
       const start = new Date();
       const dateString = moment(start).format("YYYY-MM-DD HH:mm:ss");
+      const timeString = moment(start).format("HH:mm:ss");
       setWorkState({ ...workState, startTime: start, isStarted: true });
       localStorage.setItem("startTime", start.toISOString());
       localStorage.setItem("isStarted", "true");
@@ -264,7 +284,7 @@ const LightweightStartWork = () => {
           userId,
           date,
           status,
-          clockinTime: dateString,
+          clockinTime: timeString,
           latitudeClockin: location.latitude,
           longitudeClockin: location.longitude,
         },
@@ -295,6 +315,7 @@ const LightweightStartWork = () => {
     try {
       const end = new Date();
       const dateString = moment(end).format("YYYY-MM-DD HH:mm:ss");
+      const timeString = moment(end).format("HH:mm:ss");
       setWorkState({ ...workState, endTime: end, isStarted: false });
       localStorage.removeItem("startTime");
       localStorage.removeItem("isStarted");
@@ -305,7 +326,7 @@ const LightweightStartWork = () => {
         {
           userId,
           date,
-          clockoutTime: dateString,
+          clockoutTime: timeString,
           latitudeClockout: location.latitude,
           longitudeClockout: location.longitude,
         },

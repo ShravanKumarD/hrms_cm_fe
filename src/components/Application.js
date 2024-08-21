@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
 import API_BASE_URL from "../env";
+import ApplicationInfoTooltip from "../components-mini/ApplicationInfoTooltip";
 
 const Application = () => {
   const [type, setType] = useState("");
@@ -70,17 +71,20 @@ const Application = () => {
         <Redirect to="/application-list" />
       ) : null}
       <Card className="mb-3 main-card">
-        <Card.Header>
+        <Card.Header className="d-flex justify-content-between align-items-center">
           <b>Make Application</b>
+          <div className="ml-auto">
+            <ApplicationInfoTooltip />
+          </div>
         </Card.Header>
+
         <Card.Body>
           <Form onSubmit={onSubmit}>
-            <Form.Group controlId="formDepartmentName">
+            <Form.Group controlId="formType">
               <Form.Label>Type</Form.Label>
               <Form.Control
                 as="select"
                 name="type"
-                style={{ width: "50%" }}
                 value={type}
                 onChange={handleChange}
                 required
@@ -93,28 +97,30 @@ const Application = () => {
                 <option value="Comp Off">Comp Off</option>
                 <option value="Expense">Expense</option>
                 <option value="Restricted Holiday">Restricted Holiday</option>
-                <option value="Short Leave">Short Leave</option>{" "}
+                {/* <option value="Short Leave">Short Leave</option> */}
               </Form.Control>
             </Form.Group>
-            <Form.Group>
+            <Form.Group controlId="formStartDate">
               <Form.Label>Start Date</Form.Label>
               <DatePicker
                 selected={startDate}
-                className="form-control ml-1"
+                className="form-control"
                 onChange={(date) => setStartDate(date)}
                 required
+                placeholderText="Select start date"
               />
             </Form.Group>
-            <Form.Group>
+            <Form.Group controlId="formEndDate">
               <Form.Label>End Date</Form.Label>
               <DatePicker
                 selected={endDate}
-                className="form-control ml-1"
+                className="form-control"
                 onChange={(date) => setEndDate(date)}
                 required
+                placeholderText="Select end date"
               />
             </Form.Group>
-            <Form.Group>
+            <Form.Group controlId="formReason">
               <Form.Label>
                 Reason <span className="text-muted">(Comments)</span>
               </Form.Label>
@@ -123,10 +129,11 @@ const Application = () => {
                 name="reason"
                 value={reason}
                 onChange={handleChange}
+                placeholder="Enter the reason for your application"
               />
             </Form.Group>
             <Button variant="primary" type="submit" className="mt-2">
-              Add
+              Submit Application
             </Button>
           </Form>
         </Card.Body>

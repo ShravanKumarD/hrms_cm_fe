@@ -131,36 +131,33 @@ export default class SidebarAdmin extends Component {
                   </li>
                 </ul>
               </li>
-
-              
- <li className="nav-item has-treeview">
+              <li className="nav-item has-treeview">
                 <NavLink
                   to="/fake-url"
                   className="nav-link"
                   activeClassName="nav-link"
                 >
-                  <i className="nav-icon fa fa-rocket" />
+                  <i className="nav-icon fa fa-sitemap" />
                   <p>
                     Department Management
                     <i className="right fas fa-angle-left" />
                   </p>
                 </NavLink>
                 <ul className="nav nav-treeview">
-                    <li className="nav-item">
-                <NavLink exact to="/departments" className="nav-link">
-                  <i className="nav-icon fa fa-building" />
-                  <p>Departments</p>
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink to="/job-list" className="nav-link">
-                  <i className="nav-icon fas fa-briefcase" />
-                  <p>Job List</p>
-                </NavLink>
-              </li>
+                  <li className="nav-item">
+                    <NavLink exact to="/departments" className="nav-link">
+                      <i className="nav-icon fa fa-building" />
+                      <p>Departments</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/job-list" className="nav-link">
+                      <i className="nav-icon fas fa-briefcase" />
+                      <p>Job List</p>
+                    </NavLink>
+                  </li>
                 </ul>
               </li>
- 
               {/* <li className="nav-item">
                 <NavLink exact to="/departments" className="nav-link">
                   <i className="nav-icon fa fa-building" />
@@ -245,7 +242,6 @@ export default class SidebarAdmin extends Component {
                   </li> */}
                 </ul>
               </li>{" "}
-          
               <li className="nav-item has-treeview">
                 <NavLink
                   to="/fake-url"

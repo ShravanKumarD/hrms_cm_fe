@@ -17,19 +17,30 @@ import { quotes } from "../constants/quotes";
 // Custom Hooks
 const useLocation = () => {
   const [location, setLocation] = useState({ latitude: "", longitude: "" });
+  const [locationError, setLocationError] = useState("");
 
-  const fetchUserLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      (position) =>
-        setLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        }),
-      (error) => console.error("Error fetching location:", error)
-    );
+  const fetchUserLocation = async () => {
+    try {
+      await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+            setLocationError(""); // Clear any previous errors
+            resolve();
+          },
+          (error) => reject(error)
+        );
+      });
+    } catch (error) {
+      console.error("Error fetching location:", error);
+      setLocationError("Failed to fetch location. Please try again.");
+    }
   };
 
-  return { location, fetchUserLocation };
+  return { location, fetchUserLocation, locationError };
 };
 
 const useAttendance = () => {
@@ -137,55 +148,81 @@ const WorkTimes = ({ startTime, endTime }) => (
   </>
 );
 
-const AttendanceTable = ({ records, date }) => (
-  <div className="mt-4">
-    <h4>Recent Attendance Records:</h4>
-    <Table bordered hover responsive>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Date</th>
-          <th>Clock In Time</th>
-          <th>Clock Out Time</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {records.length > 0 ? (
-          records.map((record) => (
-            <tr key={record.id}>
-              <td>{record.id}</td>
-              <td>{moment(record.date).format("Do MMM YYYY")}</td>
-              <td>{moment(record.clockinTime).format("h:mm A")}</td>
-              <td>
-                {record.clockoutTime
-                  ? moment(record.clockoutTime).format("h:mm A")
-                  : "Not yet clocked out"}
-              </td>
-              <td>{record.status}</td>
-            </tr>
-          ))
-        ) : (
-          <tr>
-            <td colSpan="5">No records found.</td>
-          </tr>
-        )}
-      </tbody>
-    </Table>
-  </div>
-);
-
-const TodayAttendance = ({ record }) => {
-  if (!record) return null;
-
+const AttendanceTable = ({ records, date }) => {
   return (
     <div className="mt-4">
-      <h4>Today's Attendance Record:</h4>
+      <h4>Recent Attendance Records:</h4>
       <Table bordered hover responsive>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Date</th>
+            {/* <th>ID</th> */}
+            {/* <th>Date</th> */}
+            <th>Day</th>
+            <th>Clock In Time</th>
+            <th>Clock Out Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {records.length > 0 ? (
+            records
+              .slice() // Create a shallow copy of the array
+              .reverse() // Reverse the order of the records
+              .map((record) => (
+                <tr key={record.id}>
+                  {/* <td>{record.id}</td> */}
+                  {/* <td>{moment(record.date).format("Do MMM YYYY")}</td> */}
+                  {/* need date dd also */}
+                  <td>{moment(record.date).format("D MMM  -  dddd")}</td>
+                  <td>
+                    {record.status === "Absent"
+                      ? ""
+                      : moment(record.clockinTime, [
+                          "YYYY-MM-DD HH:mm:ss",
+                          "HH:mm:ss",
+                        ]).format("h:mm a")}
+                  </td>
+                  <td>
+                    {record.status === "Absent"
+                      ? ""
+                      : record.clockoutTime
+                      ? moment(record.clockoutTime, [
+                          "YYYY-MM-DD HH:mm:ss",
+                          "HH:mm:ss",
+                        ]).format("h:mm a")
+                      : "Not yet clocked out"}
+                  </td>
+                  <td>{record.status}</td>
+                </tr>
+              ))
+          ) : (
+            <tr>
+              <td colSpan="5">No records found.</td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
+    </div>
+  );
+};
+
+const TodayAttendance = ({ record }) => {
+  if (!record) return null;
+  const { clockinTime, clockoutTime, status } = record;
+  // it can be in YYYY-MM-DD HH:mm:ss format or HH:mm:ss format
+  const clockin = moment(clockinTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
+  const clockout = moment(clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
+
+  return (
+    <div className="mt-4">
+      <h4>Today's Attendance Record</h4>
+      <Table bordered hover responsive>
+        <thead>
+          <tr>
+            {/* <th>ID</th> */}
+            {/* i need day instead of Date */}
+            {/* <th>Date</th> */}
+            <th>Day</th>
             <th>Clock In Time</th>
             <th>Clock Out Time</th>
             <th>Status</th>
@@ -193,12 +230,15 @@ const TodayAttendance = ({ record }) => {
         </thead>
         <tbody>
           <tr key={record.id}>
-            <td>{record.id}</td>
-            <td>{moment(record.date).format("Do MMM YYYY")}</td>
-            <td>{moment(record.clockinTime).format("h:mm a")}</td>
+            {/* <td>{record.id}</td> */}
+            {/* <td>{moment(record.date).format("Do MMM YYYY")}</td> */}
+            <td>{moment(record.date).format("D MMM  -  dddd")}</td>
+            <td>{status === "Absent" ? "" : clockin.format("h:mm A")}</td>
             <td>
-              {record.clockoutTime
-                ? moment(record.clockoutTime).format("h:mm a")
+              {status === "Absent"
+                ? ""
+                : record.clockoutTime
+                ? clockout.format("h:mm A")
                 : "Not yet clocked out"}
             </td>
             <td>{record.status}</td>
@@ -208,24 +248,23 @@ const TodayAttendance = ({ record }) => {
     </div>
   );
 };
-
 const Timeline = ({ todayAttendance }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    console.log(todayAttendance);
     if (todayAttendance && todayAttendance.clockinTime) {
       const updateProgress = () => {
-        const startTime = moment(todayAttendance.clockinTime);
-        const endTime = todayAttendance.clockoutTime
-          ? moment(todayAttendance.clockoutTime)
-          : moment();
-        const duration = moment.duration(endTime.diff(startTime));
-        const hoursWorked = duration.asHours();
-        const percent = (hoursWorked / 15) * 100; // Assuming 8-hour workday
-        setProgress(Math.min(percent, 100));
+        const hoursWorked = todayAttendance.totalHours || 0;
+        console.log(hoursWorked + " hours worked");
+
+        setProgress((hoursWorked / 9) * 100); // Assuming 9 hours workday
       };
 
       updateProgress();
+
+      console.log("Progress:" + progress);
+
       const interval = setInterval(updateProgress, 60000); // Update every minute
 
       return () => clearInterval(interval);
@@ -263,7 +302,11 @@ const Timeline = ({ todayAttendance }) => {
       </div>
       <div className="text-center mt-3">
         <h5>
-          {progress === 100
+          {progress === 0
+            ? todayAttendance.clockoutTime
+              ? "0%"
+              : "Work just started (0%)"
+            : progress === 100
             ? "Full Day"
             : `${Math.floor(progress)}% of workday completed`}
         </h5>
@@ -350,7 +393,7 @@ const StartWork = () => {
   const handleStart = async () => {
     try {
       const start = new Date();
-      const dateString = moment(start).format("YYYY-MM-DD HH:mm:ss");
+      const timeString = moment(start).format("HH:mm:ss"); // Get the current time
       setWorkState({ ...workState, startTime: start, isStarted: true });
       localStorage.setItem("startTime", start.toISOString());
       localStorage.setItem("isStarted", "true");
@@ -362,7 +405,7 @@ const StartWork = () => {
           userId,
           date,
           status,
-          clockinTime: dateString,
+          clockinTime: timeString,
           latitudeClockin: location.latitude,
           longitudeClockin: location.longitude,
         },
@@ -380,10 +423,11 @@ const StartWork = () => {
 
   const handleEnd = () => {
     const end = new Date();
+    const endTimeString = moment(end).format("HH:mm:ss");
     const duration = (end - workState.startTime) / 1000 / 60 / 60; // Duration in hours
     setWorkState({
       ...workState,
-      endTime: end,
+      endTime: endTimeString,
       totalTime: duration.toFixed(2),
     });
     setModal({ show: true, action: "end" });

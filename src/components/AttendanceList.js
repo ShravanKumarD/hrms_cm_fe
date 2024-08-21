@@ -42,10 +42,16 @@ const AttendanceList = () => {
         const date = moment(attendance.date).format("Do MMM YYYY");
 
         const clockinTime = attendance.clockinTime
-          ? moment(attendance.clockinTime).format("hh:mm A")
+          ? moment(attendance.clockinTime, [
+              "YYYY-MM-DD HH:mm:ss",
+              "HH:mm:ss",
+            ]).format("hh:mm A")
           : "";
         const clockoutTime = attendance.clockoutTime
-          ? moment(attendance.clockoutTime).format("hh:mm A")
+          ? moment(attendance.clockoutTime, [
+              "YYYY-MM-DD HH:mm:ss",
+              "HH:mm:ss",
+            ]).format("hh:mm A")
           : "";
 
         return {
@@ -154,6 +160,29 @@ const AttendanceList = () => {
     pdfMake.createPdf(docDefinition).download("Attendance_Records.pdf");
   };
 
+  // Function to handle download of today's attendance
+  const downloadTodaysAttendance = () => {
+    const today = moment().format("Do MMM YYYY");
+    const todaysAttendance = attendances.filter((attendance) =>
+      moment(attendance.clockinTime).isSame(today, "day")
+    );
+
+    // Convert to CSV or any other format as needed
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      todaysAttendance
+        .map((e) => `${e.clockinTime},${e.clockoutTime},${e.status}`)
+        .join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `attendance_${today}.csv`);
+    document.body.appendChild(link); // Required for FF
+
+    link.click();
+  };
+
   return (
     <div className="container-fluid pt-2">
       <div className="row">
@@ -243,6 +272,14 @@ const AttendanceList = () => {
                     columnsButton: true,
                   }}
                   title="Attendance Records"
+                  actions={[
+                    {
+                      icon: () => <i className="fas fa-download"></i>,
+                      tooltip: "Download Today's Attendance",
+                      isFreeAction: true,
+                      onClick: () => downloadTodaysAttendance(),
+                    },
+                  ]}
                 />
               </ThemeProvider>
             </Card.Body>
