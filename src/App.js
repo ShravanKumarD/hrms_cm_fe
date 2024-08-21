@@ -326,11 +326,12 @@ const EmployeeContainer = () => (
           path="/attendance/startwork"
           component={withAuth(StartWork)}
         />
-        <Route
+        {/* problematic, user shouldnt access admin attendance */}
+        {/* <Route
           exact
           path="/attendance/list"
           component={withAuth(AttendanceList)}
-        />
+        /> */}
         <Route
           exact
           path="/attendance/timesheet"
