@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
+import ApplicationInfoTooltip from "../components-mini/ApplicationInfoTooltip";
 import API_BASE_URL from "../env";
 
 const ApplicationModal = ({ show, onHide, date }) => {
@@ -72,8 +73,9 @@ const ApplicationModal = ({ show, onHide, date }) => {
 
   return (
     <Modal show={show} onHide={onHide}>
-      <Modal.Header closeButton>
-        <Modal.Title>Make Application</Modal.Title>
+      <Modal.Header style={{ alignItems: "center" }} closeButton>
+        <Modal.Title>Make Application </Modal.Title>
+        <ApplicationInfoTooltip placement="right" />
       </Modal.Header>
       <Modal.Body>
         {hasError && (

@@ -2,7 +2,16 @@ import React, { useState } from "react";
 import { OverlayTrigger, Tooltip, Button } from "react-bootstrap";
 import styled from "styled-components";
 
-const CustomTooltip = styled(Tooltip)``;
+const CustomTooltip = styled(Tooltip)`
+  .tooltip-inner {
+    max-width: 400px; // Adjust this value as needed
+    width: max-content;
+    text-align: left;
+    // background-color: white;
+    // color: black;
+    // border: 1px solid rgba(0, 0, 0, 0.2);
+  }
+`;
 
 const StyledTable = styled.table`
   width: 100%;
@@ -12,15 +21,11 @@ const StyledTable = styled.table`
     border: 1px solid rgba(0, 0, 0, 0.2); /* Increase the opacity of the table lines */
     left: 0;
     text-align: left;
-    font-size: 0.7rem;
-  }
-
-  th {
-    background-color: #f2f2f2;
+    font-size: 0.9rem;
   }
 `;
 
-const ApplicationInfoTooltip = () => {
+const ApplicationInfoTooltip = ({ placement = "left" }) => {
   const [show, setShow] = useState(false);
 
   const applicationTypes = {
@@ -60,7 +65,7 @@ const ApplicationInfoTooltip = () => {
 
   return (
     <OverlayTrigger
-      placement="left"
+      placement={placement}
       show={show}
       delay={{ show: 250, hide: 1400 }}
       overlay={renderTooltip}
