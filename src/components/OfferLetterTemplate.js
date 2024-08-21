@@ -1,10 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Button, Card, Row, Col, Form, Modal } from "react-bootstrap";
+import { Button, Card, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import img from "./../assets/samcint_logo.jpeg";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-import htmlToPdfmake from "html-to-pdfmake";
 import API_BASE_URL from "../env";
 import waterMark from "./../assets/10.png";
 import html2canvas from "html2canvas";
@@ -22,47 +21,63 @@ const OfferLetterTemplate = ({
   sender_title,
 }) => {
   const [showSlip, setShowSlip] = useState(false);
-  const slipRef = useRef(null);
+  const slipRef1 = useRef(null);
+  const slipRef2 = useRef(null);
   const [user, setUser] = useState({});
-
-  // Separate states for each form field
 
   const toggleSlip = () => {
     setShowSlip((prevShowSlip) => !prevShowSlip);
   };
 
-const downloadPDF = () => {
-  if (slipRef.current) {
-    html2canvas(slipRef.current, { scale: 2 }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
+  const downloadPDF = async () => {
+    if (slipRef1.current && slipRef2.current) {
+      const canvas1 = await html2canvas(slipRef1.current, { scale: 2 });
+      const canvas2 = await html2canvas(slipRef2.current, { scale: 2 });
 
-      // Define PDF document
+      const imgData1 = canvas1.toDataURL("image/png");
+      const imgData2 = canvas2.toDataURL("image/png");
+
       const docDefinition = {
-        pageSize: 'A4',
+        info: {
+          title: 'Offer Letter',
+          author: 'Samcint Solutions Pvt. Ltd.',
+          subject: 'Offer Letter Document',
+          keywords: 'offer letter, samcint, employment',
+        },
+        pageSize: "A4",
         content: [
           {
-            image: imgData,
+            image: imgData1,
             width: 500,
-            height: 750
+            height: 750,
           },
+          {
+            text: "",
+            pageBreak: "before"
+          },
+          {
+            image: imgData2,
+            width: 500,
+            height: 750,
+          }
         ],
-        pageMargins: [40, 60, 40, 60], // Adjust margins as needed
+        pageMargins: [40, 60, 40, 60],
+        defaultStyle: {
+          font: 'Roboto',
+        },
       };
 
       const pdf = pdfMake.createPdf(docDefinition);
       pdf.download("offerLetter_samcint.pdf");
-    });
-  } else {
-    console.error("Slip element is not found");
-  }
-};
-
+    } else {
+      console.error("Slip elements are not found");
+    }
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         axios.defaults.baseURL = API_BASE_URL;
-
         const userRes = await axios.get(`/api/users/${userId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
@@ -75,6 +90,32 @@ const downloadPDF = () => {
 
     fetchUserData();
   }, [userId]);
+
+  const pageStyle = {
+    position: "relative",
+    padding: "20px",
+    fontFamily: "Arial, sans-serif",
+    lineHeight: "1.6",
+    width: "80%",
+    margin: "20px auto",
+    border: "1px solid #000",
+    zIndex: 0,
+  };
+
+  const waterMarkStyle = {
+    content: '""',
+    position: "absolute",
+    top: 140,
+    left: 100,
+    width: "65%",
+    height: "65%",
+    backgroundImage: `url(${waterMark})`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    backgroundSize: "contain",
+    opacity: 0.1,
+    zIndex: -1,
+  };
 
   return (
     <div>
@@ -91,235 +132,96 @@ const downloadPDF = () => {
             </Col>
           </Row>
           {showSlip && (
-            <Row>
-              <Col>
-                <div
-                  ref={slipRef}
-                  style={{
-                    position: "relative",
-                    padding: "10px",
-                    fontFamily: "Arial, sans-serif",
-                    lineHeight: "1.6",
-                    width: "80%",
-                    margin: "20px auto",
-                    padding: "20px",
-                    border: "1px solid #000",
-                    zIndex: 0,
-                  }}
-                >
-                  <div
-                    style={{
-                      content: '""',
-                      position: "absolute",
-                      top: 140,
-                      left:100,
-                      width: "65%",
-                      height: "65%",
-                      backgroundImage: `url(${waterMark})`,
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "center",
-                      backgroundSize: "contain",
-                      opacity: 0.1,
-                      zIndex: -1,
-                    }}
-                  ></div>
+            <>
+              <Row>
+                <Col>
+                  <div ref={slipRef1} style={pageStyle}>
+                    <div style={waterMarkStyle}></div>
+                    <img style={{ height: "40px", width: "150px" }} src={img} alt="logo" />
+                    <p>&nbsp;</p>
+                    <p style={{textAlign:"right"}}>Date: {todaysDate} </p>
+                    <h1 style={{ textAlign: "center", color: "#EB7301", fontSize: "22px" }}>
+                      <strong>Offer Letter</strong>
+                    </h1>
+                    <p> {user.fullName}</p>
+                    {/* <p>{place}</p> */}
 
-                  <img
-                    style={{ height: "40px", width: "150px" }}
-                    src={img}
-                    alt="logo"
-                  />
-                  <p>&nbsp;</p>
-                  <p>&nbsp;</p>
-                  <h1
-                    style={{
-                      textAlign: "center",
-                      color: "#EB7301",
-                      fontSize: "22px",
-                    }}
-                  >
-                    <strong>Offer Letter</strong>
-                  </h1>
-                  <p>Date: {todaysDate} </p>
-                  <p> {user.fullName}</p>
-                  <p>{place}</p>
-                  <p>
-                    Dear {user.fullName}, we are delighted to extend an offer to
-                    you for the position of <strong>{position}</strong> at
-                    CreditMitra. After carefully considering your qualifications
-                    and interview performance, we believe that your skills,
-                    enthusiasm, and potential will greatly contribute to our
-                    team and provide you with valuable learning opportunities.
-                  </p>
-                  <h4 style={{ fontSize: "16px" }}>
-                    <strong>Position Details</strong>
-                  </h4>
-                  <p>
-                    <strong>Position: </strong> {position}
-                  </p>
-                  <p>
-                    <strong>Department: </strong> {department}
-                  </p>
-                  <p>
-                    <strong>Salary: </strong>
-                    {stipend}
-                  </p>
-                  <p>
-                    <strong>Start Date: </strong>
-                    {startDate}
-                  </p>
-                  <p>
-                    <strong>Work Schedule:</strong> 9:30 am to 6:30 pm, Monday
-                    to Friday
-                  </p>
-                  <p>
-                    <strong>Location:</strong> Hyderabad
-                  </p>
-                  <p>
-                    Our team at CreditMitra is looking forward to having you
-                    work with us. During your internship, the concentration will
-                    be on helping you understand the theoretical concepts with
-                    their practicality and implications to help you connect your
-                    classroom knowledge and on-field experience. We will be
-                    happy to train you to learn new skills which are extremely
-                    helpful in the professional setting.
-                  </p>
-                  <p>
-                    Once again, congratulations to you on your selection and all
-                    the best for your endeavors.
-                  </p>
+                    <p>Greetings from Samcint Solutions Private Limited!</p>
 
-                  <p>Regards,</p>
-                  <p>{hrName}</p>
-                  <p>{sender_title}</p>
-                  <p>Samcint solutions pvt. ltd.</p>
+                    <p>
+                      With reference to our discussions and meetings, we are pleased to offer you full-time employment with our esteemed organisation Samcint Solutions Private Limited as <strong>{position}.</strong>
+                    </p>
 
-                  {/* Black Bottom Section */}
-                  {/* <div
-    style={{
-      backgroundColor: "black",
-      color: "white",
-      padding: "20px",
-      height: "70px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      marginTop: "20px",
-    }}> */}
-                  <hr />
-                  <p style={{ textAlign: "center" }}>
-                    4th Floor, B-Wing , Purva Summit, White field Road, Hitec
-                    city , Kondapur,
-                    <br /> Telangana- 500081
-                  </p>
-                  {/* </div> */}
-                </div>
-              </Col>
-            </Row>
+                    <p>
+                      <strong>We are glad to inform you your revised CTC will be Rs. {stipend}</strong>
+                    </p>
+                    <p>
+                      Your initial place of posting will be the Company's office in Hyderabad, India. Your date of joining will be {startDate}. Further, your compensation including fixed components will be as per Annexure A.
+                    </p>
+                    <p>
+                      You understand that this employment is being offered to you based on the particulars submitted by you with the Company at the time of the recruitment process. The management has the right to investigate your education and employment background based on the facts provided by you either in your "Resume" or during the course of your interview. You hereby give your consent to the transfer of your personally identifiable information and specifically authorise the Company to validate the information provided by you and to conduct your background reference check throughout India or abroad. However, if at any time it should emerge that the particulars furnished by you are false/incorrect or if any material or relevant information has been suppressed or concealed this appointment will be considered ineffective and irregular and would be liable to be terminated by the management forthwith. Without notice. This will be without prejudice to the right of the management to take disciplinary action against you for the same.
+                    </p>
+                    <p>
+                      The offer has been made to you in the strictest of confidence. Disclosure to any person at any time, including after issuance of an appointment letter, of these terms, shall make it void.
+                    </p>
+                    <p>This offer is subject to:</p>
+                    <p>a. Successful clearance of your background verification.</p>
+                    <p>
+                      We request you kindly acknowledge this offer letter/email with your acceptance of the offer and date of joining. If we don't receive your confirmation by {startDate}, this offer will stand withdrawn. The Company reserves the right to revoke the offer letter prior to receiving your written official acceptance.
+                    </p>
+                  </div>
+                 
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <div ref={slipRef2} style={pageStyle}>
+                    <div style={waterMarkStyle}></div>
+                 
+                   
+                    <p>
+                      A formal appointment letter will be entered into between the Company and you, post the acceptance of the offer. You agree to sign and abide by the terms of the agreement after accepting this offer letter. Further, please note that by accepting this offer, you agree to abide by the rules, by-laws, and policies of the Company.
+                    </p>
+                    <p>
+                      We look forward to your joining the Company and contributing towards mutual and beneficial association.
+                    </p>
+
+                    <h4><strong>Code of conduct for employees in the organization</strong></h4>
+                    <ul>
+                      <li>Employees are expected to treat colleagues, clients, and stakeholders with respect and professionalism at all times.</li>
+                      <li>Employees must comply with all applicable laws, regulations, and company policies in the course of their duties.</li>
+                      <li>Employees must maintain the confidentiality of sensitive company information and customer data. They should not disclose proprietary information to unauthorized persons.</li>
+                      <li>Employees should avoid situations where personal interests conflict with the interests of the company. They must disclose any potential conflicts of interest to management.</li>
+                      <li>The organization prohibits discrimination, harassment, and retaliation based on protected characteristics such as race, gender, religion, disability, or sexual orientation.</li>
+                      <li>Guidelines on the appropriate use of social media and communication channels, ensuring that personal opinions do not reflect poorly on the company.</li>
+                      <li>Employees should conduct themselves ethically and with integrity in all business dealings. This includes avoiding bribery, fraud, and any form of unethical behaviour.</li>
+                    </ul>
+                    <p>&nbsp;</p>
+                    <p>
+                      <strong>Disciplinary actions that may result from violations of the code of conduct which could range from warnings to termination of employment without salary payment.</strong>
+                    </p>
+
+
+                 <br/>  
+                    <p style={{textAlign:"right"}}>Employee Sign </p>
+                    <p>Regards,</p>
+                    <p>{hrName}</p>
+                    <p>{sender_title}</p>
+                    <p>Samcint solutions pvt. ltd.</p>
+
+                    <hr />
+                    <p style={{ textAlign: "center" }}>
+                      4th Floor, B-Wing , Purva Summit, White field Road, Hitec city , Kondapur,
+                      <br /> Telangana- 500081
+                    </p>
+                  </div>
+                </Col>
+              </Row>
+            </>
           )}
         </Card.Body>
       </Card>
     </div>
-    //   <div
-    //   ref={slipRef}
-    //   style={{
-    //     padding: "10px",
-    //     fontFamily: "Arial, sans-serif",
-    //     lineHeight: "1.6",
-    //     width: "80%",
-    //     margin: "20px auto",
-    //     padding: "20px",
-    //     border: "1px solid #000",
-    //     backgroundImage: `url(${'https://samcintsolutions.in/wp-content/uploads/2024/01/rsz_1samcint_page-0001-removebg-preview-120x31.png'})`,
-    //     backgroundRepeat: "no-repeat",
-    //     backgroundPosition: "center",
-    //     backgroundSize: "contain",
-    //   }}
-    // >
-    //   <img
-    //     style={{ height: "40px", width: "150px" }}
-    //     src={img}
-    //     alt="Company Logo"
-    //   />
-    //   <p>&nbsp;</p>
-    //   <p>&nbsp;</p>
-    //   <h1
-    //     style={{
-    //       textAlign: "center",
-    //       color: "#EB7301",
-    //       fontSize: "22px",
-    //     }}
-    //   >
-    //     <strong>Offer Letter</strong>
-    //   </h1>
-    //   <p>&nbsp;</p>
-    //   <p>Date: {todaysDate} </p>
-    //   <p> {user.fullName}</p>
-    //   <p>{place}</p>
-    //   <p>
-    //     Dear {user.fullName}, we are delighted to extend an offer to you for the
-    //     position of <strong>{position}</strong> at CreditMitra. After carefully
-    //     considering your qualifications and interview performance, we believe
-    //     that your skills, enthusiasm, and potential will greatly contribute to
-    //     our team and provide you with valuable learning opportunities.
-    //   </p>
-    //   <h4 style={{ fontSize: "16px" }}>
-    //     <strong>Position Details</strong>
-    //   </h4>
-    //   <p>
-    //     <strong>Position: </strong> {position}
-    //   </p>
-    //   <p>
-    //     <strong>Department: </strong> {department}
-    //   </p>
-    //   <p>
-    //     <strong>Salary: </strong>
-    //     {stipend}
-    //   </p>
-    //   <p>
-    //     <strong>Start Date: </strong>
-    //     {startDate}
-    //   </p>
-    //   <p>
-    //     <strong>Work Schedule:</strong> 9:30 am to 6:30 pm, Monday to Friday
-    //   </p>
-    //   <p>
-    //     <strong>Location:</strong> Hyderabad
-    //   </p>
-    //   <p>
-    //     Our team at CreditMitra is looking forward to having you work with us.
-    //     During your internship, the concentration will be on helping you
-    //     understand the theoretical concepts with their practicality and
-    //     implications to help you connect your classroom knowledge and on-field
-    //     experience. We will be happy to train you to learn new skills which are
-    //     extremely helpful in the professional setting.
-    //   </p>
-    //   <p>
-    //     Once again, congratulations to you on your selection and all the best
-    //     for your endeavors.
-    //   </p>
-    //   <p>&nbsp;</p>
-    //   <p>Regards,</p>
-    //   <p>{hrName}</p>
-    //   <p>{sender_title}</p>
-    //   <p>Samcint solutions pvt. ltd.</p>
-
-    //   {/* Black Bottom Section */}
-    //   <div
-    //     style={{
-    //       backgroundColor: "black",
-    //       color: "white",
-    //       // padding: "20px",
-    //       height: "70px",
-    //       display: "flex",
-    //       alignItems: "center",
-    //       justifyContent: "center",
-    //       marginTop: "20px", // Add some space above the bottom section
-    //     }}
-    //   >
-    //     <p style={{textAlign:"center"}}>Address – 4th Floor, B-Wing , Purva Summit, White field Road, Hitec city , Kondapur, Telangana- 500081</p>
-    //   </div>
-    // </div>
   );
 };
 

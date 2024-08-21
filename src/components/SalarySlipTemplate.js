@@ -10,6 +10,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const SalarySlipTemplate = React.forwardRef((props, ref) => {
   const { data } = props;
+  console.log(props,'props')
   const [showSlip, setShowSlip] = useState(false);
   const slipRef = useRef(null);
 
@@ -25,7 +26,8 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
           content: [
             {
               image: imgData,
-              width: 500,
+              width: 514.8, 
+              height: 728.0,
             },
           ],
         });
@@ -99,29 +101,29 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
                 Kailashnath Arcade, #201 2nd Floor, Samcint Solutions Pvt. Ltd., Near
                 Madhapur Metro station, opposite to HDFC Bank Lane, Hyderabad – 500033
               </p> */}
-              <p>      4th Floor, B-Wing, Purva Summit, White field Road, Hitec city ,
+               <p style={{ marginBottom: "0px" }}>     4th Floor, B-Wing, Purva Summit, White field Road, Hitec city ,
               Kondapur,
               <br /> Telangana- 500081</p>
-              <p>+91- 9663347744</p>
+              <p style={{ marginBottom: "0px" }}>+91- 9663347744</p>
             </div>
             <hr />
             <h3 style={{ textAlign: "center", fontSize: "18px" }}>
               Salary slip for the month of {data.month}
             </h3>
             <div style={{ marginBottom: "20px" }}>
-              <p>
+              <p style={{ marginBottom: "0px" }}>
                 <strong>Name of Employee:</strong> {data.name}
               </p>
-              <p>
+              <p style={{ marginBottom: "0px" }}>
                 <strong>Address:</strong> {data.address}
               </p>
-              <p>
+              <p style={{ marginBottom: "0px" }}>
                 <strong>Designation:</strong> {data.designation}
               </p>
-              <p>
+              <p style={{ marginBottom: "0px" }}>
                 <strong>Month:</strong> {data.month}
               </p>
-              <p>
+              <p style={{ marginBottom: "0px" }}>
                 <strong>DOJ:</strong> {data.date_of_joining}
               </p>
             </div>
@@ -129,7 +131,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               style={{
                 width: "100%",
                 borderCollapse: "collapse",
-                marginBottom: "20px",
+                marginBottom: "0px",
               }}
             >
               <thead>
