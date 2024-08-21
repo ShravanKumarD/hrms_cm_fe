@@ -37,6 +37,12 @@ const HikeLetterTemplate = ({
       html2canvas(letterRef.current, { scale: 2 }).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = pdfMake.createPdf({
+          info: {
+            title: 'Hike Letter',
+            author: 'Samcint Solutions Pvt. Ltd.',
+            subject: 'Hike Letter Document',
+            keywords: 'Hike letter, samcint, employment',
+          },
           content: [
             {
               image: imgData,

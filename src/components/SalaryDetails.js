@@ -171,7 +171,7 @@ export default class SalaryDetails extends Component {
 
     render() {
         const { salaryGross, deductionTotal, salaryNet } = this.calculateSalaryDetails();
-
+     console.log(salaryGross, deductionTotal, salaryNet,"salaryGross, deductionTotal, salaryNet")
         return (
             <div className="container-fluid pt-2">
                 <div className="row">

@@ -40,12 +40,22 @@ const RelievingLetterTemplate = ({
       html2canvas(letterRef.current, { scale: 2 }).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = pdfMake.createPdf({
+          info: {
+            title: 'Relieving Letter',
+            author: 'Samcint Solutions Pvt. Ltd.',
+            subject: 'Relieving Letter Document',
+            keywords: 'Relieving letter, samcint, employment',
+          },
           content: [
             {
               image: imgData,
-              width: 500,
+              width: 514.8, 
+              height: 728.0,
             },
           ],
+          defaultStyle: {
+            font: 'Roboto',
+          },
         });
         pdf.download("relievingLetter.pdf");
       });

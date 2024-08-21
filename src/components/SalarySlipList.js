@@ -129,12 +129,12 @@ const SalarySlipList = () => {
                       title: "Action",
                       render: (rowData) => (
                         <div className="text-center">
-                          <ActionButton
+                          {/* <ActionButton
                             variant="info"
                             icon="edit"
                             label="Edit"
                             onClick={() => handleModalShow("edit", rowData)}
-                          />
+                          /> */}
                           <ActionButton
                             variant="primary"
                             icon="eye"

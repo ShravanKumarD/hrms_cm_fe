@@ -26,7 +26,6 @@ const SalarySlipAdd = ({
   const [specialAllowance, setSpecialAllowance] = useState(0);
   const [medicalAllowance, setMedicalAllowance] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
-  const [lop, setLop] = useState(0); // New state for LOP
   const [tds, setTds] = useState('');
   const [professionalTax, setProfessionalTax] = useState(0);
   const [employeePf, setEmployeePf] = useState(0);
@@ -94,33 +93,18 @@ const SalarySlipAdd = ({
   ];
 
   const years = Array.from({ length: 10 }, (v, i) => new Date().getFullYear() - i);
-  const calculateTotalEarnings = () => {
- 
-    const totalDaysInMonth = 30;
-    const dailySalary = basicSalary / totalDaysInMonth;
-    let lopdays = Number(totalDaysInMonth) - Number(daysWorked)
-    const calculatedLop = dailySalary * lopdays;
-    setLop(calculatedLop);
-    console.log(dailySalary,"dailySalary")
-    console.log(lopdays,"lopdays")
-    console.log(calculatedLop,"calculatedLop")
-    const total = Number(basicSalary) + Number(hra) + Number(conveyanceAllowance) + Number(specialAllowance) + Number(medicalAllowance);
-    setTotalEarnings(total);
-    console.log(total,"totLEARNINGS")
-};
 
-const calculateTotalDeductions = () => {
-    const total = Number(tds) + Number(professionalTax) + Number(employeePf) + Number(otherDeductions);
-    setTotalDeductions(total);
-};
+  const calculateTotalEarnings = () => {
+    const totalDaysInMonth = 30; // Assuming 30 days for the month
+    const dailySalary = basicSalary / totalDaysInMonth;
+    const earningsFromDaysWorked = dailySalary * daysWorked;
+    const total = earningsFromDaysWorked + Number(hra) + Number(conveyanceAllowance) + Number(specialAllowance) + Number(medicalAllowance);
+    setTotalEarnings(total);
+  };
 
   useEffect(() => {
     calculateTotalEarnings();
   }, [daysWorked, basicSalary, hra, conveyanceAllowance, specialAllowance, medicalAllowance]);
-
-  useEffect(() => {
-    calculateTotalDeductions();
-  }, [lop, tds, professionalTax, employeePf, otherDeductions]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -139,7 +123,6 @@ const calculateTotalDeductions = () => {
         special_allowance: Number(specialAllowance),
         medical_allowance: Number(medicalAllowance),
         total_earnings: Number(totalEarnings),
-        lop: Number(lop),
         tds: Number(tds),
         professional_tax: Number(professionalTax),
         employee_pf: Number(employeePf),
@@ -147,11 +130,11 @@ const calculateTotalDeductions = () => {
         total_deductions: Number(totalDeductions),
         daysWorked:Number(daysWorked)
       };
-      console.log(salarySlip, "before submission");
-      let res = await axios.post(`${API_BASE_URL}/api/salary-slip`, salarySlip, {
+console.log(salarySlip,"before submission")
+     let res =  await axios.post(`${API_BASE_URL}/api/salary-slip`, salarySlip, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      console.log(res, 'after submission');
+console.log(res,'after submission')
       setDone(true);
       if (onAddSuccess) {
         onAddSuccess(); // Callback to handle success
@@ -231,10 +214,11 @@ const calculateTotalDeductions = () => {
               as="select"
               value={month}
               onChange={(e) => setMonth(Number(e.target.value))}
+              required
             >
-              {months.map((month, index) => (
+              {months.map((monthName, index) => (
                 <option key={index} value={index}>
-                  {month}
+                  {monthName}
                 </option>
               ))}
             </Form.Control>
@@ -246,10 +230,11 @@ const calculateTotalDeductions = () => {
               as="select"
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
+              required
             >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
+              {years.map((yr) => (
+                <option key={yr} value={yr}>
+                  {yr}
                 </option>
               ))}
             </Form.Control>
@@ -260,20 +245,17 @@ const calculateTotalDeductions = () => {
             <DatePicker
               selected={dateOfJoining}
               onChange={(date) => setDateOfJoining(date)}
-              dateFormat="dd/MM/yyyy"
-              placeholderText="Select date of joining"
+              dateFormat="yyyy-MM-dd"
               className="form-control"
               required
             />
           </Form.Group>
-
           <Form.Group controlId="formDaysWorked">
             <Form.Label className="mb-2 required">Days Worked</Form.Label>
             <Form.Control
-              type="text"
+              type="number"
               value={daysWorked}
-              onChange={(e) => setDaysWorked(Number(e.target.value))}
-              placeholder="Number of days worked"
+              onChange={(e) => setDaysWorked(e.target.value)}
               required
             />
           </Form.Group>
@@ -283,8 +265,7 @@ const calculateTotalDeductions = () => {
             <Form.Control
               type="number"
               value={basicSalary}
-              onChange={(e) => setBasicSalary(Number(e.target.value))}
-              placeholder="Basic salary"
+              onChange={(e) => setBasicSalary(e.target.value)}
               required
             />
           </Form.Group>
@@ -294,8 +275,7 @@ const calculateTotalDeductions = () => {
             <Form.Control
               type="number"
               value={hra}
-              onChange={(e) => setHra(Number(e.target.value))}
-              placeholder="House Rent Allowance"
+              onChange={(e) => setHra(e.target.value)}
               required
             />
           </Form.Group>
@@ -305,8 +285,7 @@ const calculateTotalDeductions = () => {
             <Form.Control
               type="number"
               value={conveyanceAllowance}
-              onChange={(e) => setConveyanceAllowance(Number(e.target.value))}
-              placeholder="Conveyance Allowance"
+              onChange={(e) => setConveyanceAllowance(e.target.value)}
               required
             />
           </Form.Group>
@@ -316,8 +295,7 @@ const calculateTotalDeductions = () => {
             <Form.Control
               type="number"
               value={specialAllowance}
-              onChange={(e) => setSpecialAllowance(Number(e.target.value))}
-              placeholder="Special Allowance"
+              onChange={(e) => setSpecialAllowance(e.target.value)}
               required
             />
           </Form.Group>
@@ -327,19 +305,8 @@ const calculateTotalDeductions = () => {
             <Form.Control
               type="number"
               value={medicalAllowance}
-              onChange={(e) => setMedicalAllowance(Number(e.target.value))}
-              placeholder="Medical Allowance"
+              onChange={(e) => setMedicalAllowance(e.target.value)}
               required
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formLop">
-            <Form.Label className="mb-2 required">Loss of Pay (LOP)</Form.Label>
-            <Form.Control
-              type="number"
-              value={lop}
-              placeholder="Calculated LOP"
-              readOnly
             />
           </Form.Group>
 
@@ -348,8 +315,7 @@ const calculateTotalDeductions = () => {
             <Form.Control
               type="number"
               value={tds}
-              onChange={(e) => setTds(Number(e.target.value))}
-              placeholder="TDS"
+              onChange={(e) => setTds(e.target.value)}
               required
             />
           </Form.Group>
@@ -359,8 +325,7 @@ const calculateTotalDeductions = () => {
             <Form.Control
               type="number"
               value={professionalTax}
-              onChange={(e) => setProfessionalTax(Number(e.target.value))}
-              placeholder="Professional Tax"
+              onChange={(e) => setProfessionalTax(e.target.value)}
               required
             />
           </Form.Group>
@@ -370,8 +335,7 @@ const calculateTotalDeductions = () => {
             <Form.Control
               type="number"
               value={employeePf}
-              onChange={(e) => setEmployeePf(Number(e.target.value))}
-              placeholder="Employee Provident Fund"
+              onChange={(e) => setEmployeePf(e.target.value)}
               required
             />
           </Form.Group>
@@ -381,8 +345,17 @@ const calculateTotalDeductions = () => {
             <Form.Control
               type="number"
               value={otherDeductions}
-              onChange={(e) => setOtherDeductions(Number(e.target.value))}
-              placeholder="Other Deductions"
+              onChange={(e) => setOtherDeductions(e.target.value)}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formTotalDeductions">
+            <Form.Label className="mb-2 required">Total Deductions</Form.Label>
+            <Form.Control
+              type="number"
+              value={totalDeductions}
+              onChange={(e) => setTotalDeductions(e.target.value)}
               required
             />
           </Form.Group>
@@ -392,34 +365,29 @@ const calculateTotalDeductions = () => {
             <Form.Control
               type="number"
               value={totalEarnings}
-              placeholder="Calculated Total Earnings"
-              readOnly
+              onChange={(e) => setTotalEarnings(e.target.value)}
+              required
             />
           </Form.Group>
 
-          <Form.Group controlId="formTotalDeductions">
-            <Form.Label className="mb-2 required">Total Deductions</Form.Label>
-            <Form.Control
-              type="number"
-              value={totalDeductions}
-              placeholder="Calculated Total Deductions"
-              readOnly
-            />
-          </Form.Group>
-
-          {showAlert && <Alert variant="danger">{errorMsg}</Alert>}
-
-          {done && (
-            <Alert variant="success">
-              Salary Slip added successfully!
-            </Alert>
-          )}
-
-          <Button variant="primary" type="submit">
+          <Button variant="success" type="submit" className="mt-2">
             Add Salary Slip
           </Button>
+          {done && (
+          <Alert variant="success" className="m-1">
+            Salary slip added successfully!
+          </Alert>
+        )}
+        {showAlert && (
+          <Alert variant="danger" className="m-1">
+            {errorMsg}
+          </Alert>
+        )}
         </Form>
       </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={onHide}>Close</Button>
+      </Modal.Footer>
     </Modal>
   );
 };
