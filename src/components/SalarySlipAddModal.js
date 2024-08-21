@@ -128,6 +128,7 @@ const SalarySlipAdd = ({
         employee_pf: Number(employeePf),
         other_deductions: Number(otherDeductions),
         total_deductions: Number(totalDeductions),
+        daysWorked:daysWorked
       };
 
      let res =  await axios.post(`${API_BASE_URL}/api/salary-slip`, salarySlip, {

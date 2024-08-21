@@ -45,9 +45,9 @@ const OfferLetterList = () => {
       setOfferLetters(
         response.data.map((letter) => ({
           ...letter,
-          start_date: moment(letter.start_date).format("YYYY-MM-DD"),
+          start_date: moment(letter.start_date).format("Do MMM YYYY"),
           end_date: letter.end_date
-            ? moment(letter.end_date).format("YYYY-MM-DD")
+            ? moment(letter.end_date).format("Do MMM YYYY")
             : null,
         }))
       );

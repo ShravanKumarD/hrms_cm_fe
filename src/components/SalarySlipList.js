@@ -33,7 +33,7 @@ const SalarySlipList = () => {
         // Format any other date fields as needed
       }));
       setSalarySlips(formattedSlips);
-      console.log("Salary slips fetched successfully");
+      console.log("Salary slips fetched successfully",formattedSlips);
     } catch (error) {
       console.error("Failed to fetch salary slips:", error);
     }
