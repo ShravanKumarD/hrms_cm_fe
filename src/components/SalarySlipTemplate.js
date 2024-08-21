@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button, Card, Row, Col } from "react-bootstrap";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
@@ -10,12 +10,35 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const SalarySlipTemplate = React.forwardRef((props, ref) => {
   const { data } = props;
-  console.log(props,'props')
+  console.log(props, 'props');
+
   const [showSlip, setShowSlip] = useState(false);
   const slipRef = useRef(null);
+  const [month, setMonth] = useState(new Date().getMonth()); // Months are 0-indexed in JavaScript Date
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [totalDaysInMonth, setTotalDaysInMonth] = useState(0);
 
   const toggleSlip = () => {
-    setShowSlip((prevShowSlip) => !prevShowSlip);
+    setShowSlip(prevShowSlip => !prevShowSlip);
+  };
+
+  useEffect(() => {
+    if (data && data.month) {
+      extractMonthAndYear(data.month);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    setTotalDaysInMonth(daysInMonth);
+  }, [month, year]);
+
+  const extractMonthAndYear = (input) => {
+    const [monthStr, yearStr] = input.split(',');
+    const month = parseInt(monthStr.trim(), 10) - 1; // Convert month to 0-indexed
+    setMonth(month);
+    const year = parseInt(yearStr.trim(), 10);
+    setYear(year);
   };
 
   const downloadPDF = () => {
@@ -32,7 +55,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
           content: [
             {
               image: imgData,
-              width: 514.8, 
+              width: 514.8,
               height: 728.0,
             },
           ],
@@ -51,7 +74,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
     return <div>Data not available</div>;
   }
 
-  const netPay = data.total_earnings - data.total_deductions-data.lop;
+  const netPay = data.total_earnings - data.total_deductions - data.lop;
 
   return (
     <Card>
@@ -84,7 +107,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               style={{
                 position: "absolute",
                 top: '55%',
-                left:'50%',
+                left: '50%',
                 transform: "translate(-50%, -50%)",
                 width: "65%",
                 height: "65%",
@@ -106,13 +129,10 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               />
               <p>&nbsp;</p>
               <h2>SAMCINT SOLUTIONS PVT LTD</h2>
-              {/* <p>
-                Kailashnath Arcade, #201 2nd Floor, Samcint Solutions Pvt. Ltd., Near
-                Madhapur Metro station, opposite to HDFC Bank Lane, Hyderabad – 500033
-              </p> */}
-               <p style={{ marginBottom: "0px" }}>     4th Floor, B-Wing, Purva Summit, White field Road, Hitec city ,
-              Kondapur,
-              <br /> Telangana- 500081</p>
+              <p style={{ marginBottom: "0px" }}>
+                4th Floor, B-Wing, Purva Summit, White field Road, Hitec city, Kondapur,
+                <br /> Telangana- 500081
+              </p>
               <p style={{ marginBottom: "0px" }}>+91- 9663347744</p>
             </div>
             <hr />
@@ -136,10 +156,10 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
                 <strong>DOJ:</strong> {data.date_of_joining}
               </p>
               <p style={{ marginBottom: "0px" }}>
-                <strong>Days in Month:</strong> 30
+                <strong>Days in Month:</strong> {totalDaysInMonth}
               </p>
               <p style={{ marginBottom: "0px" }}>
-                <strong>LOP Days:</strong>{Number(30)-Number(data.daysWorked)}
+                <strong>LOP Days:</strong>{30 - Number(data.daysWorked)}
               </p>
             </div>
             <table
