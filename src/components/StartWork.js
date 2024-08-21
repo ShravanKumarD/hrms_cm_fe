@@ -151,18 +151,18 @@ const WorkTimes = ({ startTime, endTime }) => (
 const AttendanceTable = ({ records, date }) => {
   return (
     <div className="mt-4">
-      <h4>Recent Attendance Records:</h4>
+      <h4>Recent Attendance Records</h4>
       <Table bordered hover responsive>
-        <thead>
-          <tr>
-            {/* <th>ID</th> */}
-            {/* <th>Date</th> */}
-            <th>Day</th>
+        {/* <thead>
+          <tr> */}
+        {/* <th>ID</th> */}
+        {/* <th>Date</th> */}
+        {/* <th>Day</th>
             <th>Clock In Time</th>
             <th>Clock Out Time</th>
             <th>Status</th>
           </tr>
-        </thead>
+        </thead> */}
         <tbody>
           {records.length > 0 ? (
             records
@@ -217,17 +217,17 @@ const TodayAttendance = ({ record }) => {
     <div className="mt-4">
       <h4>Today's Attendance Record</h4>
       <Table bordered hover responsive>
-        <thead>
-          <tr>
-            {/* <th>ID</th> */}
-            {/* i need day instead of Date */}
-            {/* <th>Date</th> */}
-            <th>Day</th>
+        {/* <thead>
+          <tr> */}
+        {/* <th>ID</th> */}
+        {/* i need day instead of Date */}
+        {/* <th>Date</th> */}
+        {/* <th>Day</th>
             <th>Clock In Time</th>
             <th>Clock Out Time</th>
             <th>Status</th>
           </tr>
-        </thead>
+        </thead> */}
         <tbody>
           <tr key={record.id}>
             {/* <td>{record.id}</td> */}
@@ -472,7 +472,7 @@ const StartWork = () => {
   return (
     <Container className="my-5">
       <Card className="p-4 shadow-lg">
-        <h2 className="text-center mb-4">Start Work</h2>
+        <h2 className="text-center mb-4">Let's get to Work</h2>
         {error && <Alert variant="danger">{error}</Alert>}
         {/* <CurrentTimeDisplay currentTime={currentTime} /> */}
         <QuoteScroller quote={quotes[currentQuoteIndex]} />

@@ -354,7 +354,7 @@ const LightweightStartWork = () => {
       style={{ paddingLeft: "0px", paddingRight: "0px" }}
     >
       <Card className="p-4 shadow-sm">
-        <h2 className="text-center mb-4">Start Work</h2>
+        <h2 className="text-center mb-4">Let's Get to Work</h2>
         {error && <Alert variant="danger">{error}</Alert>}
         <WorkControls
           isStarted={workState.isStarted}
