@@ -32,7 +32,7 @@ const SalarySlipAdd = ({
   const [otherDeductions, setOtherDeductions] = useState(0);
   const [totalDeductions, setTotalDeductions] = useState(0);
   const [daysWorked, setDaysWorked] = useState(0); // New state for days worked
-
+const [totalDaysInMonth,setTotalDaysInMonth]=useState(0);
   const [showAlert, setShowAlert] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [done, setDone] = useState(false);

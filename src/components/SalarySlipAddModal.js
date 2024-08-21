@@ -33,15 +33,19 @@ const SalarySlipAdd = ({
   const [otherDeductions, setOtherDeductions] = useState(0);
   const [totalDeductions, setTotalDeductions] = useState(0);
   const [daysWorked, setDaysWorked] = useState(0); // New state for days worked
-
+  const [totalDaysInMonth,setTotalDaysInMonth]=useState(0);
   const [showAlert, setShowAlert] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [done, setDone] = useState(false);
-
+  const months = [
+    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+  ];
   useEffect(() => {
     fetchUsers();
     if (selectedUserId) fetchUserFinanceDetails(selectedUserId);
-  }, [selectedUserId]);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    setTotalDaysInMonth(daysInMonth);
+}, [selectedUserId,month, year]);
 
   const fetchUsers = async () => {
     try {
@@ -89,14 +93,12 @@ const SalarySlipAdd = ({
     </option>
   ));
 
-  const months = [
-    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-  ];
+ 
 
   const years = Array.from({ length: 10 }, (v, i) => new Date().getFullYear() - i);
   const calculateTotalEarnings = () => {
- 
-    const totalDaysInMonth = 30;
+ console.log(totalDaysInMonth,"totalDaysInMonth")
+    // const totalDaysInMonth = 30;
     const dailySalary = basicSalary / totalDaysInMonth;
     let lopdays = Number(totalDaysInMonth) - Number(daysWorked)
     const calculatedLop = dailySalary * lopdays;
@@ -179,6 +181,44 @@ const calculateTotalDeductions = () => {
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
+        <Form.Group>
+      <Form.Label className="mb-2 required">Set the month to generate the salary slip</Form.Label>
+      <Form.Control
+        as="select"
+        value={month}
+        onChange={(e) => setMonth(Number(e.target.value))}
+      >
+        {months.map((monthName, index) => (
+          <option key={index} value={index}>
+            {monthName}
+          </option>
+        ))}
+      </Form.Control>
+
+      {/* <Form.Label className="mb-2 required">Year</Form.Label> */}
+      {/* <Form.Control
+        type="number"
+        value={year}
+        onChange={(e) => setYear(Number(e.target.value))}
+        min="1900"
+        max="2100"
+      /> */}
+      <p>Total Days in Month: {totalDaysInMonth}</p>
+    </Form.Group>
+          <Form.Group controlId="formYear">
+            <Form.Label className="mb-2 required">Year</Form.Label>
+            <Form.Control
+              as="select"
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+            >
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
           <Form.Group>
             <Form.Label className="mb-2 required">Select Employee</Form.Label>
             <Form.Control
@@ -224,37 +264,6 @@ const calculateTotalDeductions = () => {
               required
             />
           </Form.Group>
-
-          <Form.Group controlId="formMonth">
-            <Form.Label className="mb-2 required">Month</Form.Label>
-            <Form.Control
-              as="select"
-              value={month}
-              onChange={(e) => setMonth(Number(e.target.value))}
-            >
-              {months.map((month, index) => (
-                <option key={index} value={index}>
-                  {month}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-
-          <Form.Group controlId="formYear">
-            <Form.Label className="mb-2 required">Year</Form.Label>
-            <Form.Control
-              as="select"
-              value={year}
-              onChange={(e) => setYear(Number(e.target.value))}
-            >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-
           <Form.Group controlId="formDateOfJoining">
             <Form.Label className="mb-2 required">Date of Joining</Form.Label>
             <DatePicker
@@ -273,7 +282,7 @@ const calculateTotalDeductions = () => {
               type="text"
               value={daysWorked}
               onChange={(e) => setDaysWorked(Number(e.target.value))}
-              placeholder="Number of days worked"
+              placeholder="Number of days worked +totalDaysInMonth+"
               required
             />
           </Form.Group>
