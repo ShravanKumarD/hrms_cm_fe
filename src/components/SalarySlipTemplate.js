@@ -23,6 +23,12 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
       html2canvas(slipRef.current, { scale: 2 }).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = pdfMake.createPdf({
+          info: {
+            title: 'Salary slip',
+            author: 'Samcint Solutions Pvt. Ltd.',
+            subject: 'Salary slip Document',
+            keywords: 'Salary slip, samcint, employment',
+          },
           content: [
             {
               image: imgData,
@@ -30,6 +36,9 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               height: 728.0,
             },
           ],
+          defaultStyle: {
+            font: 'Roboto',
+          },
         });
         pdf.download("SalarySlip.pdf");
       });
@@ -42,7 +51,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
     return <div>Data not available</div>;
   }
 
-  const netPay = data.total_earnings - data.total_deductions;
+  const netPay = data.total_earnings - data.total_deductions-data.lop;
 
   return (
     <Card>
@@ -125,6 +134,12 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               </p>
               <p style={{ marginBottom: "0px" }}>
                 <strong>DOJ:</strong> {data.date_of_joining}
+              </p>
+              <p style={{ marginBottom: "0px" }}>
+                <strong>Days in Month:</strong> 30
+              </p>
+              <p style={{ marginBottom: "0px" }}>
+                <strong>LOP Days:</strong>{Number(30)-Number(data.daysWorked)}
               </p>
             </div>
             <table
