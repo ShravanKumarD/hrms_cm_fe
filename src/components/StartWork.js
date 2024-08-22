@@ -133,21 +133,21 @@ const WorkControls = ({
   </div>
 );
 
-const WorkTimes = ({ startTime, endTime }) => (
-  <>
-    {console.log("End Time is", endTime)}
-    {startTime && (
-      <div className="text-center mb-4">
-        <h4>Start Time is {startTime.toLocaleTimeString()}</h4>
-      </div>
-    )}
-    {endTime && (
-      <div className="text-center mb-4">
-        <h4>End Time is {endTime}</h4>
-      </div>
-    )}
-  </>
-);
+const WorkTimes = ({ record }) => {
+  if (!record) return null;
+  const { clockinTime, clockoutTime, status } = record;
+  // it can be in YYYY-MM-DD HH:mm:ss format or HH:mm:ss format
+  const clockin = moment(clockinTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
+  const clockout = moment(clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
+  console.log(clockin);
+
+  return (
+    <div className="d-flex justify-content-between mx-3">
+      {clockin && <div>{clockin.format("h:mm A")}</div>}
+      {clockout && <div>{clockout.format("h:mm A")}</div>}
+    </div>
+  );
+};
 
 const AttendanceTable = ({ records, date }) => {
   return (
@@ -249,14 +249,26 @@ const TodayAttendance = ({ record }) => {
     </div>
   );
 };
+
 const Timeline = ({ todayAttendance }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     console.log(todayAttendance);
     if (todayAttendance && todayAttendance.clockinTime) {
+      // start time: 05:00:19
+      // end time = now
+      // total hours = end - start
       const updateProgress = () => {
-        const hoursWorked = todayAttendance.totalHours || 0;
+        const now = moment();
+        const clockin = moment(todayAttendance.clockinTime, "HH:mm:ss");
+        let hoursWorked = todayAttendance.totalHours || 0;
+        if (todayAttendance.clockoutTime) {
+          const clockout = moment(todayAttendance.clockoutTime, "HH:mm:ss");
+          hoursWorked = clockout.diff(clockin, "hours", true);
+        } else {
+          hoursWorked = now.diff(clockin, "hours", true);
+        }
         console.log(hoursWorked + " hours worked");
 
         setProgress((hoursWorked / 9) * 100); // Assuming 9 hours workday
@@ -266,7 +278,7 @@ const Timeline = ({ todayAttendance }) => {
 
       console.log("Progress:" + progress);
 
-      const interval = setInterval(updateProgress, 60000); // Update every minute
+      const interval = setInterval(updateProgress, 1000); // Update every minute
 
       return () => clearInterval(interval);
     }
@@ -276,6 +288,13 @@ const Timeline = ({ todayAttendance }) => {
 
   // Function to calculate color based on progress
   const getColor = (progress) => {
+    if (progress > 100) {
+      // need to color green to black on 200%;
+      const red = Math.round(255 * (1 - progress / 200));
+      const green = Math.round(255 * (progress / 200));
+      return `rgb(${red}, ${green}, 0)`;
+    }
+
     const red = Math.round(255 * (1 - progress / 100));
     const green = Math.round(255 * (progress / 100));
     return `rgb(${red}, ${green}, 0)`;
@@ -309,7 +328,7 @@ const Timeline = ({ todayAttendance }) => {
               : "Work just started (0%)"
             : progress === 100
             ? "Full Day"
-            : `${Math.floor(progress)}% of workday completed`}
+            : `${parseFloat(progress.toFixed(2))}% completed`}
         </h5>
       </div>
     </div>
@@ -477,10 +496,7 @@ const StartWork = () => {
           canStartWork={canStartWork}
           canEndWork={canEndWork}
         />
-        <WorkTimes
-          startTime={workState.startTime}
-          endTime={workState.endTime}
-        />
+        <WorkTimes record={todayAttendance} />
         <Timeline todayAttendance={todayAttendance} />
         <TodayAttendance record={todayAttendance} />
         <AttendanceTable records={attendanceRecords} date={date} />

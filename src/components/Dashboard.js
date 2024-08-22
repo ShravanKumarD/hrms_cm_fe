@@ -33,7 +33,10 @@ const Dashboard = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         if (data.length > 0) {
-          const total = data.reduce((sum, item) => sum + parseInt(item.expenses), 0);
+          const total = data.reduce(
+            (sum, item) => sum + parseInt(item.expenses),
+            0
+          );
           setTotalExpenses(total);
         }
       } catch (err) {
@@ -47,7 +50,10 @@ const Dashboard = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         if (data.length > 0) {
-          const total = data.reduce((sum, item) => sum + parseInt(item.expenses), 0);
+          const total = data.reduce(
+            (sum, item) => sum + parseInt(item.expenses),
+            0
+          );
           setTotalPayments(total);
         }
       } catch (err) {
@@ -134,7 +140,17 @@ const Dashboard = () => {
               <h3 className="panel-title">Recent Announcements</h3>
             </div>
             <RecentAnnouncements />
-            <HoursWorkedLastWeek />
+          </div>
+          <div className="panel panel-default">
+            <div
+              className="panel-heading with-border"
+              style={{ backgroundColor: "#515e73", color: "white" }}
+            >
+              <h3 className="panel-title">Hours Worked Last Week</h3>
+            </div>
+            <div className="panel-body" style={{ height: "300px" }}>
+              <HoursWorkedLastWeek />
+            </div>
           </div>
         </div>
       </div>

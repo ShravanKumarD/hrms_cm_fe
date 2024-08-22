@@ -7,12 +7,19 @@ const HoursWorkedLastWeek = () => {
     labels: [],
     datasets: [
       {
-        label: "Hours Worked",
         data: [],
-        backgroundColor: "#007fad",
+        backgroundColor: [
+          "#4285F4",
+          "#FBBC05",
+          "#34A853",
+          "#EA4335",
+          "#4285F4",
+        ],
       },
     ],
   });
+  const [totalHours, setTotalHours] = useState(0);
+
   const userId = JSON.parse(localStorage.getItem("user")).id;
 
   const fetchHoursWorkedLastWeek = async () => {
@@ -28,6 +35,7 @@ const HoursWorkedLastWeek = () => {
       const data = transformData(response.data);
       const array = makeArrayStructure(data);
       setChartData(array);
+      setTotalHours(data.reduce((sum, day) => sum + day.workedHours, 0));
     } catch (error) {
       console.error("Error fetching hours worked last week:", error);
     }
@@ -42,12 +50,20 @@ const HoursWorkedLastWeek = () => {
 
   const makeArrayStructure = (data) => {
     return {
-      labels: data.map((d) => d.date), // X-axis labels (dates)
+      labels: data.slice(-5).map((d) => {
+        const date = new Date(d.date);
+        return date.toLocaleString("default", { weekday: "short" });
+      }),
       datasets: [
         {
-          label: "Hours Worked", // Label for the dataset
-          data: data.map((d) => d.workedHours), // Y-axis data (worked hours)
-          backgroundColor: "#007fad", // Bar color
+          data: data.slice(-5).map((d) => d.workedHours),
+          backgroundColor: [
+            "#4285F4",
+            "#FBBC05",
+            "#34A853",
+            "#EA4335",
+            "#4285F4",
+          ],
         },
       ],
     };
@@ -57,30 +73,48 @@ const HoursWorkedLastWeek = () => {
     fetchHoursWorkedLastWeek();
   }, []);
 
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: false },
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+      },
+      y: {
+        beginAtZero: true,
+        max: 8,
+        ticks: { stepSize: 2 },
+      },
+    },
+  };
+
   return (
-    <div>
-      <h2>Hours Worked Last Week</h2>
-      <Bar
-        data={chartData}
-        height={300}
-        options={{
-          maintainAspectRatio: false,
-          legend: {
-            display: false,
-          },
-          // scales: {
-          //   yAxes: [
-          //     {
-          //       ticks: {
-          //         min: 0,
-          //         stepSize: 300,
-          //       },
-          //     },
-          //   ],
-          // },
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        padding: "15px",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "10px",
         }}
-        redraw
-      />
+      >
+        <h3 style={{ margin: 0 }}>Working hours</h3>
+        <span style={{ fontWeight: "bold" }}>{totalHours.toFixed(1)} hrs</span>
+      </div>
+      <div style={{ height: "calc(100% - 40px)" }}>
+        <Bar data={chartData} options={options} />
+      </div>
     </div>
   );
 };
