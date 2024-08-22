@@ -1,18 +1,17 @@
 import React, { Component } from "react";
 import { Card, Button, Form, Alert } from "react-bootstrap";
-import axios from 'axios';
+import axios from "axios";
 
 export default class SalaryDetails extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             departments: [],
-            selectedDepartment: null,
-            selectedUser: null,
+            selectedDepartment: "",
+            selectedUser: "",
             financialId: null,
             users: [],
-            employmentType: "", // Initialize employmentType state
+            employmentType: "",
             salaryBasic: 0,
             allowanceHouseRent: 0,
             allowanceMedical: 0,
@@ -36,10 +35,11 @@ export default class SalaryDetails extends Component {
         })
         .then(res => {
             this.setState({ departments: res.data }, () => {
-                if (this.props.location.state) {
+                const { location } = this.props;
+                if (location.state) {
                     this.setState({
-                        selectedDepartment: this.props.location.state.selectedUser.departmentId,
-                        selectedUser: this.props.location.state.selectedUser.id
+                        selectedDepartment: location.state.selectedUser.departmentId,
+                        selectedUser: location.state.selectedUser.id
                     }, this.fetchData);
                 }
             });
@@ -50,7 +50,8 @@ export default class SalaryDetails extends Component {
     }
 
     fetchData = () => {
-        axios.get(`/api/departments/${this.state.selectedDepartment}`, {
+        const { selectedDepartment } = this.state;
+        axios.get(`/api/departments/${selectedDepartment}`, {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         })
         .then(res => {
@@ -112,20 +113,12 @@ export default class SalaryDetails extends Component {
 
     handleChange = (event) => {
         const { name, value } = event.target;
-        const numericValue = value === "" ? 0 : Number(value);
-
-        this.setState({ 
-            [name]: name === "employmentType" ? value : numericValue
-        });
-
-        if (isNaN(numericValue) && name !== "employmentType") {
-            this.setState({ [name]: 0 });
-        }
+        const numericValue = name === "employmentType" ? value : parseFloat(value) || 0;
+        this.setState({ [name]: numericValue });
     };
 
     calculateSalaryDetails = () => {
         const { salaryBasic, allowanceHouseRent, allowanceMedical, allowanceSpecial, allowanceFuel, allowanceOther, deductionTax, deductionOther, pf, pt, tds } = this.state;
-
         const allowanceTotal = allowanceHouseRent + allowanceMedical + allowanceSpecial + allowanceFuel + allowanceOther;
         const deductionTotal = deductionTax + deductionOther + pf + pt + tds;
         const salaryGross = salaryBasic + allowanceTotal;
@@ -159,7 +152,7 @@ export default class SalaryDetails extends Component {
         axios.put(`/api/financialInformations/${this.state.financialId}`, data, {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         })
-        .then((res) => {
+        .then(() => {
             this.setState({ completed: true });
             window.scrollTo(0, 0);
         })
@@ -171,7 +164,6 @@ export default class SalaryDetails extends Component {
 
     render() {
         const { salaryGross, deductionTotal, salaryNet } = this.calculateSalaryDetails();
-     console.log(salaryGross, deductionTotal, salaryNet,"salaryGross, deductionTotal, salaryNet")
         return (
             <div className="container-fluid pt-2">
                 <div className="row">
@@ -192,7 +184,7 @@ export default class SalaryDetails extends Component {
                             <Card.Body>
                                 <Form>
                                     <Form.Group>
-                                        <Form.Label>Select Department: </Form.Label>
+                                        <Form.Label>Select Department:</Form.Label>
                                         <Form.Control as="select" value={this.state.selectedDepartment} onChange={this.handleDepartmentChange}>
                                             <option value="">Choose one...</option>
                                             <option value="all">All departments</option>
@@ -202,8 +194,8 @@ export default class SalaryDetails extends Component {
                                         </Form.Control>
                                     </Form.Group>
                                     <Form.Group>
-                                        <Form.Label>Select User: </Form.Label>
-                                        <Form.Control as="select" value={this.state.selectedUser || ''} onChange={this.handleUserChange}>
+                                        <Form.Label>Select User:</Form.Label>
+                                        <Form.Control as="select" value={this.state.selectedUser} onChange={this.handleUserChange}>
                                             <option value="">Choose one...</option>
                                             {this.state.users.map(user => (
                                                 <option key={user.id} value={user.id}>{user.fullName}</option>
@@ -224,7 +216,7 @@ export default class SalaryDetails extends Component {
                                     <Card.Header>Salary Details</Card.Header>
                                     <Card.Body>
                                         <Form.Group>
-                                            <Form.Label className="required">Employment Type </Form.Label>
+                                            <Form.Label className="required">Employment Type</Form.Label>
                                             <Form.Control as="select" value={this.state.employmentType} onChange={this.handleChange} name="employmentType">
                                                 <option value="">Choose one...</option>
                                                 <option value="Full Time">Full Time</option>
@@ -233,7 +225,7 @@ export default class SalaryDetails extends Component {
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="required">Basic Salary</Form.Label>
-                                            <Form.Control type="number" value={this.state.salaryBasic} onChange={this.handleChange} name="salaryBasic" />
+                                            <Form.Control type="text" value={this.state.salaryBasic} onChange={this.handleChange} name="salaryBasic" />
                                         </Form.Group>
                                     </Card.Body>
                                 </Card>
@@ -271,21 +263,20 @@ export default class SalaryDetails extends Component {
                                 <Card className="main-card">
                                     <Card.Header>Deductions</Card.Header>
                                     <Card.Body>
-                                        {/* <Form.Group>
+                                        <Form.Group>
                                             <Form.Label>Tax Deduction</Form.Label>
                                             <Form.Control type="text" value={this.state.deductionTax} onChange={this.handleChange} name="deductionTax" />
-                                        </Form.Group> */}
-                                       
+                                        </Form.Group>
                                         <Form.Group>
-                                            <Form.Label>Employee PF</Form.Label>
+                                            <Form.Label>Provident Fund</Form.Label>
                                             <Form.Control type="text" value={this.state.pf} onChange={this.handleChange} name="pf" />
                                         </Form.Group>
                                         <Form.Group>
-                                            <Form.Label>Professional Tax(PT)</Form.Label>
+                                            <Form.Label>Professional Tax</Form.Label>
                                             <Form.Control type="text" value={this.state.pt} onChange={this.handleChange} name="pt" />
                                         </Form.Group>
                                         <Form.Group>
-                                            <Form.Label>Tax Deduction at Source (TDS)</Form.Label>
+                                            <Form.Label>Tax Deducted at Source (TDS)</Form.Label>
                                             <Form.Control type="text" value={this.state.tds} onChange={this.handleChange} name="tds" />
                                         </Form.Group>
                                         <Form.Group>
@@ -296,27 +287,32 @@ export default class SalaryDetails extends Component {
                                 </Card>
                             </div>
                         </div>
-
                         <div className="row">
-    <div className="col-sm-12">
-        <Card className="main-card shadow-sm">
-            <Card.Header className=" text-white align-items-center">Summary</Card.Header>
-            <Card.Body className="d-flex flex-column align-items-center p-4">
-                <div className="mb-2">
-                    <strong>Gross Salary:</strong> <span className="text-success">{salaryGross.toLocaleString()}</span>
-                </div>
-                <div className="mb-2">
-                    <strong>Total Deductions:</strong> <span className="text-danger">{deductionTotal.toLocaleString()}</span>
-                </div>
-                <div className="mb-2">
-                    <strong>Net Salary:</strong> <span className="text-info">{salaryNet.toLocaleString()}</span>
-                </div>
-            </Card.Body>
-        </Card>
-        <Button type="submit" className="mt-3 ml-3 btn-lg btn-primary">Submit</Button>
-    </div>
-</div>
-
+                            <div className="col-sm-12">
+                                <Card className="main-card">
+                                    <Card.Header>Salary Summary</Card.Header>
+                                    <Card.Body>
+                                        <Form.Group>
+                                            <Form.Label>Gross Salary</Form.Label>
+                                            <Form.Control type="text" readOnly value={salaryGross} />
+                                        </Form.Group>
+                                        <Form.Group>
+                                            <Form.Label>Total Deductions</Form.Label>
+                                            <Form.Control type="text" readOnly value={deductionTotal} />
+                                        </Form.Group>
+                                        <Form.Group>
+                                            <Form.Label>Net Salary</Form.Label>
+                                            <Form.Control type="text" readOnly value={salaryNet} />
+                                        </Form.Group>
+                                    </Card.Body>
+                                </Card>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12 text-center">
+                                <Button type="submit">Submit</Button>
+                            </div>
+                        </div>
                     </Form>
                 )}
             </div>

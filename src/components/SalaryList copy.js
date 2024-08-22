@@ -7,8 +7,6 @@ import axios from "axios";
 import { ThemeProvider } from "@material-ui/core";
 import { createTheme } from "@material-ui/core/styles";
 import API_BASE_URL from "../env";
-import FileSaver from 'file-saver';
-import { Dropdown } from 'react-bootstrap';
 
 
 export default class SalaryList extends Component {
@@ -37,25 +35,7 @@ export default class SalaryList extends Component {
         console.log(err);
       });
   }
-  
 
-  handleDownload = (type) => {
-    axios({
-      method: "get",
-      url: `/api/financialInformations/download?type=${type}`,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      responseType: 'blob', // Important for binary data
-    })
-      .then((response) => {
-        const fileName = type === 'monthly' ? 'monthly_report.xlsx' : 'employee_report.xlsx';
-        FileSaver.saveAs(response.data, fileName);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  
-  
   onEdit = (financialInfo) => {
     return (event) => {
       event.preventDefault();
@@ -107,30 +87,11 @@ export default class SalaryList extends Component {
         )}
         <div className="col-sm-12">
           <Card>
-            {/* <Card.Header style={{ backgroundColor: "#515e73", color: "white" }}>
+            <Card.Header style={{ backgroundColor: "#515e73", color: "white" }}>
               <div className="panel-title">
                 <strong>List of Employees and Their Salaries</strong>
               </div>
-            </Card.Header> */}
-            <Card.Header style={{ backgroundColor: "#515e73", color: "white" }}>
-  <div className="d-flex justify-content-between align-items-center">
-    <strong>List of Employees and Their Salaries</strong>
-    <Dropdown>
-      <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-        Download Report
-      </Dropdown.Toggle>
-
-      <Dropdown.Menu>
-        <Dropdown.Item onClick={() => this.handleDownload('monthly')}>
-          Monthly Report
-        </Dropdown.Item>
-        <Dropdown.Item onClick={() => this.handleDownload('employeeWise')}>
-          Employee-wise Report
-        </Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
-  </div>
-</Card.Header>
+            </Card.Header>
             <Card.Body>
               <ThemeProvider theme={theme}>
                 <MaterialTable

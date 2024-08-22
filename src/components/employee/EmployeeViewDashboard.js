@@ -51,15 +51,14 @@ export default class EmployeeViewEmployee extends Component {
         this.setState({ user: user }, () => {
           if (user.jobs) {
             let jobs = user.jobs;
-            // jobs.map((job) => {
-            //   if (
-            //     new Date(job.startDate) <= Date.now() &&
-            //     new Date(job.endDate) >= Date.now()
-            //   ) {
-            //     console.log(job,this.state.job,"job")
-            //     this.setState({ job: job });
-            //   }
-            // });
+            jobs.map((job) => {
+              // if (
+              //   new Date(job.startDate) <= Date.now() &&
+              //   new Date(job.endDate) >= Date.now()
+              // ) {
+                this.setState({ job: job });
+              // }
+            });
             console.log(user.jobs)
           }
           if (user.department) {
@@ -85,6 +84,7 @@ export default class EmployeeViewEmployee extends Component {
   }
 
   render() {
+    console.log(this.state.user)
     return (
       <Card>
         <Card.Header
@@ -113,7 +113,7 @@ export default class EmployeeViewEmployee extends Component {
                   <div className="emp-view-list">
                     <ul>
                       <li>
-                        <span>Employee ID: </span> {this.state.user.id}
+                        <span>Employee ID: </span> {this.state.user.username}
                       </li>
                       <li>
                         <span>Department: </span>{" "}

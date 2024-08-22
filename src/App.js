@@ -43,6 +43,7 @@ import SalaryList from "./components/SalaryList";
 import SalaryView from "./components/SalaryView";
 import SalaryViewManager from "./components/manager/SalaryView";
 import SalaryViewEmployee from "./components/employee/SalaryView";
+import SalaryViewHR from "./components/hr/SalaryView";
 import Payment from "./components/Payment";
 import Expense from "./components/Expense";
 import ExpenseManager from "./components/manager/Expense";
@@ -276,13 +277,18 @@ const HRContainer = () =>(
           component={withAuth(SalaryDetails)}
         />
         <Route exact path="/salary-list" component={withAuth(SalaryList)} />
-        <Route exact path="/salary-view" component={withAuth(SalaryView)} />
+        <Route exact path="/salary-view-hr" component={withAuth(SalaryViewEmployee)} />
         <Route exact path="/payment" component={withAuth(Payment)} />
         <Route exact path="/expense" component={withAuth(Expense)} />
         <Route
           exact
           path="/expense-report"
           component={withAuth(ExpenseReport)}
+        />
+         <Route
+          exact
+          path="/salary-view"
+          component={withAuth(SalaryViewEmployee)}
         />
       <Route exact path="/announcement" component={withAuth(AnnouncementHR)} />
         <Route exact path="/register" component={Register} />

@@ -271,6 +271,15 @@ export default class SidebarHr extends Component {
                       <p>Employee Salary List</p>
                     </NavLink>
                   </li>
+             
+                  <li className="nav-item">
+                <NavLink exact to="/salary-view-hr" className="nav-link">
+                  <i className="nav-icon fas fa-rupee-sign" />
+                  <p>My Salary Details</p>
+                </NavLink>
+              </li>
+             
+             
                   <li className="nav-item">
                     <NavLink to="/payment" className="nav-link">
                       <i className="fas fa-money-check nav-icon" />
@@ -304,6 +313,7 @@ export default class SidebarHr extends Component {
                       <p>Expense Report</p>
                     </NavLink>
                   </li>
+          
                 </ul>
               </li>
               <li className="nav-item">
