@@ -321,15 +321,17 @@ const Timeline = ({ todayAttendance }) => {
         />
       </div>
       <div className="text-center mt-3">
-        <h5>
+      <div>
           {progress === 0
             ? todayAttendance.clockoutTime
               ? "0%"
               : "Work just started (0%)"
+            : progress < 100
+            ? `${parseFloat(progress.toFixed(2))}% completed`
             : progress === 100
-            ? "Full Day"
-            : `${parseFloat(progress.toFixed(2))}% completed`}
-        </h5>
+            ? "Work completed (100%)"
+            : `${parseFloat(progress.toFixed(2))}% supercharged!`}
+        </div>
       </div>
     </div>
   );

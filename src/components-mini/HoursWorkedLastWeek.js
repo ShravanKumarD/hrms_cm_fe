@@ -14,6 +14,8 @@ const HoursWorkedLastWeek = () => {
           "#34A853",
           "#EA4335",
           "#4285F4",
+          "#FBBC05",
+          "#34A853",
         ],
       },
     ],
@@ -42,27 +44,38 @@ const HoursWorkedLastWeek = () => {
   };
 
   const transformData = (data) => {
-    return data.map((obj) => ({
-      ...obj,
-      workedHours: obj.workedHours > 0 ? obj.workedHours : 0,
+    const today = new Date();
+    const last7Days = Array.from({ length: 8 }, (_, i) => {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      return d.toISOString().split("T")[0];
+    }).reverse();
+
+    const dataMap = new Map(data.map((item) => [item.date, item.workedHours]));
+
+    return last7Days.map((date) => ({
+      date,
+      workedHours: dataMap.get(date) || 0,
     }));
   };
 
   const makeArrayStructure = (data) => {
     return {
-      labels: data.slice(-5).map((d) => {
+      labels: data.map((d) => {
         const date = new Date(d.date);
         return date.toLocaleString("default", { weekday: "short" });
       }),
       datasets: [
         {
-          data: data.slice(-5).map((d) => d.workedHours),
+          data: data.map((d) => d.workedHours),
           backgroundColor: [
             "#4285F4",
             "#FBBC05",
             "#34A853",
             "#EA4335",
             "#4285F4",
+            "#FBBC05",
+            "#34A853",
           ],
         },
       ],
@@ -110,7 +123,9 @@ const HoursWorkedLastWeek = () => {
         }}
       >
         <h3 style={{ margin: 0 }}>Working hours</h3>
-        <span style={{ fontWeight: "bold" }}>{totalHours.toFixed(1)} hrs</span>
+        <span style={{ fontWeight: "bold" }}>
+          {(totalHours / 7).toFixed(1)} hrs
+        </span>
       </div>
       <div style={{ height: "calc(100% - 40px)" }}>
         <Bar data={chartData} options={options} />
