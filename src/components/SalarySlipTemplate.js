@@ -1,29 +1,50 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Button, Card, Row, Col } from "react-bootstrap";
+import React, { useState, useEffect, useRef } from "react";
+import { Button, Card, Row, Col, Table } from "react-bootstrap";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import html2canvas from "html2canvas";
 import img from "./../assets/samcint_logo.jpeg";
-import waterMark from './../assets/10.png';
+import axios from "axios";
+import API_BASE_URL from "../env";
+import moment from "moment";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
+let userData =null;
 const SalarySlipTemplate = React.forwardRef((props, ref) => {
   const { data } = props;
-  console.log(props, 'props');
-
   const [showSlip, setShowSlip] = useState(false);
   const slipRef = useRef(null);
-  const [month, setMonth] = useState(new Date().getMonth()); // Months are 0-indexed in JavaScript Date
+  const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
   const [totalDaysInMonth, setTotalDaysInMonth] = useState(0);
+  const [user, setUser] = useState({});
+  const [department, setDepartment] = useState({ departmentName: null });
+  const [jobTitle, setJobTitle] = useState(null);
+  const [userPersonalInfo, setUserPersonalInfo] = useState({
+    dateOfBirth: null,
+    gender: null,
+    maritalStatus: null,
+    fatherName: null,
+    country: null,
+    address: null,
+    mobile: null,
+    emailAddress: null,
+  });
+  const [userFinancialInfo, setUserFinancialInfo] = useState({
+    bankName: null,
+    accountName: null,
+    accountNumber: null,
+    iban: null,
+  });
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [salarySlip, setSalarySlip] = useState(null);
 
   const toggleSlip = () => {
     setShowSlip(prevShowSlip => !prevShowSlip);
   };
 
   useEffect(() => {
-    if (data && data.month) {
+    if (data?.month) {
       extractMonthAndYear(data.month);
     }
   }, [data]);
@@ -31,32 +52,69 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
   useEffect(() => {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     setTotalDaysInMonth(daysInMonth);
+    console.log(user,"useruseruseruser")
   }, [month, year]);
+
+
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (data.userId) {
+        try {
+          axios.defaults.baseURL = API_BASE_URL;
+          const userResponse = await axios.get(
+            `api/users/${data.userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+          userData = userResponse.data;
+          console.log(userData,'userda')
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+  
+    fetchData();
+  }, [data.userId]); // Add data.userId as a dependency if it changes and you want to refetch
+  
+
 
   const extractMonthAndYear = (input) => {
     const [monthStr, yearStr] = input.split(',');
-    const month = parseInt(monthStr.trim(), 10) - 1; // Convert month to 0-indexed
-    setMonth(month);
-    const year = parseInt(yearStr.trim(), 10);
-    setYear(year);
+    setMonth(parseInt(monthStr.trim(), 10) - 1);
+    setYear(parseInt(yearStr.trim(), 10));
   };
 
   const downloadPDF = () => {
     if (slipRef.current) {
-      html2canvas(slipRef.current, { scale: 2 }).then((canvas) => {
+      html2canvas(slipRef.current, {
+        scale: window.devicePixelRatio,
+        logging: true,
+        useCORS: true
+      }).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = pdfMake.createPdf({
           info: {
-            title: 'Salary slip',
+            title: 'Salary Slip',
             author: 'Samcint Solutions Pvt. Ltd.',
-            subject: 'Salary slip Document',
-            keywords: 'Salary slip, samcint, employment',
+            subject: 'Salary Slip Document',
+            keywords: 'salary slip, samcint, employment',
           },
+          pageSize: {
+            width: canvas.width,
+            height: canvas.height,
+          },// Set the page size to A4
+          pageMargins: [0, 0, 0, 0], // Left, Top, Right, Bottom in points
           content: [
             {
               image: imgData,
-              width: 514.8,
-              height: 728.0,
+              width: canvas.width   , // Adjust width according to the margins
+              height: canvas.height, // Adjust height according to the margins
             },
           ],
           defaultStyle: {
@@ -66,7 +124,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
         pdf.download("SalarySlip.pdf");
       });
     } else {
-      console.error("Slip element is not found");
+      console.error("Slip element not found");
     }
   };
 
@@ -91,199 +149,90 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
         </Row>
 
         {showSlip && (
-          <div
-            ref={slipRef}
-            style={{
-              fontFamily: "Arial, open-sans",
-              margin: "20px",
-              padding: "20px",
-              border: "1px solid #000",
-              maxWidth: "600px",
-              position: "relative",
-            }}
-          >
-            {/* Watermark */}
-            <div
-              style={{
-                position: "absolute",
-                top: '55%',
-                left: '50%',
-                transform: "translate(-50%, -50%)",
-                width: "65%",
-                height: "65%",
-                backgroundImage: `url(${waterMark})`,
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center",
-                backgroundSize: "contain",
-                opacity: 0.2,
-                zIndex: 1,
-                pointerEvents: "none",
-              }}
-            />
-
-            <div style={{ textAlign: "center", marginBottom: "20px" }}>
+          <div ref={slipRef} style={{ margin:'20px' }}>
+            <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
               <img
-                style={{ height: "40px", width: "150px" }}
+                style={{ height: "40px", width: "150px", marginRight: "10px" }}
                 src={img}
                 alt="Company Logo"
               />
-              <p>&nbsp;</p>
-              <h2>SAMCINT SOLUTIONS PVT LTD</h2>
-              <p style={{ marginBottom: "0px" }}>
-                4th Floor, B-Wing, Purva Summit, White field Road, Hitec city, Kondapur,
-                <br /> Telangana- 500081
-              </p>
-              <p style={{ marginBottom: "0px" }}>+91- 9663347744</p>
+              <h2 style={{ margin: 0,fontStyle:"normal" }}>SAMCINT SOLUTIONS PVT LTD</h2>
             </div>
-            <hr />
-            <h3 style={{ textAlign: "center", fontSize: "18px" }}>
-              Salary slip for the month of {data.month}
-            </h3>
-            <div style={{ marginBottom: "20px" }}>
-              <p style={{ marginBottom: "0px" }}>
-                <strong>Name of Employee:</strong> {data.name}
-              </p>
-              <p style={{ marginBottom: "0px" }}>
-                <strong>Address:</strong> {data.address}
-              </p>
-              <p style={{ marginBottom: "0px" }}>
-                <strong>Designation:</strong> {data.designation}
-              </p>
-              <p style={{ marginBottom: "0px" }}>
-                <strong>Month:</strong> {data.month}
-              </p>
-              <p style={{ marginBottom: "0px" }}>
-                <strong>DOJ:</strong> {data.date_of_joining}
-              </p>
-              <p style={{ marginBottom: "0px" }}>
-                <strong>Days in Month:</strong> {totalDaysInMonth}
-              </p>
-              <p style={{ marginBottom: "0px" }}>
-                <strong>LOP Days:</strong>{30 - Number(data.daysWorked)}
-              </p>
+
+            <div style={{ textAlign: "center", marginBottom: "20px" }}>
+              <h3>Payslip For: {data.month}</h3>
+              <p>Amount in INR</p>
             </div>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                marginBottom: "0px",
-              }}
-            >
+
+            <Table bordered size="sm" style={{ fontSize: '12px', lineHeight: '1.2', margin: '10' }}>
+              <tbody>
+                {[
+                  ["Employee Code", userData.username || '-', "Employee Name", data.name],
+                  ["Bank", userData.user_financial_info.bankName || '-', "A/c No", userData.user_financial_info.accountNumber || '-'],
+                  ["DOJ", data.date_of_joining, "LOP Days", `${30 - Number(data.daysWorked)}`],
+                  ["PF A/c No", data.pfAccountNumber || '-', "STD Days", totalDaysInMonth],
+                  ["PF UAN", data.pfUAN || '-', "No. of Days Paid", data.daysWorked],
+                  ["Department", userData.department.departmentName, "Designation", userData.jobs[0].jobTitle],
+                  ["Location", data.address, "Previous Month LOP", data.previousMonthLop || '-'],
+                  ["ESI No", data.esiNumber || '-', "Employee Class", data.employeeClass || '-']
+                ].map(([label1, value1, label2, value2], idx) => (
+                  <tr key={idx}>
+                    <td><strong>{label1}</strong></td>
+                    <td>{value1}</td>
+                    <td><strong>{label2}</strong></td>
+                    <td>{value2}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+
+            <Table bordered size="sm" className="mt-4" style={{ fontSize: '12px', lineHeight: '1.2', margin: '0' }}>
               <thead>
                 <tr>
-                  <th style={{ border: "1px solid #000", padding: "8px" }}>
-                    Earnings
-                  </th>
-                  <th style={{ border: "1px solid #000", padding: "8px" }}>
-                    Amount (Rs.)
-                  </th>
-                  <th style={{ border: "1px solid #000", padding: "8px" }}>
-                    Deductions
-                  </th>
-                  <th style={{ border: "1px solid #000", padding: "8px" }}>
-                    Amount (Rs.)
-                  </th>
+                  <th>Earnings</th>
+                  <th>Amount (Rs.)</th>
+                  <th>Deductions</th>
+                  <th>Amount (Rs.)</th>
                 </tr>
               </thead>
               <tbody>
+                {[
+                  ["Basic", data.basic_salary, "PF Employee Cont.", data.employee_pf],
+                  ["House Rent Allowance", data.hra, "Professional Tax", data.professional_tax],
+                  ["Children Education Allowance", data.childrenEducationAllowance || '-', "VPF", data.vpf || '-'],
+                  ["Children Hostel Allowance", data.childrenHostelAllowance || '-', "Income Tax", data.tds],
+                  ["Leave Travel Assistance", data.lta || '-', "", ""],
+                  ["Self-Owned Vehicle Expenses", data.vehicleExpenses || '-', "", ""],
+                  ["Medical", data.medical_allowance || "-", "", ""],
+                  ["Meal Allowance", data.mealAllowance || '-', "", ""],
+                  ["Flexi Allowance", data.flexiAllowance || '-', "", ""],
+                  ["Monthly Joining Bonus", data.joiningBonus || '-', "", ""],
+                  ["Transportation Allowance", data.conveyance_allowance || '-', "", ""]
+                ].map(([earningsLabel, earningsValue, deductionsLabel, deductionsValue], idx) => (
+                  <tr key={idx}>
+                    <td>{earningsLabel}</td>
+                    <td>{earningsValue}</td>
+                    <td>{deductionsLabel}</td>
+                    <td>{deductionsValue}</td>
+                  </tr>
+                ))}
                 <tr>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    Basic Salary
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    {data.basic_salary}
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>TDS</td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    {data.tds}
-                  </td>
+                  <td><strong>GROSS EARNINGS</strong></td>
+                  <td><strong>{data.total_earnings}</strong></td>
+                  <td><strong>GROSS DEDUCTIONS</strong></td>
+                  <td><strong>{data.total_deductions}</strong></td>
                 </tr>
                 <tr>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>H.R.A</td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    {data.hra}
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    <strong>NET PAY</strong>: {netPay}
                   </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    Professional tax
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    {data.professional_tax}
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    Conveyance Allowance
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    {data.conveyance_allowance}
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    Employee PF
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    {data.employee_pf}
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    Special Allowance
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    {data.special_allowance}
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>Others</td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    {data.other_deductions}
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    Medical Allowance
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    {data.medical_allowance}
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}></td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}></td>
                 </tr>
               </tbody>
-              <tfoot>
-                <tr>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    <strong>Total Earnings</strong>
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    {data.total_earnings}
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    <strong>Total Deductions</strong>
-                  </td>
-                  <td style={{ border: "1px solid #000", padding: "8px" }}>
-                    {data.total_deductions}
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-            <div style={{ textAlign: "right", marginBottom: "20px" }}>
-              <p>
-                <strong>Net Pay:</strong>
-                {netPay}
-              </p>
-            </div>
-            <div>
-              <p>
-                <strong>For SAMCINT SOLUTIONS PVT LTD</strong>
-              </p>
-              <p>
-                This is a system generated payslip and does not require any signature
-              </p>
-            </div>
-            {/* <hr />
-            <p style={{ textAlign: "center" }}>
-              4th Floor, B-Wing , Purva Summit, White field Road, Hitec city ,
-              Kondapur,
-              <br /> Telangana- 500081
-            </p> */}
+            </Table>
+
+            <p style={{ textAlign: "center", marginTop: "10px", fontSize: "10px" }}>
+              ** This is a computer-generated payslip and does not require a signature or stamp.
+            </p>
           </div>
         )}
       </Card.Body>
