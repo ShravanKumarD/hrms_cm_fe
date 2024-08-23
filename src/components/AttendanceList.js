@@ -92,10 +92,26 @@ const AttendanceList = () => {
   };
 
   const theme = createTheme({
+    palette: {
+      primary: {
+        main: "#1976d2",
+      },
+      secondary: {
+        main: "#dc004e",
+      },
+      background: {
+        default: "#f5f5f5",
+      },
+    },
     overrides: {
       MuiTableCell: {
         root: {
-          padding: "6px",
+          padding: "12px",
+        },
+      },
+      MuiButton: {
+        root: {
+          textTransform: "none",
         },
       },
     },
@@ -113,8 +129,14 @@ const AttendanceList = () => {
   };
 
   const ActionButton = ({ variant, icon, label, onClick }) => (
-    <Button size="sm" variant={variant} onClick={onClick} className="mx-1 mb-1">
-      <i className={`fas fa-${icon}`}></i> {label}
+    <Button
+      size="sm"
+      variant={variant}
+      onClick={onClick}
+      className="mx-1 mb-1"
+      style={{ minWidth: "80px" }}
+    >
+      <i className={`fas fa-${icon} mr-1`}></i> {label}
     </Button>
   );
 
@@ -311,8 +333,8 @@ const AttendanceList = () => {
               <i className="fa fa-plus" /> Add Attendance Record
             </Button>
           </h4>
-          <Card className="main-card">
-            <Card.Header>
+          <Card className="main-card" elevation={3}>
+            <Card.Header className="bg-primary text-white">
               <strong>Attendance List</strong>
             </Card.Header>
             <Card.Body>
@@ -389,19 +411,19 @@ const AttendanceList = () => {
                   title="Attendance Records"
                   actions={[
                     {
-                      icon: () => <i className="fas fa-file-download"></i>,
+                      icon: () => <i className="fas fa-calendar-day"></i>,
                       tooltip: "Download Today's Attendance",
                       isFreeAction: true,
                       onClick: () => downloadTodaysAttendance(),
                     },
                     {
-                      icon: () => <i className="fas fa-calendar-alt"></i>,
+                      icon: () => <i className="fas fa-calendar-week"></i>,
                       tooltip: "Download Month's Attendance",
                       isFreeAction: true,
                       onClick: () => downloadThisMonthsAttendance(),
                     },
                     {
-                      icon: () => <i className="fas fa-calendar-check"></i>,
+                      icon: () => <i className="fas fa-calendar"></i>,
                       tooltip: "Download Year's Attendance",
                       isFreeAction: true,
                       onClick: () => downloadThisYearsAttendance(),

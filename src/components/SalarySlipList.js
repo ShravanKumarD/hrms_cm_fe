@@ -33,7 +33,7 @@ const SalarySlipList = () => {
         // Format any other date fields as needed
       }));
       setSalarySlips(formattedSlips);
-      console.log("Salary slips fetched successfully",formattedSlips);
+      console.log("Salary slips fetched successfully", formattedSlips);
     } catch (error) {
       console.error("Failed to fetch salary slips:", error);
     }
@@ -104,27 +104,6 @@ const SalarySlipList = () => {
               <ThemeProvider theme={theme}>
                 <MaterialTable
                   columns={[
-                    { title: "ID", field: "id" },
-                    { title: "Name", field: "name" },
-                    { title: "User ID", field: "userId" },
-                    { title: "Address", field: "address" },
-                    { title: "Designation", field: "designation" },
-                    { title: "Month", field: "month" },
-                    { title: "Date of Joining", field: "date_of_joining" },
-                    { title: "Basic Salary", field: "basic_salary" },
-                    { title: "HRA", field: "hra" },
-                    {
-                      title: "Conveyance Allowance",
-                      field: "conveyance_allowance",
-                    },
-                    { title: "Special Allowance", field: "special_allowance" },
-                    { title: "Medical Allowance", field: "medical_allowance" },
-                    { title: "Total Earnings", field: "total_earnings" },
-                    { title: "TDS", field: "tds" },
-                    { title: "Professional Tax", field: "professional_tax" },
-                    { title: "Employee PF", field: "employee_pf" },
-                    { title: "Other Deductions", field: "other_deductions" },
-                    { title: "Total Deductions", field: "total_deductions" },
                     {
                       title: "Action",
                       render: (rowData) => (
@@ -150,6 +129,27 @@ const SalarySlipList = () => {
                         </div>
                       ),
                     },
+                    { title: "ID", field: "id" },
+                    { title: "Name", field: "name" },
+                    { title: "User ID", field: "userId" },
+                    { title: "Address", field: "address" },
+                    { title: "Designation", field: "designation" },
+                    { title: "Month", field: "month" },
+                    { title: "Date of Joining", field: "date_of_joining" },
+                    { title: "Basic Salary", field: "basic_salary" },
+                    { title: "HRA", field: "hra" },
+                    {
+                      title: "Conveyance Allowance",
+                      field: "conveyance_allowance",
+                    },
+                    { title: "Special Allowance", field: "special_allowance" },
+                    { title: "Medical Allowance", field: "medical_allowance" },
+                    { title: "Total Earnings", field: "total_earnings" },
+                    { title: "TDS", field: "tds" },
+                    { title: "Professional Tax", field: "professional_tax" },
+                    { title: "Employee PF", field: "employee_pf" },
+                    { title: "Other Deductions", field: "other_deductions" },
+                    { title: "Total Deductions", field: "total_deductions" },
                   ]}
                   data={salarySlips}
                   options={{
