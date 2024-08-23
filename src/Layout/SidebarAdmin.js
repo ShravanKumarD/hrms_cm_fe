@@ -20,7 +20,7 @@ export default class SidebarAdmin extends Component {
 
   render() {
     return (
-      <aside className="main-sidebar sidebar-dark-primary elevation-4">
+      <aside className="main-sidebar  elevation-4">
         {/* Brand Logo */}
         <img src={Logo} className="logo-main" alt="company-logo" />
         <a href="/" className="brand-link">
