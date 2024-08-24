@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Card, Button, Form } from "react-bootstrap";
+import { Card, Button } from "react-bootstrap";
 import axios from "axios";
 import moment from "moment";
 import MaterialTable from "material-table";
@@ -7,8 +7,83 @@ import { ThemeProvider, createTheme } from "@material-ui/core/styles";
 import SalarySlipAddModal from "./SalarySlipAddModal";
 import SalarySlipEditModal from "./SalarySlipEditModal";
 import SalarySlipDeleteModal from "./SalarySlipDeleteModal";
-import SalarySlipPreviewModal from "./SalarySlipPreviewModal"; // Import the preview modal
+import SalarySlipPreviewModal from "./SalarySlipPreviewModal";
 import API_BASE_URL from "../env";
+
+const convertToCSV = (data) => {
+  const headers = [
+    "ID",
+    "Name",
+    "Month",
+    "Basic Salary",
+    "HRA",
+    "Conveyance Allowance",
+    "Special Allowance",
+    "Medical Allowance",
+    "Total Earnings",
+    "TDS",
+    "Professional Tax",
+    "Employee PF",
+    "Other Deductions",
+    "Total Deductions",
+  ];
+
+  const csvRows = [];
+  csvRows.push(headers.join(","));
+
+  data.forEach((row) => {
+    const values = headers.map((header) => {
+      const key = header.toLowerCase().replace(/ /g, "_");
+      if (key === "month") {
+        return moment(row[key], "M, YYYY").format("MMM-YYYY");
+      }
+      return JSON.stringify(row[key]) || "";
+    });
+    csvRows.push(values.join(","));
+  });
+
+  return csvRows.join("\n");
+};
+
+const downloadCSV = (data, filterBy) => {
+  const filteredData = data
+    .filter((record) => {
+      if (filterBy.month) {
+        return (
+          moment(record.month, "M, YYYY").format("MMM-YYYY") === filterBy.month
+        );
+      }
+      if (filterBy.year) {
+        return moment(record.month, "M, YYYY").format("YYYY") === filterBy.year;
+      }
+      return true;
+    })
+    .map((record) => {
+      const { userId, address, designation, dateOfJoining, ...rest } = record;
+      return rest;
+    });
+
+  const csv = convertToCSV(filteredData);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+
+  if (filterBy.month) {
+    link.setAttribute(
+      "download",
+      `salary_slips_${filterBy.month.replace(", ", "-")}.csv`
+    );
+  } else if (filterBy.year) {
+    link.setAttribute("download", `salary_slips_${filterBy.year}.csv`);
+  } else {
+    link.setAttribute("download", "salary_slips.csv");
+  }
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
 const SalarySlipList = () => {
   const [salarySlips, setSalarySlips] = useState([]);
@@ -30,7 +105,7 @@ const SalarySlipList = () => {
       const formattedSlips = response.data.map((slip) => ({
         ...slip,
         date_of_joining: moment(slip.date_of_joining).format("YYYY-MM-DD"),
-        // Format any other date fields as needed
+        month: moment(slip.month, "M, YYYY").format("M, YYYY"),
       }));
       setSalarySlips(formattedSlips);
       console.log("Salary slips fetched successfully", formattedSlips);
@@ -41,7 +116,6 @@ const SalarySlipList = () => {
 
   useEffect(() => {
     fetchData();
-    console.log(selectedSalarySlip, "selectedSalarySlip");
   }, [fetchData]);
 
   const handleModalShow = (modalType, slip = null) => {
@@ -72,13 +146,8 @@ const SalarySlipList = () => {
   });
 
   const ActionButton = ({ variant, icon, label, onClick }) => (
-    <Button
-      size="sm"
-      variant={variant}
-      onClick={onClick}
-      className="mx-1 mb-1" // Add mb-2 for bottom margin
-    >
-      <i className={`fas fa-${icon}`}></i> {label}
+    <Button size="sm" variant={variant} onClick={onClick} className="mx-1 mb-1">
+      <i className={`fa fa-${icon}`}></i> {label}
     </Button>
   );
 
@@ -108,12 +177,6 @@ const SalarySlipList = () => {
                       title: "Action",
                       render: (rowData) => (
                         <div className="text-center">
-                          {/* <ActionButton
-                            variant="info"
-                            icon="edit"
-                            label="Edit"
-                            onClick={() => handleModalShow("edit", rowData)}
-                          /> */}
                           <ActionButton
                             variant="primary"
                             icon="eye"
@@ -134,7 +197,12 @@ const SalarySlipList = () => {
                     { title: "User ID", field: "userId" },
                     { title: "Address", field: "address" },
                     { title: "Designation", field: "designation" },
-                    { title: "Month", field: "month" },
+                    {
+                      title: "Month",
+                      field: "month",
+                      render: (rowData) =>
+                        moment(rowData.month, "M, YYYY").format("MMM, YYYY"),
+                    },
                     { title: "Date of Joining", field: "date_of_joining" },
                     { title: "Basic Salary", field: "basic_salary" },
                     { title: "HRA", field: "hra" },
@@ -159,6 +227,32 @@ const SalarySlipList = () => {
                     pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
                   }}
                   title="Salary Slips"
+                  actions={[
+                    {
+                      icon: () => <i className="fas fa-download"></i>,
+                      tooltip: "Download All Salary Slips",
+                      isFreeAction: true,
+                      onClick: () => downloadCSV(salarySlips, {}),
+                    },
+                    {
+                      icon: () => <i className="fas fa-file-invoice"></i>,
+                      tooltip: "Download Current Month's Salary Slips",
+                      isFreeAction: true,
+                      onClick: () => {
+                        const currentMonth = moment().format("MMM-YYYY");
+                        downloadCSV(salarySlips, { month: currentMonth });
+                      },
+                    },
+                    {
+                      icon: () => <i className="fas fa-calendar-check"></i>,
+                      tooltip: "Download Current Year's Salary Slips",
+                      isFreeAction: true,
+                      onClick: () => {
+                        const currentYear = moment().format("YYYY");
+                        downloadCSV(salarySlips, { year: currentYear });
+                      },
+                    },
+                  ]}
                 />
               </ThemeProvider>
             </Card.Body>
@@ -168,30 +262,30 @@ const SalarySlipList = () => {
               show={showModal.edit}
               onHide={closeModal}
               data={selectedSalarySlip}
-              onUpdateSuccess={fetchData} // Refetch data after update
+              onUpdateSuccess={fetchData}
             />
           )}
           {showModal.add && (
             <SalarySlipAddModal
               show={showModal.add}
               onHide={closeModal}
-              onAddSuccess={fetchData} // Refetch data after addition
-              selectedUserId={selectedSalarySlip?.userId} // Pass the selected user's userId
+              onAddSuccess={fetchData}
+              selectedUserId={selectedSalarySlip?.userId}
             />
           )}
           {showModal.delete && (
             <SalarySlipDeleteModal
               show={showModal.delete}
               onHide={closeModal}
-              salarySlipId={selectedSalarySlip.id} // Pass salarySlipId to the modal
-              onDeleteSuccess={fetchData} // Refetch data after deletion
+              salarySlipId={selectedSalarySlip.id}
+              onDeleteSuccess={fetchData}
             />
           )}
           {showModal.preview && (
             <SalarySlipPreviewModal
               show={showModal.preview}
               onHide={closeModal}
-              data={selectedSalarySlip} // Pass selected salary slip data to the preview modal
+              data={selectedSalarySlip}
             />
           )}
         </div>
