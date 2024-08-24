@@ -15,19 +15,30 @@ import API_BASE_URL from "../env";
 // Custom Hooks
 const useLocation = () => {
   const [location, setLocation] = useState({ latitude: "", longitude: "" });
+  const [locationError, setLocationError] = useState("");
 
-  const fetchUserLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      (position) =>
-        setLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        }),
-      (error) => console.error("Error fetching location:", error)
-    );
+  const fetchUserLocation = async () => {
+    try {
+      await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+            setLocationError(""); // Clear any previous errors
+            resolve();
+          },
+          (error) => reject(error)
+        );
+      });
+    } catch (error) {
+      console.error("Error fetching location:", error);
+      setLocationError("Failed to fetch location. Please try again.");
+    }
   };
 
-  return { location, fetchUserLocation };
+  return { location, fetchUserLocation, locationError };
 };
 
 const useAttendance = () => {
@@ -36,8 +47,10 @@ const useAttendance = () => {
   const [status] = useState("Present");
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [todayAttendance, setTodayAttendance] = useState(null);
+  const [isWorking, setIsWorking] = useState(false);
+  const [incompleteAttendance, setIncompleteAttendance] = useState(null);
 
-  const fetchAttendanceRecords = async () => {
+  const fetchAttendanceRecords = async (retries = 3) => {
     try {
       axios.defaults.baseURL = API_BASE_URL;
       const response = await axios.get(
@@ -48,9 +61,19 @@ const useAttendance = () => {
       );
       setAttendanceRecords(response.data || []);
       updateTodayAttendance(response.data);
+      checkIncompleteAttendance(response.data);
     } catch (error) {
       console.error("Error fetching attendance records:", error);
-      throw error;
+      if (retries > 0) {
+        console.log(`Retrying... (${retries} retries left)`);
+        // Wait for a short period before retrying
+        await new Promise((res) => setTimeout(res, 1000));
+        await fetchAttendanceRecords(retries - 1);
+      } else {
+        console.log(
+          "Failed to fetch attendance records after multiple attempts."
+        );
+      }
     }
   };
 
@@ -60,6 +83,45 @@ const useAttendance = () => {
       (record) => moment(record.date).format("YYYY-MM-DD") === todayDate
     );
     setTodayAttendance(todayRecord || null);
+    setIsWorking(todayRecord && !todayRecord.clockoutTime);
+  };
+
+  const checkIncompleteAttendance = (records) => {
+    const yesterdayDate = moment().subtract(1, "days").format("YYYY-MM-DD");
+    const incompleteRecord = records.find(
+      (record) =>
+        moment(record.date).format("YYYY-MM-DD") === yesterdayDate &&
+        !record.clockoutTime
+    );
+    setIncompleteAttendance(incompleteRecord || null);
+  };
+
+  const closeIncompleteAttendance = async () => {
+    if (incompleteAttendance) {
+      try {
+        const endTimeString = "23:59:59";
+        await axios.put(
+          `api/attendance/clock-out`,
+          {
+            userId,
+            date: incompleteAttendance.date,
+            clockoutTime: endTimeString,
+            latitudeClockout: null,
+            longitudeClockout: null,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setIncompleteAttendance(null);
+        await fetchAttendanceRecords();
+      } catch (error) {
+        console.error("Error closing incomplete attendance:", error);
+        throw error;
+      }
+    }
   };
 
   return {
@@ -68,27 +130,42 @@ const useAttendance = () => {
     status,
     attendanceRecords,
     todayAttendance,
+    isWorking,
+    incompleteAttendance,
     fetchAttendanceRecords,
+    closeIncompleteAttendance,
   };
 };
 
 const WorkControls = ({
-  isStarted,
+  isWorking,
   onStart,
   onEnd,
-  canStartWork,
-  canEndWork,
+  todayAttendance,
+  incompleteAttendance,
 }) => (
   <div className="text-center mb-4">
-    {!isStarted && canStartWork && (
-      <Button variant="success" size="lg" onClick={onStart}>
-        <strong>Start Work</strong>
+    {!isWorking && (
+      <Button
+        variant="success"
+        size="lg"
+        onClick={onStart}
+        disabled={todayAttendance && todayAttendance.clockoutTime}
+      >
+        <strong>
+          {incompleteAttendance ? "Start New Work Day" : "Start Work"}
+        </strong>
       </Button>
     )}
-    {isStarted && canEndWork && (
+    {isWorking && (
       <Button variant="danger" size="lg" onClick={onEnd}>
         End Work
       </Button>
+    )}
+    {todayAttendance && todayAttendance.clockoutTime && (
+      <div className="text-muted mt-2">
+        You've already ended work for today.
+      </div>
     )}
   </div>
 );
@@ -96,10 +173,8 @@ const WorkControls = ({
 const WorkTimes = ({ record }) => {
   if (!record) return null;
   const { clockinTime, clockoutTime, status } = record;
-  // it can be in YYYY-MM-DD HH:mm:ss format or HH:mm:ss format
   const clockin = moment(clockinTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
   const clockout = moment(clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
-  console.log(clockin);
 
   return (
     <div className="d-flex justify-content-between mx-3">
@@ -113,11 +188,7 @@ const Timeline = ({ todayAttendance }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    console.log(todayAttendance);
     if (todayAttendance && todayAttendance.clockinTime) {
-      // start time: 05:00:19
-      // end time = now
-      // total hours = end - start
       const updateProgress = () => {
         const now = moment();
         const clockin = moment(todayAttendance.clockinTime, "HH:mm:ss");
@@ -128,32 +199,23 @@ const Timeline = ({ todayAttendance }) => {
         } else {
           hoursWorked = now.diff(clockin, "hours", true);
         }
-        console.log(hoursWorked + " hours worked");
-
         setProgress((hoursWorked / 9) * 100); // Assuming 9 hours workday
       };
 
       updateProgress();
-
-      console.log("Progress:" + progress);
-
-      const interval = setInterval(updateProgress, 1000); // Update every minute
-
+      const interval = setInterval(updateProgress, 1000);
       return () => clearInterval(interval);
     }
   }, [todayAttendance]);
 
   if (!todayAttendance || !todayAttendance.clockinTime) return null;
 
-  // Function to calculate color based on progress
   const getColor = (progress) => {
     if (progress > 100) {
-      // need to color green to black on 200%;
       const red = Math.round(255 * (1 - progress / 200));
       const green = Math.round(255 * (progress / 200));
       return `rgb(${red}, ${green}, 0)`;
     }
-
     const red = Math.round(255 * (1 - progress / 100));
     const green = Math.round(255 * (progress / 100));
     return `rgb(${red}, ${green}, 0)`;
@@ -218,6 +280,7 @@ const ConfirmationModal = ({ show, onHide, onConfirm, totalTime }) => (
 
 // Main Component
 const LightweightStartWork = () => {
+  const [currentTime, setCurrentTime] = useState(new Date());
   const [workState, setWorkState] = useState({
     startTime: null,
     endTime: null,
@@ -234,54 +297,59 @@ const LightweightStartWork = () => {
     status,
     attendanceRecords,
     todayAttendance,
+    isWorking,
+    incompleteAttendance,
     fetchAttendanceRecords,
+    closeIncompleteAttendance,
   } = useAttendance();
 
   useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
     fetchUserLocation();
-    loadSavedWorkState();
     fetchAttendanceRecords().catch((err) =>
       setError("Failed to fetch attendance records")
     );
   }, []);
 
-  const loadSavedWorkState = () => {
-    const savedStartTime = localStorage.getItem("startTime");
-    const savedIsStarted = localStorage.getItem("isStarted") === "true";
-    if (savedStartTime) {
-      setWorkState({
-        ...workState,
-        startTime: new Date(savedStartTime),
-        isStarted: savedIsStarted,
-      });
-    }
-  };
-
   const handleStart = async () => {
+    if (incompleteAttendance) {
+      try {
+        await closeIncompleteAttendance();
+        setError("Previous day's work session has been closed automatically.");
+      } catch (error) {
+        setError("Failed to close previous work session. Please try again.");
+        return;
+      }
+    }
+
+    if (todayAttendance && todayAttendance.clockoutTime) {
+      setError("You've already ended work for today. You cannot start again.");
+      return;
+    }
+
     try {
       const start = new Date();
-      const dateString = moment(start).format("YYYY-MM-DD HH:mm:ss");
       const timeString = moment(start).format("HH:mm:ss");
-      setWorkState({ ...workState, startTime: start, isStarted: true });
-      localStorage.setItem("startTime", start.toISOString());
-      localStorage.setItem("isStarted", "true");
 
       axios.defaults.baseURL = API_BASE_URL;
-      const response = await axios.post(
+      await axios.post(
         "/api/attendance/clock-in",
         {
           userId,
           date,
           status,
           clockinTime: timeString,
-          latitudeClockin: location.latitude,
-          longitudeClockin: location.longitude,
+          latitudeClockin: location.latitude ? location.latitude : null,
+          longitudeClockin: location.longitude ? location.longitude : null,
         },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      localStorage.setItem("attendanceId", response.data.attendanceId);
       await fetchAttendanceRecords();
     } catch (error) {
       console.error("Error marking start time:", error);
@@ -290,24 +358,13 @@ const LightweightStartWork = () => {
   };
 
   const handleEnd = () => {
-    const end = new Date();
-    const duration = (end - workState.startTime) / 1000 / 60 / 60; // Duration in hours
-    setWorkState({
-      ...workState,
-      endTime: end,
-      totalTime: duration.toFixed(2),
-    });
     setModal({ show: true, action: "end" });
   };
 
   const handleConfirmEnd = async () => {
     try {
       const end = new Date();
-      const dateString = moment(end).format("YYYY-MM-DD HH:mm:ss");
-      const timeString = moment(end).format("HH:mm:ss");
-      setWorkState({ ...workState, endTime: end, isStarted: false });
-      localStorage.removeItem("startTime");
-      localStorage.removeItem("isStarted");
+      const endTimeString = moment(end).format("HH:mm:ss");
 
       axios.defaults.baseURL = API_BASE_URL;
       await axios.put(
@@ -315,7 +372,7 @@ const LightweightStartWork = () => {
         {
           userId,
           date,
-          clockoutTime: timeString,
+          clockoutTime: endTimeString,
           latitudeClockout: location.latitude,
           longitudeClockout: location.longitude,
         },
@@ -333,24 +390,26 @@ const LightweightStartWork = () => {
 
   const handleCloseModal = () => setModal({ ...modal, show: false });
 
-  const canStartWork = !todayAttendance || !todayAttendance.clockoutTime;
-  const canEndWork =
-    workState.isStarted && (!todayAttendance || !todayAttendance.clockoutTime);
-
   return (
     <Container
       className="my-5"
       style={{ paddingLeft: "0px", paddingRight: "0px" }}
     >
       <Card className="p-4 shadow-sm">
-        <h2 className="text-center mb-4">Let's Get to Work</h2>
+        <h2 className="text-center mb-4">Let's get to Work</h2>
         {error && <Alert variant="danger">{error}</Alert>}
+        {incompleteAttendance && (
+          <Alert variant="warning">
+            You have an incomplete work session from yesterday. It will be
+            automatically closed when you start today's work.
+          </Alert>
+        )}
         <WorkControls
-          isStarted={workState.isStarted}
+          isWorking={isWorking}
           onStart={handleStart}
           onEnd={handleEnd}
-          canStartWork={canStartWork}
-          canEndWork={canEndWork}
+          todayAttendance={todayAttendance}
+          incompleteAttendance={incompleteAttendance}
         />
         <WorkTimes record={todayAttendance} />
         <Timeline todayAttendance={todayAttendance} />
@@ -359,7 +418,7 @@ const LightweightStartWork = () => {
         show={modal.show}
         onHide={handleCloseModal}
         onConfirm={handleConfirmEnd}
-        totalTime={workState.totalTime}
+        totalTime={todayAttendance?.totalHours || 0}
       />
     </Container>
   );

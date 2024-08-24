@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
-import {
-  Container,
-  Card,
-  Alert,
-  Button,
-  Modal,
-  Table,
-  ProgressBar,
-} from "react-bootstrap";
+import { Container, Card, Alert, Button, Modal, Table } from "react-bootstrap";
 import "./startwork.css";
 import API_BASE_URL from "../env";
 import { quotes } from "../constants/quotes";
@@ -49,6 +41,8 @@ const useAttendance = () => {
   const [status] = useState("Present");
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [todayAttendance, setTodayAttendance] = useState(null);
+  const [isWorking, setIsWorking] = useState(false);
+  const [incompleteAttendance, setIncompleteAttendance] = useState(null);
 
   const fetchAttendanceRecords = async () => {
     try {
@@ -61,6 +55,7 @@ const useAttendance = () => {
       );
       setAttendanceRecords(response.data || []);
       updateTodayAttendance(response.data);
+      checkIncompleteAttendance(response.data);
     } catch (error) {
       console.error("Error fetching attendance records:", error);
       throw error;
@@ -73,6 +68,45 @@ const useAttendance = () => {
       (record) => moment(record.date).format("YYYY-MM-DD") === todayDate
     );
     setTodayAttendance(todayRecord || null);
+    setIsWorking(todayRecord && !todayRecord.clockoutTime);
+  };
+
+  const checkIncompleteAttendance = (records) => {
+    const yesterdayDate = moment().subtract(1, "days").format("YYYY-MM-DD");
+    const incompleteRecord = records.find(
+      (record) =>
+        moment(record.date).format("YYYY-MM-DD") === yesterdayDate &&
+        !record.clockoutTime
+    );
+    setIncompleteAttendance(incompleteRecord || null);
+  };
+
+  const closeIncompleteAttendance = async () => {
+    if (incompleteAttendance) {
+      try {
+        const endTimeString = "23:59:59";
+        await axios.put(
+          `api/attendance/clock-out`,
+          {
+            userId,
+            date: incompleteAttendance.date,
+            clockoutTime: endTimeString,
+            latitudeClockout: null,
+            longitudeClockout: null,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setIncompleteAttendance(null);
+        await fetchAttendanceRecords();
+      } catch (error) {
+        console.error("Error closing incomplete attendance:", error);
+        throw error;
+      }
+    }
   };
 
   return {
@@ -81,27 +115,14 @@ const useAttendance = () => {
     status,
     attendanceRecords,
     todayAttendance,
+    isWorking,
+    incompleteAttendance,
     fetchAttendanceRecords,
+    closeIncompleteAttendance,
   };
 };
 
 // Subcomponents
-const CurrentTimeDisplay = ({ currentTime }) => (
-  <div className="text-center mb-4">
-    <h3 className="display-4" style={{ fontSize: "1.5rem" }}>
-      Current Time:
-      <strong>
-        {currentTime.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-          second: "numeric",
-          hour12: true,
-        })}
-      </strong>
-    </h3>
-  </div>
-);
-
 const QuoteScroller = ({ quote }) => (
   <div className="quote-scroller">
     <blockquote className="quote-content">
@@ -113,22 +134,34 @@ const QuoteScroller = ({ quote }) => (
 );
 
 const WorkControls = ({
-  isStarted,
+  isWorking,
   onStart,
   onEnd,
-  canStartWork,
-  canEndWork,
+  todayAttendance,
+  incompleteAttendance,
 }) => (
   <div className="text-center mb-4">
-    {!isStarted && canStartWork && (
-      <Button variant="success" size="lg" onClick={onStart}>
-        <strong>Start Work</strong>
+    {!isWorking && (
+      <Button
+        variant="success"
+        size="lg"
+        onClick={onStart}
+        disabled={todayAttendance && todayAttendance.clockoutTime}
+      >
+        <strong>
+          {incompleteAttendance ? "Start New Work Day" : "Start Work"}
+        </strong>
       </Button>
     )}
-    {isStarted && canEndWork && (
+    {isWorking && (
       <Button variant="danger" size="lg" onClick={onEnd}>
         End Work
       </Button>
+    )}
+    {todayAttendance && todayAttendance.clockoutTime && (
+      <div className="text-muted mt-2">
+        You've already ended work for today.
+      </div>
     )}
   </div>
 );
@@ -136,10 +169,8 @@ const WorkControls = ({
 const WorkTimes = ({ record }) => {
   if (!record) return null;
   const { clockinTime, clockoutTime, status } = record;
-  // it can be in YYYY-MM-DD HH:mm:ss format or HH:mm:ss format
   const clockin = moment(clockinTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
   const clockout = moment(clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
-  console.log(clockin);
 
   return (
     <div className="d-flex justify-content-between mx-3">
@@ -154,26 +185,13 @@ const AttendanceTable = ({ records, date }) => {
     <div className="mt-4">
       <h4>Recent Attendance Records</h4>
       <Table bordered hover responsive>
-        {/* <thead>
-          <tr> */}
-        {/* <th>ID</th> */}
-        {/* <th>Date</th> */}
-        {/* <th>Day</th>
-            <th>Clock In Time</th>
-            <th>Clock Out Time</th>
-            <th>Status</th>
-          </tr>
-        </thead> */}
         <tbody>
           {records.length > 0 ? (
             records
-              .slice() // Create a shallow copy of the array
-              .reverse() // Reverse the order of the records
+              .slice()
+              .reverse()
               .map((record) => (
                 <tr key={record.id}>
-                  {/* <td>{record.id}</td> */}
-                  {/* <td>{moment(record.date).format("Do MMM YYYY")}</td> */}
-                  {/* need date dd also */}
                   <td>{moment(record.date).format("D MMM  -  dddd")}</td>
                   <td>
                     {record.status === "Absent"
@@ -210,7 +228,6 @@ const AttendanceTable = ({ records, date }) => {
 const TodayAttendance = ({ record }) => {
   if (!record) return null;
   const { clockinTime, clockoutTime, status } = record;
-  // it can be in YYYY-MM-DD HH:mm:ss format or HH:mm:ss format
   const clockin = moment(clockinTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
   const clockout = moment(clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
 
@@ -218,21 +235,8 @@ const TodayAttendance = ({ record }) => {
     <div className="mt-4">
       <h4>Today's Attendance Record</h4>
       <Table bordered hover responsive>
-        {/* <thead>
-          <tr> */}
-        {/* <th>ID</th> */}
-        {/* i need day instead of Date */}
-        {/* <th>Date</th> */}
-        {/* <th>Day</th>
-            <th>Clock In Time</th>
-            <th>Clock Out Time</th>
-            <th>Status</th>
-          </tr>
-        </thead> */}
         <tbody>
           <tr key={record.id}>
-            {/* <td>{record.id}</td> */}
-            {/* <td>{moment(record.date).format("Do MMM YYYY")}</td> */}
             <td>{moment(record.date).format("D MMM  -  dddd")}</td>
             <td>{status === "Absent" ? "" : clockin.format("h:mm A")}</td>
             <td>
@@ -254,11 +258,7 @@ const Timeline = ({ todayAttendance }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    console.log(todayAttendance);
     if (todayAttendance && todayAttendance.clockinTime) {
-      // start time: 05:00:19
-      // end time = now
-      // total hours = end - start
       const updateProgress = () => {
         const now = moment();
         const clockin = moment(todayAttendance.clockinTime, "HH:mm:ss");
@@ -269,32 +269,23 @@ const Timeline = ({ todayAttendance }) => {
         } else {
           hoursWorked = now.diff(clockin, "hours", true);
         }
-        console.log(hoursWorked + " hours worked");
-
         setProgress((hoursWorked / 9) * 100); // Assuming 9 hours workday
       };
 
       updateProgress();
-
-      console.log("Progress:" + progress);
-
-      const interval = setInterval(updateProgress, 1000); // Update every minute
-
+      const interval = setInterval(updateProgress, 1000);
       return () => clearInterval(interval);
     }
   }, [todayAttendance]);
 
   if (!todayAttendance || !todayAttendance.clockinTime) return null;
 
-  // Function to calculate color based on progress
   const getColor = (progress) => {
     if (progress > 100) {
-      // need to color green to black on 200%;
       const red = Math.round(255 * (1 - progress / 200));
       const green = Math.round(255 * (progress / 200));
       return `rgb(${red}, ${green}, 0)`;
     }
-
     const red = Math.round(255 * (1 - progress / 100));
     const green = Math.round(255 * (progress / 100));
     return `rgb(${red}, ${green}, 0)`;
@@ -321,7 +312,7 @@ const Timeline = ({ todayAttendance }) => {
         />
       </div>
       <div className="text-center mt-3">
-      <div>
+        <div>
           {progress === 0
             ? todayAttendance.clockoutTime
               ? "0%"
@@ -332,6 +323,9 @@ const Timeline = ({ todayAttendance }) => {
             ? "Work completed (100%)"
             : `${parseFloat(progress.toFixed(2))}% supercharged!`}
         </div>
+      </div>
+      <div className="text-center mt-3">
+        <div>Shift from 9:30 AM to 6:30 PM</div>
       </div>
     </div>
   );
@@ -360,12 +354,6 @@ const ConfirmationModal = ({ show, onHide, onConfirm, totalTime }) => (
 // Main Component
 const StartWork = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [workState, setWorkState] = useState({
-    startTime: null,
-    endTime: null,
-    isStarted: false,
-    totalTime: 0,
-  });
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
   const [error, setError] = useState(null);
   const [modal, setModal] = useState({ show: false, action: "" });
@@ -377,7 +365,10 @@ const StartWork = () => {
     status,
     attendanceRecords,
     todayAttendance,
+    isWorking,
+    incompleteAttendance,
     fetchAttendanceRecords,
+    closeIncompleteAttendance,
   } = useAttendance();
 
   useEffect(() => {
@@ -394,34 +385,33 @@ const StartWork = () => {
 
   useEffect(() => {
     fetchUserLocation();
-    loadSavedWorkState();
     fetchAttendanceRecords().catch((err) =>
       setError("Failed to fetch attendance records")
     );
   }, []);
 
-  const loadSavedWorkState = () => {
-    const savedStartTime = localStorage.getItem("startTime");
-    const savedIsStarted = localStorage.getItem("isStarted") === "true";
-    if (savedStartTime) {
-      setWorkState({
-        ...workState,
-        startTime: new Date(savedStartTime),
-        isStarted: savedIsStarted,
-      });
-    }
-  };
-
   const handleStart = async () => {
+    if (incompleteAttendance) {
+      try {
+        await closeIncompleteAttendance();
+        setError("Previous day's work session has been closed automatically.");
+      } catch (error) {
+        setError("Failed to close previous work session. Please try again.");
+        return;
+      }
+    }
+
+    if (todayAttendance && todayAttendance.clockoutTime) {
+      setError("You've already ended work for today. You cannot start again.");
+      return;
+    }
+
     try {
       const start = new Date();
-      const timeString = moment(start).format("HH:mm:ss"); // Get the current time
-      setWorkState({ ...workState, startTime: start, isStarted: true });
-      localStorage.setItem("startTime", start.toISOString());
-      localStorage.setItem("isStarted", "true");
+      const timeString = moment(start).format("HH:mm:ss");
 
       axios.defaults.baseURL = API_BASE_URL;
-      const response = await axios.post(
+      await axios.post(
         "/api/attendance/clock-in",
         {
           userId,
@@ -435,7 +425,6 @@ const StartWork = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      localStorage.setItem("attendanceId", response.data.attendanceId);
       await fetchAttendanceRecords();
     } catch (error) {
       console.error("Error marking start time:", error);
@@ -450,11 +439,7 @@ const StartWork = () => {
   const handleConfirmEnd = async () => {
     try {
       const end = new Date();
-      const dateString = moment(end).format("YYYY-MM-DD HH:mm:ss");
       const endTimeString = moment(end).format("HH:mm:ss");
-      setWorkState({ ...workState, endTime: endTimeString, isStarted: false });
-      localStorage.removeItem("startTime");
-      localStorage.removeItem("isStarted");
 
       axios.defaults.baseURL = API_BASE_URL;
       await axios.put(
@@ -480,23 +465,24 @@ const StartWork = () => {
 
   const handleCloseModal = () => setModal({ ...modal, show: false });
 
-  const canStartWork = !todayAttendance || !todayAttendance.clockoutTime;
-  const canEndWork =
-    workState.isStarted && (!todayAttendance || !todayAttendance.clockoutTime);
-
   return (
     <Container className="my-5">
       <Card className="p-4 shadow-lg">
         <h2 className="text-center mb-4">Let's get to Work</h2>
         {error && <Alert variant="danger">{error}</Alert>}
-        {/* <CurrentTimeDisplay currentTime={currentTime} /> */}
+        {incompleteAttendance && (
+          <Alert variant="warning">
+            You have an incomplete work session from yesterday. It will be
+            automatically closed when you start today's work.
+          </Alert>
+        )}
         <QuoteScroller quote={quotes[currentQuoteIndex]} />
         <WorkControls
-          isStarted={workState.isStarted}
+          isWorking={isWorking}
           onStart={handleStart}
           onEnd={handleEnd}
-          canStartWork={canStartWork}
-          canEndWork={canEndWork}
+          todayAttendance={todayAttendance}
+          incompleteAttendance={incompleteAttendance}
         />
         <WorkTimes record={todayAttendance} />
         <Timeline todayAttendance={todayAttendance} />
@@ -507,7 +493,7 @@ const StartWork = () => {
         show={modal.show}
         onHide={handleCloseModal}
         onConfirm={handleConfirmEnd}
-        totalTime={workState.totalTime}
+        totalTime={todayAttendance?.totalHours || 0}
       />
     </Container>
   );
