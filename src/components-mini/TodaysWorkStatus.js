@@ -10,7 +10,7 @@ const Badge = styled.span`
     background-color: red;
   }
   &.badge-light-green {
-    background-color: lightgreen;
+    background-color: yellowgreen;
   }
   &.badge-green {
     background-color: green;
