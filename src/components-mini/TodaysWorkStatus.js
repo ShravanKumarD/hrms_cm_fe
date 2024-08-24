@@ -1,104 +1,85 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import moment from "moment";
+import styled from "styled-components";
 import API_BASE_URL from "../env"; // Update the path to your API_BASE_URL
 
-/**
- * Utility function to get the work status for today's attendance.
- *
- * @param {Array} attendances - The array of attendance records.
- * @returns {Array} - An array of objects with user information and their work status.
- */
-const getTodaysWorkStatus = (attendances) => {
-  const today = moment().startOf("day");
+const Badge = styled.span`
+  color: white;
 
-  return attendances
-    .filter((attendance) =>
-      moment(attendance.date, "Do MMM YYYY").isSame(today, "day")
-    )
-    .map((attendance) => {
-      const hasClockin = Boolean(attendance.clockinTime);
-      const hasClockout = Boolean(attendance.clockoutTime);
+  &.badge-danger {
+    background-color: red;
+  }
+  &.badge-light-green {
+    background-color: lightgreen;
+  }
+  &.badge-green {
+    background-color: green;
+  }
+  &.badge-grey {
+    background-color: grey;
+  }
+`;
 
-      let status;
-      if (!hasClockin) {
-        status = "Start";
-      } else if (hasClockin && !hasClockout) {
-        status = "Working";
-      } else if (hasClockin && hasClockout) {
-        status = "Done";
-      } else {
-        status = "Unknown"; // Fallback in case of unexpected data
-      }
-
-      return {
-        ...attendance,
-        status,
-      };
-    });
-};
-
-const TodaysWorkStatus = () => {
-  const [attendances, setAttendances] = useState([]);
-  const [todaysWorkStatus, setTodaysWorkStatus] = useState([]);
-  const [loading, setLoading] = useState(true);
+const TodaysWorkStatus = ({ userId }) => {
+  const [status, setStatus] = useState("Loading...");
   const [error, setError] = useState(null);
 
-  // Fetch attendance data from API and determine today's work status
-  const fetchDataAndDetermineStatus = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get("/api/attendance", {
-        baseURL: API_BASE_URL,
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+  // Fetch today's attendance data for the specified user and determine work status
+  useEffect(() => {
+    const fetchDataAndDetermineStatus = async () => {
+      try {
+        const response = await axios.get(
+          `api/attendance/today/user/${userId}`,
+          {
+            baseURL: API_BASE_URL,
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
-      // Format attendance data
-      const formattedAttendances = response.data.map((attendance) => {
-        const date = moment(attendance.date).format("Do MMM YYYY");
-        return {
-          ...attendance,
-          date,
-        };
-      });
+        const attendanceData = response.data;
+        const hasClockin = Boolean(attendanceData.clockinTime);
+        const hasClockout = Boolean(attendanceData.clockoutTime);
 
-      setAttendances(formattedAttendances);
+        if (!hasClockin) {
+          setStatus("Start");
+        } else if (hasClockin && !hasClockout) {
+          setStatus("Working");
+        } else if (hasClockin && hasClockout) {
+          setStatus("Done");
+        } else {
+          setStatus("Unknown"); // Fallback in case of unexpected data
+        }
+      } catch (error) {
+        setError("Failed to fetch today's attendance record");
+        console.error("Failed to fetch today's attendance record:", error);
+        setStatus(null);
+      }
+    };
 
-      // Determine work status for today's attendance
-      const status = getTodaysWorkStatus(formattedAttendances);
-      setTodaysWorkStatus(status);
-    } catch (error) {
-      setError("Failed to fetch attendance records");
-      console.error("Failed to fetch attendance records:", error);
-    } finally {
-      setLoading(false);
+    fetchDataAndDetermineStatus();
+  }, [userId]);
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Start":
+        return "badge-danger";
+      case "Working":
+        return "badge-light-green";
+      case "Done":
+        return "badge-green";
+      default:
+        return "badge-grey";
     }
   };
 
-  // Fetch data and determine status when component mounts
-  useEffect(() => {
-    fetchDataAndDetermineStatus();
-  }, []);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (error) {
+    return <>{console.log(error)}</>;
+  }
 
   return (
-    <div>
-      <h1>Today's Work Status</h1>
-      {todaysWorkStatus.length === 0 ? (
-        <p>No attendance records for today.</p>
-      ) : (
-        <ul>
-          {todaysWorkStatus.map((attendance) => (
-            <li key={attendance.id}>
-              {attendance.user.fullName} - {attendance.date} - Status:{" "}
-              {attendance.status}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <Badge className={`right badge ${getStatusClass(status)}`}>{status}</Badge>
   );
 };
 
