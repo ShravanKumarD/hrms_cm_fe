@@ -76,6 +76,7 @@ const HoursWorkedLastWeek = () => {
             "#4285F4",
             "#FBBC05",
             "#34A853",
+            "#EA4335",
           ],
         },
       ],
@@ -95,9 +96,20 @@ const HoursWorkedLastWeek = () => {
     },
     scales: {
       x: {
-        grid: { display: false },
+        grid: {
+          display: false,
+          drawBorder: false,
+        },
+        ticks: {
+          display: true,
+        },
       },
       y: {
+        grid: {
+          display: false,
+          drawBorder: false,
+        },
+
         beginAtZero: true,
         max: 8,
         ticks: { stepSize: 2 },
@@ -122,7 +134,7 @@ const HoursWorkedLastWeek = () => {
           marginBottom: "10px",
         }}
       >
-        <h3 style={{ margin: 0 }}>Working hours</h3>
+        <span style={{ margin: 0 }}>Average hours</span>
         <span style={{ fontWeight: "bold" }}>
           {(totalHours / 7).toFixed(1)} hrs
         </span>
