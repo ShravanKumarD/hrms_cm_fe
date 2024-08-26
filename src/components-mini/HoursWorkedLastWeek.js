@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Container, Card } from "react-bootstrap";
 import { Bar } from "react-chartjs-2";
 import axios from "axios";
 
@@ -90,59 +91,85 @@ const HoursWorkedLastWeek = () => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { enabled: false },
-    },
+    legend: { display: false }, // Hide legend
+    tooltips: { enabled: false }, // Disable tooltips
     scales: {
-      x: {
-        grid: {
-          display: false,
-          drawBorder: false,
+      xAxes: [
+        {
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            display: true, // Hide x-axis
+          },
         },
-        ticks: {
-          display: true,
+      ],
+      yAxes: [
+        {
+          gridLines: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            // display: false, // Hide y-axis
+            beginAtZero: true,
+            stepSize: 2,
+            max: 8,
+          },
         },
-      },
-      y: {
-        grid: {
-          display: false,
-          drawBorder: false,
-        },
-
-        beginAtZero: true,
-        max: 8,
-        ticks: { stepSize: 2 },
-      },
+      ],
     },
   };
 
   return (
-    <div
-      style={{
-        height: "100%",
-        width: "100%",
-        padding: "15px",
-        fontFamily: "Arial, sans-serif",
-      }}
+    <Container
+      fluid
+      className="d-flex flex-column justify-content-center align-items-center mt-4"
     >
-      <div
+      <Card
+        className="shadow-sm"
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "10px",
+          maxWidth: "400px",
+          width: "100%",
+          fontSize: "0.95rem",
+          borderRadius: "10px", // Added border radius
         }}
       >
-        <span style={{ margin: 0 }}>Average hours</span>
-        <span style={{ fontWeight: "bold" }}>
-          {(totalHours / 7).toFixed(1)} hrs
-        </span>
-      </div>
-      <div style={{ height: "calc(100% - 40px)" }}>
-        <Bar data={chartData} options={options} />
-      </div>
-    </div>
+        <div
+          style={{
+            height: "100%",
+            width: "100%",
+            padding: "15px",
+            fontFamily: "Arial, sans-serif",
+            backgroundColor: "white",
+            borderRadius: "10px", // Added border radius
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "10px",
+            }}
+          >
+            <span style={{ margin: 0 }}>Working hours</span>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{ fontWeight: "bold" }}>
+                {(totalHours / 7).toFixed(1)} hrs
+              </span>
+              <span style={{ fontSize: "0.5rem", textAlign: "center" }}>
+                on avg
+              </span>
+            </div>
+          </div>
+          <div style={{ height: "calc(100%)" }}>
+            <Bar data={chartData} options={options} />
+          </div>
+        </div>
+      </Card>
+    </Container>
   );
 };
 

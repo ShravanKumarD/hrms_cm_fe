@@ -70,7 +70,7 @@ const SidebarManager = () => {
               >
                 <i className="nav-icon fas fa-calendar-check" />
                 <p>
-                  Attendance Management
+                  Attendance
                   <i className="right fas fa-angle-left" />
                 </p>
               </NavLink>
@@ -172,7 +172,7 @@ const SidebarManager = () => {
               >
                 <i className="nav-icon fas fa-money-bill" />
                 <p>
-                  Expense Management
+                  Expense
                   <i className="right fas fa-angle-left" />
                 </p>
               </NavLink>

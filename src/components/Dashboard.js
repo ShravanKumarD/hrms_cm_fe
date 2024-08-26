@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import "../App.css";
 import Infobox from "./infobox";
 import Calendar from "./Calendar";
+import Timesheet from "./Timesheet";
 import ExpenseChartsPage from "./ExpenseChartsPage";
 import PaymentChartsPage from "./PaymentChartsPage";
 import RecentApplications from "./RecentApplications";
 import RecentAnnouncements from "./RecentAnnouncements";
-import LightweightStartWork from "./LightweightStartWork";
+import LightweightStartWork from "../components-mini/LightweightStartWork";
 import axios from "axios";
 import HoursWorkedLastWeek from "../components-mini/HoursWorkedLastWeek";
 
@@ -68,7 +69,38 @@ const Dashboard = () => {
 
   return (
     <div>
-      {/* First Row with small info-boxes */}
+      {/* First Row with Attendance and Start Work/Hours Worked */}
+      <div className="row pt-4">
+        {/* Attendance section (2/3 width) */}
+        <div className="col-md-8">
+          <div
+            className="panel panel-default"
+            style={{ height: "calc(100% - 20px)" }}
+          >
+            <div className="panel-body">
+              <Timesheet />
+            </div>
+          </div>
+        </div>
+
+        {/* Right column (1/3 width) */}
+        <div className="col-md-4">
+          {/* StartWork section */}
+          <div className="panel panel-default">
+            <div className="panel-body">
+              <LightweightStartWork />
+            </div>
+          </div>
+
+          {/* HoursWorked section */}
+          <div className="panel panel-default">
+            <div className="panel-body">
+              <HoursWorkedLastWeek />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="row pt-4">
         <div className="col-md-4 col-sm-6 col-xs-12">
           <Infobox
@@ -96,61 +128,30 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Second Row with Calendar and Expense Report */}
+      {/* Third Row with Expense and Payment Reports */}
       <div className="row pt-4">
-        <div className="col-sm-6">
-          <Calendar />
-          <div className="panel panel-default">
-            <div
-              className="panel-heading with-border"
-              style={{ backgroundColor: "#515e73", color: "white" }}
-            >
-              <h3 className="panel-title">Recent Applications</h3>
-            </div>
-            <RecentApplications />
-            <LightweightStartWork />
-          </div>
-        </div>
-
-        {/* Expense Report & Recent Applications */}
         <div className="col-md-6">
           <div className="panel panel-default">
-            <div
-              className="panel-heading with-border"
-              style={{ backgroundColor: "#515e73", color: "white" }}
-            >
-              <h3 className="panel-title">Expense Report</h3>
-            </div>
             <ExpenseChartsPage />
           </div>
+        </div>
+        <div className="col-md-6">
           <div className="panel panel-default">
-            <div
-              className="panel-heading with-border"
-              style={{ backgroundColor: "#515e73", color: "white" }}
-            >
-              <h3 className="panel-title">Payment Report</h3>
-            </div>
             <PaymentChartsPage />
           </div>
+        </div>
+      </div>
+
+      {/* Fourth Row with Recent Applications and Announcements */}
+      <div className="row pt-4">
+        <div className="col-md-6">
           <div className="panel panel-default">
-            <div
-              className="panel-heading with-border"
-              style={{ backgroundColor: "#515e73", color: "white" }}
-            >
-              <h3 className="panel-title">Recent Announcements</h3>
-            </div>
-            <RecentAnnouncements />
+            <RecentApplications />
           </div>
+        </div>
+        <div className="col-md-6">
           <div className="panel panel-default">
-            <div
-              className="panel-heading with-border"
-              style={{ backgroundColor: "#515e73", color: "white" }}
-            >
-              <h3 className="panel-title">Hours Worked Last Week</h3>
-            </div>
-            <div className="panel-body" style={{ height: "300px" }}>
-              <HoursWorkedLastWeek />
-            </div>
+            <RecentAnnouncements />
           </div>
         </div>
       </div>

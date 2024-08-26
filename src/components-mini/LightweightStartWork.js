@@ -9,7 +9,7 @@ import {
   Modal,
   ProgressBar,
 } from "react-bootstrap";
-import "./startwork.css";
+import "../startwork.css";
 import API_BASE_URL from "../env";
 
 // Custom Hooks
@@ -144,11 +144,11 @@ const WorkControls = ({
   todayAttendance,
   incompleteAttendance,
 }) => (
-  <div className="text-center mb-4">
+  <div className="text-center mb-3">
     {!isWorking && (
       <Button
         variant="success"
-        size="lg"
+        size="sm"
         onClick={onStart}
         disabled={todayAttendance && todayAttendance.clockoutTime}
       >
@@ -158,12 +158,12 @@ const WorkControls = ({
       </Button>
     )}
     {isWorking && (
-      <Button variant="danger" size="lg" onClick={onEnd}>
+      <Button variant="danger" size="sm" onClick={onEnd}>
         End Work
       </Button>
     )}
     {todayAttendance && todayAttendance.clockoutTime && (
-      <div className="text-muted mt-2">
+      <div className="text-muted mt-2" style={{ fontSize: "0.7rem" }}>
         You've already ended work for today.
       </div>
     )}
@@ -177,7 +177,10 @@ const WorkTimes = ({ record }) => {
   const clockout = moment(clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
 
   return (
-    <div className="d-flex justify-content-between mx-3">
+    <div
+      className="d-flex justify-content-between mx-2"
+      style={{ fontSize: "0.7rem" }}
+    >
       {clockin && <div>{clockin.format("h:mm A")}</div>}
       {clockout && <div>{clockout.format("h:mm A")}</div>}
     </div>
@@ -222,11 +225,11 @@ const Timeline = ({ todayAttendance }) => {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-3">
       <div
         style={{
-          height: "28px",
-          borderRadius: "13px",
+          height: "20px",
+          borderRadius: "10px",
           backgroundColor: "#e9ecef",
           overflow: "hidden",
         }}
@@ -241,7 +244,7 @@ const Timeline = ({ todayAttendance }) => {
           }}
         />
       </div>
-      <div className="text-center mt-3">
+      <div className="text-center mt-2" style={{ fontSize: "0.7rem" }}>
         <div>
           {progress === 0
             ? todayAttendance.clockoutTime
@@ -259,38 +262,28 @@ const Timeline = ({ todayAttendance }) => {
 };
 
 const ConfirmationModal = ({ show, onHide, onConfirm, totalTime }) => (
-  <Modal show={show} onHide={onHide}>
+  <Modal show={show} onHide={onHide} size="sm">
     <Modal.Header closeButton>
-      <Modal.Title>Confirm End Work</Modal.Title>
+      <Modal.Title style={{ fontSize: "1rem" }}>Confirm End Work</Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      Are you sure you want to end work? Your total work time today is{" "}
-      <strong>{totalTime} hours</strong>.
+      <p style={{ fontSize: "0.7rem" }}>
+        Are you sure you want to end work now? You've worked a total of{" "}
+        <strong>{totalTime}</strong>.
+      </p>
     </Modal.Body>
     <Modal.Footer>
-      <Button variant="secondary" onClick={onHide}>
+      <Button variant="secondary" size="sm" onClick={onHide}>
         Cancel
       </Button>
-      <Button variant="primary" onClick={onConfirm}>
+      <Button variant="primary" size="sm" onClick={onConfirm}>
         Confirm
       </Button>
     </Modal.Footer>
   </Modal>
 );
 
-// Main Component
-const LightweightStartWork = () => {
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [workState, setWorkState] = useState({
-    startTime: null,
-    endTime: null,
-    isStarted: false,
-    totalTime: 0,
-  });
-  const [error, setError] = useState(null);
-  const [modal, setModal] = useState({ show: false, action: "" });
-
-  const { location, fetchUserLocation } = useLocation();
+const StartWork = () => {
   const {
     userId,
     date,
@@ -303,125 +296,145 @@ const LightweightStartWork = () => {
     closeIncompleteAttendance,
   } = useAttendance();
 
+  const { location, fetchUserLocation, locationError } = useLocation();
+
+  const [showModal, setShowModal] = useState(false);
+  const [totalTime, setTotalTime] = useState("0 hours");
+
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
+    fetchAttendanceRecords();
   }, []);
 
   useEffect(() => {
-    fetchUserLocation();
-    fetchAttendanceRecords().catch((err) =>
-      setError("Failed to fetch attendance records")
-    );
-  }, []);
-
-  const handleStart = async () => {
     if (incompleteAttendance) {
-      try {
-        await closeIncompleteAttendance();
-        setError("Previous day's work session has been closed automatically.");
-      } catch (error) {
-        setError("Failed to close previous work session. Please try again.");
-        return;
-      }
+      closeIncompleteAttendance();
     }
+  }, [incompleteAttendance]);
 
-    if (todayAttendance && todayAttendance.clockoutTime) {
-      setError("You've already ended work for today. You cannot start again.");
-      return;
-    }
-
+  const handleStartWork = async () => {
     try {
-      const start = new Date();
-      const timeString = moment(start).format("HH:mm:ss");
+      await fetchUserLocation();
+      if (locationError) return;
 
-      axios.defaults.baseURL = API_BASE_URL;
       await axios.post(
-        "/api/attendance/clock-in",
+        `/api/attendance/clock-in`,
         {
           userId,
           date,
+          clockinTime: moment().format("HH:mm:ss"),
+          latitudeClockin: location.latitude,
+          longitudeClockin: location.longitude,
           status,
-          clockinTime: timeString,
-          latitudeClockin: location.latitude ? location.latitude : null,
-          longitudeClockin: location.longitude ? location.longitude : null,
         },
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
+
       await fetchAttendanceRecords();
     } catch (error) {
-      console.error("Error marking start time:", error);
-      setError("Failed to start work. Please try again.");
+      console.error("Error starting work:", error);
     }
   };
 
-  const handleEnd = () => {
-    setModal({ show: true, action: "end" });
+  const handleEndWork = async () => {
+    try {
+      await fetchUserLocation();
+      if (locationError) return;
+
+      const startTime = moment(todayAttendance.clockinTime, "HH:mm:ss");
+      const endTime = moment();
+      const totalWorkTime = moment.duration(endTime.diff(startTime));
+      setTotalTime(
+        `${Math.floor(
+          totalWorkTime.asHours()
+        )} hours ${totalWorkTime.minutes()} minutes`
+      );
+
+      setShowModal(true);
+    } catch (error) {
+      console.error("Error ending work:", error);
+    }
   };
 
-  const handleConfirmEnd = async () => {
+  const confirmEndWork = async () => {
     try {
-      const end = new Date();
-      const endTimeString = moment(end).format("HH:mm:ss");
-
-      axios.defaults.baseURL = API_BASE_URL;
       await axios.put(
-        `api/attendance/clock-out`,
+        `/api/attendance/clock-out`,
         {
           userId,
           date,
-          clockoutTime: endTimeString,
+          clockoutTime: moment().format("HH:mm:ss"),
           latitudeClockout: location.latitude,
           longitudeClockout: location.longitude,
         },
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
-      await fetchAttendanceRecords();
-    } catch (error) {
-      console.error("Error marking end time:", error);
-      setError("Failed to end work. Please try again.");
-    }
-    handleCloseModal();
-  };
 
-  const handleCloseModal = () => setModal({ ...modal, show: false });
+      await fetchAttendanceRecords();
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error confirming end work:", error);
+    }
+  };
 
   return (
     <Container
-      className="my-5"
-      style={{ paddingLeft: "0px", paddingRight: "0px" }}
+      fluid
+      className="d-flex flex-column justify-content-center align-items-center mt-4"
     >
-      <Card className="p-4 shadow-sm">
-        <h2 className="text-center mb-4">Let's get to Work</h2>
-        {error && <Alert variant="danger">{error}</Alert>}
-        {incompleteAttendance && (
-          <Alert variant="warning">
-            You have an incomplete work session from yesterday. It will be
-            automatically closed when you start today's work.
-          </Alert>
-        )}
-        <WorkControls
-          isWorking={isWorking}
-          onStart={handleStart}
-          onEnd={handleEnd}
-          todayAttendance={todayAttendance}
-          incompleteAttendance={incompleteAttendance}
-        />
-        <WorkTimes record={todayAttendance} />
-        <Timeline todayAttendance={todayAttendance} />
+      <Card
+        className="shadow-sm"
+        style={{
+          maxWidth: "400px",
+          width: "100%",
+          fontSize: "0.95rem",
+          borderRadius: "10px", // Added border radius
+        }}
+      >
+        <div
+          style={{
+            paddingTop: "20px",
+            paddingLeft: "15px",
+            paddingRight: "15px",
+            paddingBottom: "15px",
+            borderRadius: "10px", // Added border radius
+          }}
+        >
+          {/* <div className="text-center mb-3" style={{ fontSize: "1rem" }}>
+            {moment().format("MMMM Do YYYY")}
+          </div> */}
+          <WorkControls
+            isWorking={isWorking}
+            onStart={handleStartWork}
+            onEnd={handleEndWork}
+            todayAttendance={todayAttendance}
+            incompleteAttendance={incompleteAttendance}
+          />
+          <WorkTimes record={todayAttendance} />
+          {locationError && (
+            <Alert variant="danger" className="mt-2">
+              {locationError}
+            </Alert>
+          )}
+          <Timeline todayAttendance={todayAttendance} />
+        </div>
       </Card>
+
       <ConfirmationModal
-        show={modal.show}
-        onHide={handleCloseModal}
-        onConfirm={handleConfirmEnd}
-        totalTime={todayAttendance?.totalHours || 0}
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        onConfirm={confirmEndWork}
+        totalTime={totalTime}
       />
     </Container>
   );
 };
 
-export default LightweightStartWork;
+export default StartWork;

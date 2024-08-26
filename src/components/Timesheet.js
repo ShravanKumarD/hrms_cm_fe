@@ -8,7 +8,7 @@ import moment from "moment";
 import "@fullcalendar/core/main.css";
 import "@fullcalendar/daygrid/main.css";
 import "../Timesheet.css";
-import LightweightStartWork from "./LightweightStartWork";
+import LightweightStartWork from "../components-mini/LightweightStartWork";
 import ApplicationModal from "./ApplicationModal";
 import API_BASE_URL from "../env";
 import { Modal } from "react-bootstrap";
@@ -216,7 +216,7 @@ const Timesheet = () => {
 
   return (
     <div className="attendance-container">
-      <header className="attendance-header">
+      {/* <header className="attendance-header">
         <h1>Attendance Calendar</h1>
         <TimesheetTooltip />
         <button
@@ -225,7 +225,7 @@ const Timesheet = () => {
         >
           Apply New
         </button>
-      </header>
+      </header> */}
       <div className="calendar-wrapper">
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 import { Container, Card, Alert, Button, Modal, Table } from "react-bootstrap";
-import "./startwork.css";
+import "../startwork.css";
 import API_BASE_URL from "../env";
 import { quotes } from "../constants/quotes";
 

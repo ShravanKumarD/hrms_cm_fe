@@ -66,7 +66,7 @@ const SidebarHr = () => {
               >
                 <i className="nav-icon fas fa-calendar-check" />
                 <p>
-                  Attendance Management
+                  Attendance
                   <i className="right fas fa-angle-left" />
                 </p>
               </NavLink>
@@ -164,7 +164,7 @@ const SidebarHr = () => {
               >
                 <i className="nav-icon fas fa-file-alt" />
                 <p>
-                  Document Management
+                  Documents
                   <i className="right fas fa-angle-left" />
                 </p>
               </NavLink>
@@ -204,7 +204,7 @@ const SidebarHr = () => {
               >
                 <i className="nav-icon fas fa-rupee-sign" />
                 <p>
-                  Payroll Management
+                  Payroll
                   <i className="right fas fa-angle-left" />
                 </p>
               </NavLink>
@@ -244,7 +244,7 @@ const SidebarHr = () => {
               >
                 <i className="nav-icon fas fa-money-bill" />
                 <p>
-                  Expense Management
+                  Expense
                   <i className="right fas fa-angle-left" />
                 </p>
               </NavLink>
