@@ -175,7 +175,7 @@ const WorkTimes = ({ record }) => {
   return (
     <div className="d-flex justify-content-between mx-3">
       {clockin && <div>{clockin.format("h:mm A")}</div>}
-      {clockout && <div>{clockout.format("h:mm A")}</div>}
+      {clockout && clockout.isValid() && <div>{clockout.format("h:mm A")}</div>}
     </div>
   );
 };

@@ -182,7 +182,7 @@ const WorkTimes = ({ record }) => {
       style={{ fontSize: "0.7rem" }}
     >
       {clockin && <div>{clockin.format("h:mm A")}</div>}
-      {clockout && <div>{clockout.format("h:mm A")}</div>}
+      {clockout && clockout.isValid() && <div>{clockout.format("h:mm A")}</div>}
     </div>
   );
 };
