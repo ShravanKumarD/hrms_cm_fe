@@ -29,14 +29,15 @@ export default class SalaryView extends Component {
           console.log(res);
           this.setState({ user: res.data }, () => {
             if (this.state.user.jobs) {
-              this.state.user.jobs.map((job) => {
-                if (
-                  new Date(job.startDate).setHours(0) < new Date() &&
-                  new Date(job.endDate).setHours(24) > new Date()
-                ) {
-                  this.setState({ currentJobTitle: job.jobTitle });
-                }
-              });
+              // this.state.user.jobs.map((job) => {
+              //   if (
+              //     new Date(job.startDate).setHours(0) < new Date() &&
+              //     new Date(job.endDate).setHours(24) > new Date()
+              //   ) {
+              //     this.setState({ currentJobTitle: job.jobTitle });
+              //   }
+              // });
+              this.setState({ currentJobTitle: this.state.user.jobs[0].jobTitle});
             }
           });
         })
