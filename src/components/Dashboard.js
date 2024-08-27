@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../App.css";
 import Infobox from "./infobox";
 import Calendar from "./Calendar";
-import Timesheet from "./Timesheet";
+import TimesheetMini from "../components-mini/TimesheetMini";
 import ExpenseChartsPage from "./ExpenseChartsPage";
 import PaymentChartsPage from "./PaymentChartsPage";
 import RecentApplications from "./RecentApplications";
@@ -78,7 +78,7 @@ const Dashboard = () => {
             style={{ height: "calc(100% - 20px)" }}
           >
             <div className="panel-body">
-              <Timesheet />
+              <TimesheetMini />
             </div>
           </div>
         </div>
