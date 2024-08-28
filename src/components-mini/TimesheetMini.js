@@ -62,146 +62,140 @@ const Timesheet = () => {
     fetchApplications();
   }, [userId]);
 
-  const handleDayRender = (dayRenderInfo) => {
-    const { date, el } = dayRenderInfo;
-    // console.log("Day render info:", dayRenderInfo);
+  const handleDayRender = (info) => {
+    const { date, el } = info;
+    const cellDateString = date.toDateString();
     const today = new Date();
     const end = new Date();
     end.setDate(today.getDate() + 7);
 
-    const cellDateString = date.toDateString();
-
-    // Default styling
+    // Reset styles
     el.style.backgroundColor = "";
+    el.style.color = "black";
+    el.style.borderRadius = "0"; // No border radius for the full cell
+    el.style.overflow = "hidden";
+    el.style.padding = "4px";
     el.style.textAlign = "left";
     el.style.verticalAlign = "bottom";
     el.style.lineHeight = "normal";
-    el.style.fontSize = "0.7em";
+    el.style.fontSize = "1em"; // Slightly smaller font size
     el.style.paddingBottom = "0.6rem";
     el.style.paddingLeft = "0.6rem";
+    el.style.position = "relative"; // Make the container relative for absolute positioning
 
-    if (date.toDateString() === today.toDateString()) {
-      el.style.backgroundColor = "red";
-    }
+    // Create date number element
+    const dateNumber = document.createElement("div");
+    dateNumber.innerText = date.getDate();
+    dateNumber.style.fontSize = "0.9em";
+    dateNumber.style.width = "24px";
+    dateNumber.style.height = "24px";
+    dateNumber.style.borderRadius = "50%";
+    dateNumber.style.display = "flex";
+    dateNumber.style.alignItems = "center";
+    dateNumber.style.justifyContent = "center";
+    dateNumber.style.margin = "0";
+    dateNumber.style.position = "absolute"; // Position absolute for placement
+    dateNumber.style.top = "4px"; // Distance from the top
+    dateNumber.style.right = "4px"; // Distance from the right
+    dateNumber.style.backgroundColor = "transparent"; // Background color, if needed
 
-    // if (date > today && date <= end) {
-    //   el.style.backgroundColor = "yellow";
-    //   el.textContent = "Yellow";
-    // }
+    // Create content element
+    const content = document.createElement("div");
+    content.style.fontSize = "0.7em"; // Slightly smaller font size
+    content.style.marginTop = "30px"; // Push down the content to avoid overlap with dateNumber
 
-    if (date.getDay() === 0) {
-      el.style.backgroundColor = "rgba(240, 240, 240, 0.5)";
-    }
-
-    // Check if application exists for the date
-
+    // Check for application
     const application = applications.find(
-      (application) =>
-        new Date(application.startDate).toDateString() === cellDateString
+      (app) => new Date(app.startDate).toDateString() === cellDateString
     );
 
     if (application) {
-      console.log("Application found:", application);
-      el.style.color = "black";
-      // if application approved, dont show this: "Requested <br>" instead show "Approved <br>" with color green
       if (application.status === "Pending") {
-        el.style.backgroundColor = "rgba(255, 165, 0, 0.4)";
-        el.innerHTML = "Requested <br>" + application.type;
+        el.style.backgroundColor = "rgba(255, 165, 0, 0.2)";
+        content.innerText = `Pending\n${application.type}`;
       } else if (application.status === "Approved") {
-        el.style.backgroundColor = "rgba(0, 128, 0, 0.4)";
-        el.innerHTML = "Approved <br>" + application.type;
+        el.style.backgroundColor = "rgba(0, 255, 0, 0.2)";
+        content.innerText = `Approved\n${application.type}`;
       }
     }
 
+    // Check for attendance
+    const attendance = attendances.find(
+      (att) => new Date(att.date).toDateString() === cellDateString
+    );
+
+    if (attendance) {
+      const clockInTime = moment(attendance.clockinTime, [
+        "YYYY-MM-DD HH:mm:ss",
+        "HH:mm:ss",
+      ]);
+      const clockOutTime = attendance.clockoutTime
+        ? moment(attendance.clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"])
+        : moment();
+      const duration = moment.duration(clockOutTime.diff(clockInTime));
+      const hoursWorked = duration.asHours();
+
+      let status = "Less than Half Day";
+      el.style.backgroundColor = "rgba(255, 255, 0, 0.2)";
+
+      if (hoursWorked > 9) {
+        status = "Overtime";
+        el.style.backgroundColor = "rgba(0, 128, 0, 0.4)";
+      } else if (hoursWorked >= 9) {
+        status = "Full Day";
+        el.style.backgroundColor = "rgba(0, 255, 0, 0.2)";
+      } else if (hoursWorked >= 4) {
+        status = "Half Day";
+        el.style.backgroundColor = "rgba(144, 238, 144, 0.2)";
+      }
+
+      content.innerText = `${status}\n${clockInTime.format(
+        "HH:mm"
+      )} - ${clockOutTime.format("HH:mm")}`;
+
+      if (attendance.status === "Absent") {
+        el.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+        content.innerText = "Absent";
+      } else if (attendance.status === "Leave") {
+        el.style.backgroundColor = "rgba(173, 216, 230, 0.2)";
+        content.innerText = "Leave";
+      }
+    }
+
+    // Set date number background color
+    dateNumber.style.backgroundColor = el.style.backgroundColor;
+
+    // Append elements
+    el.innerHTML = "";
+    el.appendChild(dateNumber);
+    el.appendChild(content);
+
+    // Handle weekends (only Sunday)
+    if (date.getDay() === 0) {
+      el.style.backgroundColor = "rgba(240, 240, 240, 0.5)";
+      content.innerText = "Week Off";
+    }
+
+    // Highlight today's date
+    if (date.toDateString() === today.toDateString()) {
+      el.style.backgroundColor = "red";
+      content.style.color = "white"; // Ensure text is visible on red background
+    }
+
+    // Highlight date within the next 7 days
+    // if (date > today && date <= end) {
+    //   el.style.backgroundColor = "yellow";
+    //   content.style.color = "black"; // Ensure text is visible on yellow background
+    // }
+
+    // Highlight clicked date
     if (clickedDate && date.toDateString() === clickedDate.toDateString()) {
-      // increase opacity  el.style.backgroundColor is in format "rgba(255, 165, 0, 0.4)" -> "rgba(255, 165, 0, 1)"
       const color = el.style.backgroundColor.split(", ");
       color[3] = "0.8)";
       el.style.backgroundColor = color.join(", ");
     }
-
-    // Check if attendance record exists for the date
-
-    const attendance = attendances.find(
-      (attendance) =>
-        new Date(attendance.date).toDateString() === cellDateString
-    );
-
-    function getWorkStatusAndColor(hoursWorked) {
-      let workStatus = "Less than Half Day";
-      let backgroundColor = "rgba(255, 255, 0, 0.4)"; // Yellow for "Less than Half Day"
-
-      if (hoursWorked > 9) {
-        workStatus = "Overtime";
-        backgroundColor = "rgba(0, 100, 0, 0.6)"; // Darker green for overtime
-      } else if (hoursWorked >= 9) {
-        workStatus = "Full Day";
-        backgroundColor = "rgba(0, 128, 0, 0.4)"; // Green for "Full Day"
-      } else if (hoursWorked >= 4) {
-        workStatus = "Half Day";
-        backgroundColor = "rgba(144, 238, 144, 0.4)"; // Leafy green for "Half Day"
-      }
-
-      return { workStatus, backgroundColor };
-    }
-
-    if (attendance) {
-      // console.log("Attendance found:", attendance);
-      // Parse clockinTime and clockoutTime using moment to handle both formats
-      const clockinTime = moment(attendance.clockinTime, [
-        "YYYY-MM-DD HH:mm:ss",
-        "HH:mm:ss",
-      ]);
-      let clockoutTime;
-      if (
-        date.toDateString() === today.toDateString() &&
-        !attendance.clockoutTime
-      ) {
-        clockoutTime = moment(); // Set to current time if clockoutTime is null and date is today
-      } else {
-        clockoutTime = moment(attendance.clockoutTime, [
-          "YYYY-MM-DD HH:mm:ss",
-          "HH:mm:ss",
-        ]);
-      }
-      const duration = moment.duration(clockoutTime.diff(clockinTime));
-      const hoursWorked = duration.asHours();
-
-      const { workStatus, backgroundColor } =
-        getWorkStatusAndColor(hoursWorked);
-
-      switch (attendance.status) {
-        case "Present":
-          el.style.backgroundColor = backgroundColor;
-          el.style.color = "black";
-          el.innerHTML =
-            workStatus +
-            "<br>" +
-            clockinTime.format("h:mm a") +
-            " - " +
-            clockoutTime.format("h:mm a");
-          break;
-        case "Absent":
-          el.style.backgroundColor = "rgba(255, 99, 71, 0.4)";
-          el.style.color = "black";
-          el.textContent = "Absent";
-          break;
-        // case "Half Day":
-        //   el.style.backgroundColor = "rgba(255, 255, 0, 0.4)";
-        //   el.style.color = "black";
-        //   el.textContent = "Half Day";
-        //   break;
-        case "Leave":
-          el.style.backgroundColor = "rgba(173, 216, 230, 0.4)";
-          el.style.color = "black";
-          el.textContent = "Leave";
-          break;
-        default:
-          break;
-      }
-    }
-  };
-
+};
+  
   const handleDateClick = (arg) => {
     const clickedDate = new Date(arg.date);
     console.log("Clicked date:", clickedDate);
@@ -237,6 +231,7 @@ const Timesheet = () => {
             right: "dayGridMonth,dayGridWeek,dayGridDay",
           }}
           dayRender={handleDayRender}
+          dayCellDidMount={handleDayRender}
           dateClick={handleDateClick}
           height="auto"
         />

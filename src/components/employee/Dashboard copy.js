@@ -72,3 +72,25 @@ const Dashboard = () => {
 
 export default Dashboard;
 
+// <div className="row pt-4">
+//   {/* Calendar */}
+//   <div className="col-sm-6">
+//     <EmployeeViewDashboard />
+//     <div className="panel panel-default">
+//       <div className="panel-heading with-border" style={{ backgroundColor: "#515e73", color: "white" }}>
+//         <h3 className="panel-title">Recent Announcements</h3>
+//       </div>
+//       <RecentAnnouncements />
+//     </div>
+//   </div>
+//   {/* Expense Report & Recent Applications */}
+//   <div className="col-md-6">
+//     <Calendar />
+//     <div className="panel panel-default">
+//       <div className="panel-heading with-border" style={{ backgroundColor: "#515e73", color: "white" }}>
+//         <h3 className="panel-title">My Recent Applications</h3>
+//       </div>
+//       <RecentApplications />
+//     </div>
+//   </div>
+// </div>

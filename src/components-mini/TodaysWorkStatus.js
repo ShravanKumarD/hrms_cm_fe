@@ -18,9 +18,11 @@ const Badge = styled.span`
   &.badge-grey {
     background-color: grey;
   }
+
+  display: ${(props) => (props.isPushed ? "none" : "block")};
 `;
 
-const TodaysWorkStatus = ({ userId }) => {
+const TodaysWorkStatus = ({ userId, isPushed }) => {
   const [status, setStatus] = useState("Loading...");
   const [error, setError] = useState(null);
 
@@ -79,7 +81,9 @@ const TodaysWorkStatus = ({ userId }) => {
   }
 
   return (
-    <Badge className={`right badge ${getStatusClass(status)}`}>{status}</Badge>
+    <Badge className={`right badge ${getStatusClass(status)}`} isPushed={isPushed}>
+      {status}
+    </Badge>
   );
 };
 
