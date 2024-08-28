@@ -186,7 +186,7 @@ export default class SalaryView extends Component {
                                     <span>
                                       {
                                         this.state.user.user_financial_info
-                                          .employmentType
+                                          .employmentType   || this.state.user.jobs[0].employmentType
                                       }
                                     </span>
                                   </Form.Group>
@@ -198,7 +198,7 @@ export default class SalaryView extends Component {
                                       ₹{" "}
                                       {
                                         this.state.user.user_financial_info
-                                          .salaryBasic
+                                          .salaryBasic || 0
                                       }
                                     </span>
                                   </Form.Group>
@@ -219,7 +219,7 @@ export default class SalaryView extends Component {
                                       ₹{" "}
                                       {
                                         this.state.user.user_financial_info
-                                          .allowanceHouseRent
+                                          .allowanceHouseRent || 0
                                       }
                                     </span>
                                   </Form.Group>
@@ -231,7 +231,7 @@ export default class SalaryView extends Component {
                                       ₹{" "}
                                       {
                                         this.state.user.user_financial_info
-                                          .allowanceMedical
+                                          .allowanceMedical || 0
                                       }
                                     </span>
                                   </Form.Group>
@@ -243,7 +243,7 @@ export default class SalaryView extends Component {
                                       ₹{" "}
                                       {
                                         this.state.user.user_financial_info
-                                          .allowanceSpecial
+                                          .allowanceSpecial || 0
                                       }
                                     </span>
                                   </Form.Group>
@@ -255,7 +255,7 @@ export default class SalaryView extends Component {
                                       ₹{" "}
                                       {
                                         this.state.user.user_financial_info
-                                          .allowanceFuel
+                                          .allowanceFuel || 0
                                       }
                                     </span>
                                   </Form.Group>
@@ -408,7 +408,7 @@ export default class SalaryView extends Component {
                                       ₹{" "}
                                       {
                                         this.state.user.user_financial_info
-                                          .salaryGross
+                                          .salaryGross || 0
                                       }
                                     </span>
                                   </Form.Group>
@@ -421,7 +421,7 @@ export default class SalaryView extends Component {
                                       {
                                         this.state.user.user_financial_info
                                         .salaryGross -   this.state.user.user_financial_info
-                                        .salaryNet
+                                        .salaryNet || 0
                                       }
                                     </span>
                                   </Form.Group>
@@ -433,7 +433,7 @@ export default class SalaryView extends Component {
                                       ₹{" "}
                                       {
                                         this.state.user.user_financial_info
-                                          .salaryNet
+                                          .salaryNet || 0
                                       }
                                     </span>
                                   </Form.Group>

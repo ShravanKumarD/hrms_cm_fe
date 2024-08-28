@@ -207,21 +207,21 @@ export default class SalaryList extends Component {
                         </Form>
                       ),
                     },
-                    {
-                      title: "Action",
-                      render: (rowData) => (
-                        <>
-                          <Button
-                            size="sm"
-                            variant="info"
-                            className="mr-2"
-                            onClick={this.onEdit(rowData)}
-                          >
-                            <i className="far fa-edit"></i>Edit
-                          </Button>
-                        </>
-                      ),
-                    },
+                    // {
+                    //   title: "Action",
+                    //   render: (rowData) => (
+                    //     <>
+                    //       <Button
+                    //         size="sm"
+                    //         variant="info"
+                    //         className="mr-2"
+                    //         onClick={this.onEdit(rowData)}
+                    //       >
+                    //         <i className="far fa-edit"></i>Edit
+                    //       </Button>
+                    //     </>
+                    //   ),
+                    // },
                   ]}
                   data={this.state.financialInformations}
                   options={{
