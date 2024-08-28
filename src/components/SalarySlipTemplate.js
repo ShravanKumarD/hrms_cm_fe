@@ -47,7 +47,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
     if (data?.month) {
       extractMonthAndYear(data.month);
     }
-  }, [data]);
+  }, []);
 
   useEffect(() => {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -56,7 +56,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (data.userId) {
+      if (data) {
         try {
           axios.defaults.baseURL = API_BASE_URL;
           const userResponse = await axios.get(`api/users/${data.userId}`, {
@@ -72,7 +72,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
     };
 
     fetchData();
-  }, [data.userId]);
+  }, []);
 
   useEffect(() => {
     if (isPrinting) {

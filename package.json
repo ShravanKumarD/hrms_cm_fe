@@ -38,7 +38,8 @@
     "react-scripts": "3.4.1",
     "react-time-picker": "^7.0.0",
     "react-tooltip": "^4.2.6",
-    "styled-components": "^5.1.1"
+    "styled-components": "^5.1.1",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

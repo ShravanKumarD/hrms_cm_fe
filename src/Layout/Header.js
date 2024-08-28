@@ -12,7 +12,7 @@ export default class Header extends Component {
     };
   }
 
-  onLogout = (event) => {
+  onLogout = (event) => { 
     event.preventDefault();
 
     localStorage.removeItem("token");

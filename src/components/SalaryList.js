@@ -9,6 +9,7 @@ import { createTheme } from "@material-ui/core/styles";
 import API_BASE_URL from "../env";
 import FileSaver from 'file-saver';
 import { Dropdown } from 'react-bootstrap';
+import * as XLSX from 'xlsx';
 
 
 export default class SalaryList extends Component {
@@ -39,21 +40,72 @@ export default class SalaryList extends Component {
   }
   
 
+  // handleDownload = (type) => {
+  //   axios({
+  //     method: "get",
+  //     url: `/api/financialInformations/`,
+  //     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  //     responseType: 'blob', // Important for binary data
+  //   })
+  //     .then((response) => {
+  //       // Create a blob from the response data
+  //       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  //       const fileName = type === 'monthly' ? 'monthly_report.xlsx' : 'employee_report.xlsx';
+  //       FileSaver.saveAs(blob, fileName);
+  //     })
+  //     .catch((err) => {
+  //       console.error("Download error:", err); // Improved error logging
+  //     });
+  // };
+  
+  
   handleDownload = (type) => {
     axios({
       method: "get",
-      url: `/api/financialInformations/download?type=${type}`,
+      url: `/api/financialInformations/`,
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      responseType: 'blob', // Important for binary data
     })
-      .then((response) => {
-        const fileName = type === 'monthly' ? 'monthly_report.xlsx' : 'employee_report.xlsx';
-        FileSaver.saveAs(response.data, fileName);
-      })
-      .catch((err) => {
-        console.log(err);
+    .then((response) => {
+      // Extract financial information data
+      const financialData = response.data;
+  
+      // Modify the data to include userId and fullName as separate columns
+      const modifiedData = financialData.map(info => {
+        return {
+          'Full Name': info.user.fullName,   // Add fullName as the second column
+          ...info,                           // Include the rest of the data
+        };
       });
+  
+      // Create a new workbook
+      const workbook = XLSX.utils.book_new();
+  
+      // Convert the modified data to a worksheet
+      const worksheet = XLSX.utils.json_to_sheet(modifiedData);
+  
+      // Append the worksheet to the workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+  
+      // Generate a buffer to be saved as an Excel file
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array'
+      });
+  
+      // Create a blob from the buffer
+      const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  
+      // Generate the file name
+      const fileName = type === 'monthly' ? 'monthly_report.xlsx' : 'employee_report.xlsx';
+  
+      // Use FileSaver to save the file
+      FileSaver.saveAs(blob, fileName);
+    })
+    .catch((err) => {
+      console.error("Download error:", err);
+    });
   };
+  
   
   
   onEdit = (financialInfo) => {
@@ -121,9 +173,9 @@ export default class SalaryList extends Component {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        <Dropdown.Item onClick={() => this.handleDownload('monthly')}>
+        {/* <Dropdown.Item onClick={() => this.handleDownload('monthly')}>
           Monthly Report
-        </Dropdown.Item>
+        </Dropdown.Item> */}
         <Dropdown.Item onClick={() => this.handleDownload('employeeWise')}>
           Employee-wise Report
         </Dropdown.Item>
