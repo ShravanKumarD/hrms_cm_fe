@@ -29,7 +29,7 @@ const EmployeeList = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [fetchUsers]);
+  }, []);
 
   const handleView = (user) => {
     setSelectedUser(user);
@@ -99,7 +99,7 @@ const EmployeeList = () => {
             <ThemeProvider theme={theme}>
               <MaterialTable
                 columns={[
-                  { title: "EMP ID", field: "id" },
+                  { title: "EMP ID", field: "username" },
                   { title: "Full Name", field: "fullName" },
                   { title: "Department", field: "department.departmentName" },
                   {
