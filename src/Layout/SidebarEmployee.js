@@ -6,43 +6,7 @@ import TodaysWorkStatus from "../components-mini/TodaysWorkStatus";
 import Logo from "../assets/samcint_logo_2.png";
 import LogoMini from "../assets/10.png";
 import GlobalStyle from "../constants/GlobalStyleSidebar";
-
-// Theme options
-const themes = {
-  orange: {
-    primary: "#FF8C00",
-    secondary: "#FF8C00",
-    text: "#FFFFFF",
-    background: "#FFFFFF",
-    hover: "#FFFF00",
-    iconDefault: "#FFFFFF",
-    iconHover: "#FFFF00",
-    textActive: "#FFFF00",
-    selectedBorder: "#FFFF00",
-  },
-  blue: {
-    primary: "#0066CC",
-    secondary: "#0099FF",
-    text: "#FFFFFF",
-    background: "#FFFFFF",
-    hover: "#33CCFF",
-    iconDefault: "#FFFFFF",
-    iconHover: "#33CCFF",
-    textActive: "#33CCFF",
-    selectedBorder: "#33CCFF",
-  },
-  green: {
-    primary: "#006633",
-    secondary: "#006633",
-    text: "#FFFFFF",
-    background: "#FFFFFF",
-    hover: "#00CC66",
-    iconDefault: "#FFFFFF",
-    iconHover: "#00CC66",
-    textActive: "#00CC66",
-    selectedBorder: "#00CC66",
-  },
-};
+import themes from "../constants/themes";
 
 // Styled components with theme-based colors
 const SidebarWrapper = styled.aside`
