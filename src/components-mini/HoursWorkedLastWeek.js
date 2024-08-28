@@ -115,7 +115,6 @@ const HoursWorkedLastWeek = () => {
             // display: false, // Hide y-axis
             beginAtZero: true,
             stepSize: 2,
-            max: 8,
           },
         },
       ],

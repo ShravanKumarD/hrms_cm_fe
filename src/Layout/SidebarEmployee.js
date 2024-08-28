@@ -12,59 +12,9 @@ const Sidebar = styled.aside`
   border-bottom-right-radius: 20px;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
-
-const ClosedSidebar = styled.aside`
-  width: 80px;
-  background-color: white;
-  height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 20px;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-`;
-
-const SidebarItem = styled.div`
-  width: 100%;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  position: relative;
-
-  &.active {
-    background: linear-gradient(to right, #ff8c00, #ffa500);
-    &::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background-color: #ff8c00;
-    }
-    box-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
-  }
-
-  i {
-    font-size: 24px;
-    color: ${(props) => (props.active ? "white" : "#333")};
-  }
-`;
-
-const OpenButton = styled.button`
-  position: absolute;
-  bottom: 20px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 24px;
-  color: #333;
+  transition: width 0.3s ease;
+  width: ${(props) => (props.isPushed ? "70px" : "250px")};
+  overflow: hidden;
 `;
 
 const SidebarEmployee = () => {
@@ -81,7 +31,7 @@ const SidebarEmployee = () => {
   const toggleSidebar = () => setIsPushed(!isPushed);
 
   return (
-    <Sidebar className="main-sidebar elevation-4">
+    <Sidebar className="main-sidebar elevation-4" isPushed={isPushed}>
       <div
         style={{
           display: "flex",
@@ -89,20 +39,15 @@ const SidebarEmployee = () => {
           marginTop: "30px",
           marginBottom: "30px",
         }}
-        data-widget="pushmenu"
         onClick={toggleSidebar}
       >
-        {/* if toggled show Logo otherwise LogoMini */}
-        {isPushed ? ( <img src={LogoMini} className="logo-mini" alt="company-logo" /> ) : ( <img src={Logo} className="logo-main" alt="company-logo" /> )}
+        {isPushed ? (
+          <img src={LogoMini} className="logo-mini" alt="company-logo" />
+        ) : (
+          <img src={Logo} className="logo-main" alt="company-logo" />
+        )}
       </div>
-      <div
-        style={{ display: "flex", justifyContent: "left", marginLeft: "20px" }}
-      >
-        <span style={{ textAlign: "left" }}>Employee</span>
-      </div>
-      {/* Sidebar */}
       <div className="sidebar">
-        {/* Sidebar user panel (optional) */}
         <div className="user-panel mt-3 pb-3 mb-3 d-flex">
           <div className="image">
             <img
@@ -117,7 +62,6 @@ const SidebarEmployee = () => {
             </a>
           </div>
         </div>
-        {/* Sidebar Menu */}
         <nav className="mt-2">
           <ul
             className="nav nav-pills nav-sidebar flex-column"
@@ -125,8 +69,6 @@ const SidebarEmployee = () => {
             role="menu"
             data-accordion="false"
           >
-            {/* Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library */}
             <li className="nav-item">
               <NavLink exact to="/" className="nav-link">
                 <i className="nav-icon fas fa-tachometer-alt" />
@@ -205,9 +147,7 @@ const SidebarEmployee = () => {
             </li>
           </ul>
         </nav>
-        {/* /.sidebar-menu */}
       </div>
-      {/* /.sidebar */}
     </Sidebar>
   );
 };
