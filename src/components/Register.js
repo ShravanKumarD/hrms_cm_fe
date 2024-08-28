@@ -1,219 +1,205 @@
-import React, { Component } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { Redirect, Link } from "react-router-dom";
 import { Alert } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
+import axios from "axios";
 import API_BASE_URL from "../env";
+import Logo from "../assets/samcint_logo_2.png";
+import {
+  GlobalStyle,
+  CenteredContainer,
+  LoginBox,
+  LogoContainer,
+  LogoImage,
+  InputGroup,
+  Input,
+  PasswordToggle,
+  LoginButton,
+  RegisterLink,
+  Footer,
+  BackgroundElements,
+  FluidShape,
+  Blob1,
+  Blob2,
+  Blob3,
+  Circle,
+  Person,
+  EmpowermentContainer,
+} from "../constants/LoginRegisterStyles";
 
-export default class Register extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: "",
-      password: "",
-      checkPassword: "",
-      fullname: "",
-      passwordShow: false,
-      passwordCheckShow: false,
-      completed: false,
-      hasError: false,
-      errorMessage: "",
-    };
+const Register = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    checkPassword: "",
+    fullname: "",
+  });
+  const [passwordShow, setPasswordShow] = useState(false);
+  const [passwordCheckShow, setPasswordCheckShow] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [completed, setCompleted] = useState(false);
 
-    this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-  }
-
-  passwordVisibilityHandler = () => {
-    var x = document.getElementById("password");
-    if (x.type === "password") {
-      x.type = "text";
-    } else {
-      x.type = "password";
-    }
-  };
-
-  passwordVisibilityHandlerCheck = () => {
-    var x = document.getElementById("checkPassword");
-    if (x.type === "password") {
-      x.type = "text";
-    } else {
-      x.type = "password";
-    }
-  };
-
-  onChange = (event) => {
-    const { value, name } = event.target;
-    this.setState({
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
-    });
+    }));
   };
 
-  onSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (this.state.password !== this.state.checkPassword) {
-      alert("Passwords don't match");
-    } else {
-      var newUser = {
-        username: this.state.username,
-        password: this.state.password,
-        fullname: this.state.fullname,
-      };
+    if (formData.password !== formData.checkPassword) {
+      setHasError(true);
+      setErrorMessage("Passwords don't match");
+      return;
+    }
 
+    try {
       axios.defaults.baseURL = API_BASE_URL;
-      axios({
-        method: "post",
-        url: "/register",
-        data: newUser,
-      })
-        .then((res) => {
-          this.setState({ completed: true, hasError: false });
-        })
-        .catch((err) => {
-          this.setState({
-            hasError: true,
-            errorMessage: err.response.data.message,
-          });
-        });
+      await axios.post("/register", formData);
+      setCompleted(true);
+    } catch (err) {
+      setHasError(true);
+      setErrorMessage(err.response.data.message);
     }
   };
 
-  render() {
-    return (
-      <div className="register-box">
-        <div className="register-logo">
-          <a href="../../index2.html">
-            <b>HR</b>MS{" "}
-            <small style={{ fontSize: "10px" }}>by Samcint Solutions</small>
-          </a>
-        </div>
-        <div className="card">
-          <div className="card-body register-card-body">
-            {this.state.hasError ? (
-              <Alert variant="danger">{this.state.errorMessage}</Alert>
-            ) : null}
-            {this.state.completed ? (
-              <Alert variant="success">
-                You have been registered successfully.{" "}
-                <NavLink to="/login">Go to Login.</NavLink>
-              </Alert>
-            ) : null}
-            <p className="login-box-msg">Register</p>
-            <form onSubmit={this.onSubmit}>
-              <div>
-                <div className="input-group mb-3">
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="username"
-                    placeholder="Username"
-                    value={this.state.username}
-                    onChange={this.onChange}
-                    required
-                  />
-                  <div className="input-group-append">
-                    <div className="input-group-text">
-                      <span className="fas fa-user" />
-                    </div>
-                  </div>
-                </div>
-                <div className="input-group mb-3">
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="fullname"
-                    placeholder="Fullname"
-                    value={this.state.fullname}
-                    onChange={this.onChange}
-                    required
-                  />
-                  <div className="input-group-append">
-                    <div className="input-group-text">
-                      <span className="fas fa-user" />
-                    </div>
-                  </div>
-                </div>
-                <div className="input-group mb-3">
-                  <input
-                    type="password"
-                    className="form-control"
-                    name="password"
-                    id="password"
-                    placeholder="Password"
-                    value={this.state.password}
-                    onChange={this.onChange}
-                    required
-                  />
-                  <div className="input-group-append">
-                    <div className="input-group-text">
-                      <span className="fas fa-lock" />
-                    </div>
-                  </div>
-                  <div className="input-group-append">
-                    <div className="input-group-text">
-                      <span
-                        className={
-                          this.state.passwordShow
-                            ? "fas fa-eye"
-                            : "fas fa-eye-slash"
-                        }
-                        onClick={this.passwordVisibilityHandler}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="input-group mb-3">
-                  <input
-                    type="password"
-                    className="form-control"
-                    name="checkPassword"
-                    id="checkPassword"
-                    placeholder="Retype Password"
-                    value={this.state.checkPassword}
-                    onChange={this.onChange}
-                    required
-                  />
-                  <div className="input-group-append">
-                    <div className="input-group-text">
-                      <span className="fas fa-lock" />
-                    </div>
-                  </div>
+  const togglePasswordVisibility = () => {
+    setPasswordShow((prev) => !prev);
+  };
 
-                  <div className="input-group-append">
-                    <div className="input-group-text">
-                      <span
-                        className={
-                          this.state.passwordCheckShow
-                            ? "fas fa-eye"
-                            : "fas fa-eye-slash"
-                        }
-                        onClick={this.passwordVisibilityHandlerCheck}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-8"></div>
-                {/* /.col */}
-                <div className="col-4">
-                  <button type="submit" className="btn btn-primary btn-block">
-                    Register
-                  </button>
-                </div>
-                {/* /.col */}
-              </div>
-            </form>
-            <a href="/login" className="text-center mt-1">
-              Already have an account? Login
-            </a>
-            <hr className="mt-3" />
-            <p className="mb-0">by Samcint Solutions</p>
-          </div>
-          {/* /.form-box */}
-        </div>
-        {/* /.card */}
-      </div>
-    );
+  const togglePasswordCheckVisibility = () => {
+    setPasswordCheckShow((prev) => !prev);
+  };
+
+  if (completed) {
+    return <Redirect to="/login" />;
   }
-}
+
+  return (
+    <>
+      <GlobalStyle />
+      <CenteredContainer>
+        <LoginBox>
+          <LogoContainer>
+            <LogoImage src={Logo} alt="Samcint Logo" />
+          </LogoContainer>
+          <form onSubmit={handleSubmit}>
+            {hasError && <Alert variant="danger">{errorMessage}</Alert>}
+            <InputGroup>
+              <Input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+            <InputGroup>
+              <Input
+                type="text"
+                name="fullname"
+                placeholder="Full Name"
+                value={formData.fullname}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+            <InputGroup>
+              <Input
+                type={passwordShow ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              <PasswordToggle onClick={togglePasswordVisibility}>
+                {passwordShow ? "Hide" : "Show"}
+              </PasswordToggle>
+            </InputGroup>
+            <InputGroup>
+              <Input
+                type={passwordCheckShow ? "text" : "password"}
+                name="checkPassword"
+                placeholder="Retype Password"
+                value={formData.checkPassword}
+                onChange={handleChange}
+                required
+              />
+              <PasswordToggle onClick={togglePasswordCheckVisibility}>
+                {passwordCheckShow ? "Hide" : "Show"}
+              </PasswordToggle>
+            </InputGroup>
+            <LoginButton type="submit">Register</LoginButton>
+          </form>
+          <RegisterLink to="/login">
+            Already have an account? Login
+          </RegisterLink>
+          <Footer>© 2024 Samcint Solutions</Footer>
+        </LoginBox>
+      </CenteredContainer>
+
+      <BackgroundElements>
+        {/* Background shapes similar to those in Login */}
+        <FluidShape
+          width="400px"
+          height="400px"
+          top="-100px"
+          right="-100px"
+          color="rgba(255, 165, 0, 0.1)"
+          rotate="30deg"
+        >
+          <Blob1 />
+        </FluidShape>
+        <FluidShape
+          width="300px"
+          height="300px"
+          top="20%"
+          left="5%"
+          color="rgba(255, 99, 71, 0.08)"
+          rotate="-15deg"
+        >
+          <Blob2 />
+        </FluidShape>
+        <FluidShape
+          width="250px"
+          height="250px"
+          bottom="10%"
+          right="15%"
+          color="rgba(255, 255, 255, 0.1)"
+          rotate="45deg"
+        >
+          <Blob3 />
+        </FluidShape>
+        <Circle
+          size="300px"
+          color="rgba(255, 255, 255, 0.1)"
+          top="-100px"
+          right="-100px"
+        />
+        <Circle
+          size="200px"
+          color="rgba(255, 165, 0, 0.1)"
+          top="20%"
+          left="10%"
+        />
+        <Circle
+          size="150px"
+          color="rgba(255, 99, 71, 0.1)"
+          bottom="15%"
+          right="20%"
+        />
+        <Person />
+        <EmpowermentContainer>
+          Empower your workforce in hours, not days.
+        </EmpowermentContainer>
+      </BackgroundElements>
+    </>
+  );
+};
+
+export default Register;

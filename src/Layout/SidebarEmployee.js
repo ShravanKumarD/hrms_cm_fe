@@ -1,12 +1,76 @@
 import React, { useState, useEffect } from "react";
 import { loadTree } from "../menuTreeHelper";
 import { NavLink } from "react-router-dom";
-import Logo from "../assets/samcintlogowhite.png";
+import Logo from "../assets/samcint_logo_2.png";
+import LogoMini from "../assets/10.png";
 import TodaysWorkStatus from "../components-mini/TodaysWorkStatus";
+import styled from "styled-components";
+
+// Styled components
+const Sidebar = styled.aside`
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+`;
+
+const ClosedSidebar = styled.aside`
+  width: 80px;
+  background-color: white;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+`;
+
+const SidebarItem = styled.div`
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+
+  &.active {
+    background: linear-gradient(to right, #ff8c00, #ffa500);
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background-color: #ff8c00;
+    }
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
+  }
+
+  i {
+    font-size: 24px;
+    color: ${(props) => (props.active ? "white" : "#333")};
+  }
+`;
+
+const OpenButton = styled.button`
+  position: absolute;
+  bottom: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #333;
+`;
 
 const SidebarEmployee = () => {
   const [user, setUser] = useState({});
   const userId = JSON.parse(localStorage.getItem("user")).id;
+  const [isPushed, setIsPushed] = useState(false);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
@@ -14,15 +78,28 @@ const SidebarEmployee = () => {
     loadTree();
   }, []);
 
+  const toggleSidebar = () => setIsPushed(!isPushed);
+
   return (
-    <aside className="main-sidebar elevation-4">
-      {/* Brand Logo */}
-      <img src={Logo} className="logo-main" alt="company-logo" />
-      <a href="/" className="brand-link">
-        <span className="brand-text font-weight-light ml-1">
-          <span>EMPLOYEE</span>
-        </span>
-      </a>
+    <Sidebar className="main-sidebar elevation-4">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "left",
+          marginTop: "30px",
+          marginBottom: "30px",
+        }}
+        data-widget="pushmenu"
+        onClick={toggleSidebar}
+      >
+        {/* if toggled show Logo otherwise LogoMini */}
+        {isPushed ? ( <img src={LogoMini} className="logo-mini" alt="company-logo" /> ) : ( <img src={Logo} className="logo-main" alt="company-logo" /> )}
+      </div>
+      <div
+        style={{ display: "flex", justifyContent: "left", marginLeft: "20px" }}
+      >
+        <span style={{ textAlign: "left" }}>Employee</span>
+      </div>
       {/* Sidebar */}
       <div className="sidebar">
         {/* Sidebar user panel (optional) */}
@@ -131,7 +208,7 @@ const SidebarEmployee = () => {
         {/* /.sidebar-menu */}
       </div>
       {/* /.sidebar */}
-    </aside>
+    </Sidebar>
   );
 };
 

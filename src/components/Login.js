@@ -1,160 +1,192 @@
-import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
+import React, { useState } from "react";
+import { Redirect, Link } from "react-router-dom";
 import { Alert } from "react-bootstrap";
 import axios from "axios";
-import Logo from "../assets/samcint_logo_2.png";
+import styled, { createGlobalStyle, keyframes } from "styled-components";
 import API_BASE_URL from "../env";
+import Logo from "../assets/samcint_logo_2.png";
+import {
+  GlobalStyle,
+  CenteredContainer,
+  LoginBox,
+  LogoContainer,
+  LogoImage,
+  Title,
+  InputGroup,
+  Input,
+  PasswordToggle,
+  LoginButton,
+  RegisterLink,
+  Footer,
+  BackgroundElements,
+  Circle,
+  Square,
+  Triangle,
+  Blob1,
+  Blob2,
+  Blob3,
+  Person,
+  FluidShape,
+  EmpowermentContainer,
+} from "../constants/LoginRegisterStyles";
 
-export default class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: "",
-      password: "",
-      checkPassword: "",
-      passwordShow: false,
-      hasError: false,
-      errorMessage: "",
-      done: false,
-    };
+const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordShow, setPasswordShow] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [done, setDone] = useState(false);
 
-    this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-  }
+  const passwordVisibilityHandler = () => {
+    setPasswordShow(!passwordShow);
+  };
 
-  passwordVisibilityHandler = () => {
-    var x = document.getElementById("password");
-    if (x.type === "password") {
-      x.type = "text";
-    } else {
-      x.type = "password";
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    const user = { username, password };
+    try {
+      axios.defaults.baseURL = API_BASE_URL;
+      const res = await axios.post("/login", user);
+      localStorage.setItem("token", res.data.token);
+      setDone(true);
+    } catch (err) {
+      console.error(err);
+      const errorMsg =
+        err.response?.data?.message || "An unexpected error occurred";
+      setHasError(true);
+      setErrorMessage(errorMsg);
     }
   };
 
-  onChange = (event) => {
-    const { value, name } = event.target;
-    this.setState({
-      [name]: value,
-    });
-  };
-
-  onSubmit = (event) => {
-    event.preventDefault();
-
-    var user = {
-      username: this.state.username,
-      password: this.state.password,
-    };
-
-    axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "post",
-      url: "/login",
-      data: user,
-    })
-      .then((res) => {
-        localStorage.setItem("token", res.data.token);
-        this.setState({ done: true });
-      })
-      .catch((err) => {
-        console.log(err);
-        let errorMessage = "An unexpected error occurred";
-        if (err.response && err.response.data && err.response.data.message) {
-          errorMessage = err.response.data.message;
-        }
-        this.setState({
-          hasError: true,
-          errorMessage: errorMessage,
-        });
-      });
-  };
-
-  render() {
-    return (
-      <div className="register-box">
-        <div className="register-logo">
-          <a href="/">
-            {this.state.done ? <Redirect to="/" /> : <></>}
-            <img src={Logo} style={{ width: "200px" }} alt="company-logo" />
-            {/* <b>HR</b>MS{" "}
-            <small style={{ fontSize: "10px" }}>by Samcint Solutions</small> */}
-          </a>
-        </div>
-        <div className="card">
-          <div className="card-body register-card-body">
-            {this.state.hasError ? (
-              <Alert variant="danger">{this.state.errorMessage}</Alert>
-            ) : null}
-            <p className="login-box-msg">Login</p>
-            <form onSubmit={this.onSubmit}>
-              <div>
-                <div className="input-group mb-3">
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="username"
-                    placeholder="Username"
-                    value={this.state.username}
-                    onChange={this.onChange}
-                    required
-                  />
-                  <div className="input-group-append">
-                    <div className="input-group-text">
-                      <span className="fas fa-user" />
-                    </div>
-                  </div>
-                </div>
-                <div className="input-group mb-3">
-                  <input
-                    type="password"
-                    className="form-control"
-                    name="password"
-                    id="password"
-                    placeholder="Password"
-                    value={this.state.password}
-                    onChange={this.onChange}
-                    required
-                  />
-                  <div className="input-group-append">
-                    <div className="input-group-text">
-                      <span className="fas fa-lock" />
-                    </div>
-                  </div>
-                  <div className="input-group-append">
-                    <div className="input-group-text">
-                      <span
-                        className={
-                          this.state.passwordShow
-                            ? "fas fa-eye"
-                            : "fas fa-eye-slash"
-                        }
-                        onClick={this.passwordVisibilityHandler}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-8"></div>
-                {/* /.col */}
-                <div className="col-4">
-                  <button type="submit" className="btn btn-primary btn-block">
-                    Login
-                  </button>
-                </div>
-                {/* /.col */}
-              </div>
-            </form>
-            <a href="/register" className="text-center mt-1">
-              Don't have an account? Register
-            </a>
-            <hr className="mt-3" />
-            <p className="mb-0">by Samcint Solutions</p>
-          </div>
-          {/* /.form-box */}
-        </div>
-        {/* /.card */}
-      </div>
-    );
+  if (done) {
+    return <Redirect to="/" />;
   }
-}
+
+  return (
+    <>
+      <GlobalStyle />
+      <CenteredContainer>
+        <LoginBox>
+          <LogoContainer>
+            <LogoImage src={Logo} alt="Samcint Logo" />
+          </LogoContainer>
+          <form onSubmit={onSubmit}>
+            {hasError && <Alert variant="danger">{errorMessage}</Alert>}
+            <InputGroup>
+              <Input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </InputGroup>
+            <InputGroup>
+              <Input
+                type={passwordShow ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <PasswordToggle onClick={passwordVisibilityHandler}>
+                {passwordShow ? "Hide" : "Show"}
+              </PasswordToggle>
+            </InputGroup>
+            <LoginButton type="submit">Login</LoginButton>
+          </form>
+          <RegisterLink to="/register">
+            New here? Create an account
+          </RegisterLink>
+          <Footer>© 2024 Samcint Solutions</Footer>
+        </LoginBox>
+      </CenteredContainer>
+
+      <BackgroundElements>
+        <FluidShape
+          width="400px"
+          height="400px"
+          top="-100px"
+          right="-100px"
+          color="rgba(255, 165, 0, 0.1)"
+          rotate="30deg"
+        >
+          <Blob1 />
+        </FluidShape>
+        <FluidShape
+          width="300px"
+          height="300px"
+          top="20%"
+          left="5%"
+          color="rgba(255, 99, 71, 0.08)"
+          rotate="-15deg"
+        >
+          <Blob2 />
+        </FluidShape>
+        <FluidShape
+          width="250px"
+          height="250px"
+          bottom="10%"
+          right="15%"
+          color="rgba(255, 255, 255, 0.1)"
+          rotate="45deg"
+        >
+          <Blob3 />
+        </FluidShape>
+        <FluidShape
+          width="200px"
+          height="200px"
+          top="40%"
+          left="20%"
+          color="rgba(255, 165, 0, 0.08)"
+          rotate="60deg"
+        >
+          <Blob1 />
+        </FluidShape>
+        <FluidShape
+          width="150px"
+          height="150px"
+          bottom="25%"
+          left="10%"
+          color="rgba(255, 99, 71, 0.1)"
+          rotate="-30deg"
+        >
+          <Blob2 />
+        </FluidShape>
+
+        <Circle
+          size="300px"
+          color="rgba(255, 255, 255, 0.1)"
+          top="-100px"
+          right="-100px"
+        />
+        <Circle
+          size="200px"
+          color="rgba(255, 165, 0, 0.1)"
+          top="20%"
+          left="10%"
+        />
+        <Circle
+          size="150px"
+          color="rgba(255, 99, 71, 0.1)"
+          bottom="15%"
+          right="20%"
+        />
+        {/* <Square size="120px" color="rgba(255, 255, 255, 0.08)" top="40%" left="5%" rotate="45deg" />
+        <Square size="80px" color="rgba(255, 165, 0, 0.08)" bottom="10%" left="30%" rotate="30deg" /> */}
+        {/* <Triangle size="80px" color="rgba(255, 99, 71, 0.08)" top="60%" right="5%" rotate="180deg" />
+        <Triangle size="60px" color="rgba(255, 255, 255, 0.08)" bottom="20%" left="15%" rotate="45deg" />
+        <Triangle size="100px" color="rgba(255, 165, 0, 0.08)" top="80%" right="10%" rotate="90deg" /> */}
+        <Person />
+        <EmpowermentContainer>
+          Empower your workforce in hours, not days.
+        </EmpowermentContainer>
+      </BackgroundElements>
+    </>
+  );
+};
+
+export default Login;

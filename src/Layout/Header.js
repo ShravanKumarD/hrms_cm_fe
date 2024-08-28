@@ -36,7 +36,7 @@ export default class Header extends Component {
         ) : null}
         {/* Left navbar links */}
         <ul className="navbar-nav">
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <a
               className="nav-link"
               data-widget="pushmenu"
@@ -45,7 +45,7 @@ export default class Header extends Component {
             >
               <i className="fas fa-bars" />
             </a>
-          </li>
+          </li> */}
           {/* <li className="nav-item d-none d-sm-inline-block">
             <a href="index3.html" className="nav-link">
               Home
