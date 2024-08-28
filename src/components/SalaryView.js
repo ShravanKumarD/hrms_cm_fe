@@ -118,9 +118,9 @@ export default class SalaryView extends Component {
                       </Button>
                       <br />
                       <br /> */}
-                      <span style={{ cursor: "pointer" }} onClick={this.onEdit}>
+                      {/* <span style={{ cursor: "pointer" }} onClick={this.onEdit}>
                         <i className="far fa-edit"></i> Edit
-                      </span>
+                      </span> */}
                     </Form>
                   </Card.Header>
 
@@ -267,7 +267,7 @@ export default class SalaryView extends Component {
                                       ₹{" "}
                                       {
                                         this.state.user.user_financial_info
-                                          .allowancePhoneBill
+                                          .allowancePhoneBill || 0
                                       }
                                     </span>
                                   </Form.Group>
@@ -279,7 +279,7 @@ export default class SalaryView extends Component {
                                       ₹{" "}
                                       {
                                         this.state.user.user_financial_info
-                                          .allowanceOther
+                                          .allowanceOther || 0
                                       }
                                     </span>
                                   </Form.Group>
@@ -290,8 +290,17 @@ export default class SalaryView extends Component {
                                     <span>
                                       ₹{" "}
                                       {
-                                        this.state.user.user_financial_info
-                                          .allowanceTotal
+                                        this.state.user.user_financial_info.allowanceFuel
+                                          +
+                                          this.state.user.user_financial_info.allowanceHouseRent
+                                          +
+                                          this.state.user.user_financial_info.allowanceMedical
+                                          +
+                                          this.state.user.user_financial_info.allowanceOther
+                                          +
+                                          this.state.user.user_financial_info.allowanceSpecial
+                                          +
+                                          this.state.user.user_financial_info.allowancePhoneBill
                                       }
                                     </span>
                                   </Form.Group>
@@ -314,10 +323,45 @@ export default class SalaryView extends Component {
                                       ₹{" "}
                                       {
                                         this.state.user.user_financial_info
-                                          .deductionTax
+                                          .deductionTax || 0
                                       }
                                     </span>
                                   </Form.Group>
+
+                                  <Form.Group as={Row}>
+                                    <Form.Label className="label">
+                                      PF:
+                                    </Form.Label>
+                                    <span>
+                                      ₹{" "}
+                                      {
+                                    this.state.user.user_financial_info.pf || 0
+                                      }
+                                    </span>
+                                  </Form.Group>
+                                  <Form.Group as={Row}>
+                                    <Form.Label className="label">
+                                      PT:
+                                    </Form.Label>
+                                    <span>
+                                      ₹{" "}
+                                      {
+                                       this.state.user.user_financial_info.pt || 0
+                                      }
+                                    </span>
+                                  </Form.Group>
+                                  <Form.Group as={Row}>
+                                    <Form.Label className="label">
+                                      TDS:
+                                    </Form.Label>
+                                    <span>
+                                      ₹{" "}
+                                      {
+                                     this.state.user.user_financial_info.tds || 0
+                                      }
+                                    </span>
+                                  </Form.Group>
+
                                   <Form.Group as={Row}>
                                     <Form.Label className="label">
                                       Other Deduction:
@@ -326,22 +370,27 @@ export default class SalaryView extends Component {
                                       ₹{" "}
                                       {
                                         this.state.user.user_financial_info
-                                          .deductionOther
+                                          .deductionOther || 0
                                       }
                                     </span>
                                   </Form.Group>
-                                  <Form.Group as={Row}>
+                                  {/* <Form.Group as={Row}>
                                     <Form.Label className="label">
                                       Total Deduction:
                                     </Form.Label>
                                     <span>
                                       ₹{" "}
                                       {
-                                        this.state.user.user_financial_info
-                                          .deductionTotal
+                                        this.state.user.user_financial_info.pf
+                                        +
+                                        this.state.user.user_financial_info.pt
+                                        +
+                                        this.state.user.user_financial_info.tds
+                                        +
+                                        this.state.user.user_financial_info.deductionOther
                                       }
                                     </span>
-                                  </Form.Group>
+                                  </Form.Group> */}
                                 </Card.Text>
                               </Card.Body>
                             </Card>
@@ -371,7 +420,8 @@ export default class SalaryView extends Component {
                                       ₹{" "}
                                       {
                                         this.state.user.user_financial_info
-                                          .deductionTotal
+                                        .salaryGross -   this.state.user.user_financial_info
+                                        .salaryNet
                                       }
                                     </span>
                                   </Form.Group>
