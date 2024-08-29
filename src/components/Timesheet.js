@@ -231,9 +231,8 @@ const Timesheet = () => {
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           header={{
-            left: "prev,next today",
+            left: "prev,next",
             center: "title",
-            right: "dayGridMonth,dayGridWeek,dayGridDay",
           }}
           dayRender={handleDayRender}
           dateClick={handleDateClick}

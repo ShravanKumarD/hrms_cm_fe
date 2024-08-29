@@ -1,4 +1,7 @@
 /* src/AttendanceList.css */
+:root {
+  --theme-color: #4caf50; /* Define your theme color here */
+}
 
 .attendance-container {
   max-width: 1200px;
@@ -46,6 +49,12 @@
   font-family: "Arial", sans-serif;
 }
 
+.fc-center h2 {
+  font-size: 1.5rem;
+  color: #333;
+  font-style: normal !important;
+}
+
 .fc-header-toolbar {
   margin-bottom: 1.5rem !important;
 }
@@ -62,6 +71,12 @@
 
 .fc-day-today {
   background-color: #f0f8ff !important;
+}
+
+.fc-next-button,
+.fc-prev-button {
+  background-color: #4caf50 !important;
+  border-color: #4caf50 !important;
 }
 
 .fc-event {
@@ -104,3 +119,45 @@
 .leave {
   background-color: rgba(255, 255, 0, 0.1);
 }
+
+:root {
+  --fc-day-number-color: red !important; /* Example of changing day number color */
+}
+
+.fc-day-number {
+  display: none;
+}
+
+/* Remove borders and outlines from day cells */
+.fc-day,
+.fc-daygrid-day,
+.fc-daygrid-day-frame {
+  padding: 10px !important; /* Adjust padding as needed */
+}
+
+/* Remove borders and outlines from day headers */
+.fc-day-header,
+.fc-daygrid-day-header {
+  padding: 0 !important; /* Adjust padding to match design */
+  text-align: center !important; /* Center the text if desired */
+  font-size: 14px !important; /* Adjust font size as needed */
+  font-weight: 500 !important; /* Medium weight for a clean look */
+  color: #333 !important; /* Dark gray color for text */
+}
+
+/* General border and border-radius for widget content */
+.fc-widget-content,
+.fc-widget-header {
+}
+
+/* Specific adjustments for the last widget content/header of type */
+.fc-widget-content:last-of-type,
+.fc-widget-header:last-of-type {
+}
+
+/* Specific adjustments for the first widget content/header of type */
+/* .fc-widget-content:first-of-type,
+.fc-widget-header:first-of-type {
+  border-left: 1px solid #ddd !important; 
+  border-right: 1px solid #ddd !important; 
+} */

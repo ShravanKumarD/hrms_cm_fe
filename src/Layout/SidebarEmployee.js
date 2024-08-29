@@ -3,6 +3,7 @@ import styled, { ThemeProvider } from "styled-components";
 import { NavLink } from "react-router-dom";
 import { loadTree } from "../menuTreeHelper";
 import TodaysWorkStatus from "../components-mini/TodaysWorkStatus";
+import LogoWhite from "../assets/samcintlogowhite.png"
 import Logo from "../assets/samcint_logo_2.png";
 import LogoMini from "../assets/10.png";
 import GlobalStyle from "../constants/GlobalStyleSidebar";
@@ -156,7 +157,7 @@ const SidebarEmployee = ({ onToggle, themeKey = "green" }) => {
       <GlobalStyle />
       <SidebarWrapper isPushed={isPushed}>
         <LogoContainer onClick={toggleSidebar} data-widget="pushmenu">
-          <StyledLogo src={isPushed ? LogoMini : Logo} alt="company-logo" />
+          <StyledLogo src={isPushed ? LogoMini : LogoWhite} alt="company-logo" />
         </LogoContainer>
         <SidebarContent>
           <UserPanel>
