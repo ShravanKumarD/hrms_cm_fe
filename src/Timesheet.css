@@ -3,6 +3,8 @@
   --theme-color: #4caf50; /* Define your theme color here */
 }
 
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
 .attendance-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -42,6 +44,7 @@
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 1rem;
+  font-family: Poppins, sans-serif;
 }
 
 /* FullCalendar customizations */
@@ -237,9 +240,13 @@
   /* Adds a glowing neon effect */
 }
 
-.fc-center {
+.fc-left {
+  /* make it not italics normal */
+  margin-left: 20px;
   h2 {
-    font-size: 1.5em; /* Adjust the font size as needed */
+    font-style: normal !important;
+    font-size: 1.46em; /* Adjust the font size as needed */
+    font-family: Poppins, sans-serif; /* Use a custom font family */
   }
 }
 

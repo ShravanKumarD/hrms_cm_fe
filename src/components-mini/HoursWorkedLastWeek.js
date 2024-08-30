@@ -31,8 +31,15 @@ const Title = styled.h3`
 `;
 
 const AverageHours = styled.p`
-  font-size: 18px;
+  font-weight: bold;
+  font-size: 15px;
+  color: ${(props) => props.theme.textColor || "#f0f0f0"};
   margin: 0;
+
+  span {
+    opacity: 0.7;
+    font-size: 10px;
+  }
 `;
 
 const ChartContainer = styled.div`
@@ -154,7 +161,9 @@ const HoursWorkedLastWeek = ({ theme }) => {
       >
         <Header theme={theme}>
           <Title>Working hours</Title>
-          <AverageHours>{(totalHours / 7).toFixed(1)} hrs on avg</AverageHours>
+          <AverageHours theme={theme}>
+            {(totalHours / 7).toFixed(1)} hrs <span>/ day</span>
+          </AverageHours>
         </Header>
         <HoursContainer theme={theme}>
           <ChartContainer>
