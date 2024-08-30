@@ -6,13 +6,15 @@ import RecentAnnouncements from "../RecentAnnouncementsManagerEmp";
 import TimesheetMini from "../../components-mini/TimesheetMini";
 import LightweightStartWork from "../../components-mini/LightweightStartWork";
 import HoursWorkedLastWeek from "../../components-mini/HoursWorkedLastWeek";
-
+import LeaveBalance from "../../components-mini/LeaveBalance";
+import themes from "../../constants/themes";
 
 const Dashboard = () => {
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalPayments, setTotalPayments] = useState(0);
   const [recentApplications, setRecentApplications] = useState([]);
+  const selectedTheme = themes.green;
 
   useEffect(() => {
     const departmentId = JSON.parse(localStorage.getItem("user")).departmentId;
@@ -38,18 +40,13 @@ const Dashboard = () => {
         {/* Right column (1/3 width) */}
         <div className="col-md-4">
           {/* StartWork section */}
-          <div className="panel panel-default">
-            <div className="panel-body">
-              <LightweightStartWork />
-            </div>
-          </div>
+          <LightweightStartWork theme={selectedTheme} />
 
           {/* HoursWorked section */}
-          <div className="panel panel-default">
-            <div className="panel-body">
-              <HoursWorkedLastWeek />
-            </div>
-          </div>
+          <HoursWorkedLastWeek theme={selectedTheme} />
+
+          {/* LeaveBalance section */}
+          <LeaveBalance theme={selectedTheme} />
         </div>
       </div>
 
@@ -71,4 +68,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

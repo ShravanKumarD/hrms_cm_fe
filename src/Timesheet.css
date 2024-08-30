@@ -1,4 +1,4 @@
-/* src/AttendanceList.css */
+/* src/Timesheet.css */
 :root {
   --theme-color: #4caf50; /* Define your theme color here */
 }
@@ -145,6 +145,24 @@
   color: #333 !important; /* Dark gray color for text */
 }
 
+.fc-day-header,
+.fc-widget-header {
+  /* background-color: #4caf4e;  */
+  font-size: small !important;
+  text-align: left !important;
+  background: linear-gradient(90deg, #ddf7dc 0%, #e1f8e1 100%);
+  color: rgb(
+    49,
+    99,
+    71
+  ) !important; /* Optional: Sets text color to white for better contrast */
+  border-color: transparent !important;
+  /* padding-top: 0.1em !important;  */
+  /* padding-bottom: 0.1em !important;  */
+  /* padding-left: 0.3em !important;  */
+  display: none !important;
+}
+
 /* General border and border-radius for widget content */
 .fc-widget-content,
 .fc-widget-header {
@@ -161,3 +179,85 @@
   border-left: 1px solid #ddd !important; 
   border-right: 1px solid #ddd !important; 
 } */
+
+.fc-toolbar,
+.fc-toolbar.fc-header-toolbar {
+  padding: 0 !important; /* Use !important to override any existing styles */
+}
+
+.fc-header-toolbar {
+  margin-bottom: 0 !important; /* Use !important to ensure it overrides other styles */
+}
+
+.calendar-wrapper {
+  padding: 0rem;
+  /* #DDF7DC to #E1F8E1 gradient*/
+  background: linear-gradient(90deg, #ddf7dc 0%, #e1f8e1 100%);
+  /* background-color: rgba(69, 160, 73, 0.1);  */
+}
+.fc-toolbar.fc-header-toolbar {
+  content: "";
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  /* background: linear-gradient(to right, #32cd32, #98fb9880);
+   */
+  /* background: linear-gradient(90deg, #ddf7dc 0%, #e1f8e1 100%);
+   */
+
+  background: linear-gradient(90deg, #4caf4f 100%, #98fb9880 50%);
+  z-index: 0;
+}
+
+/* .fc-toolbar {
+  justify-content: space-evenly; 
+} */
+
+.fc-button {
+  font-size: 0.58em; /* Sets the font size relative to the parent element's font size */
+  border-radius: 1.8em; /* Creates rounded corners with a radius of 1.8em */
+  color: black; /* Sets the text color to white */
+  background-color: transparent !important; /* Sets the background color to white */
+  padding: 0.65em 0.65em; /* Adds padding inside the button (top/bottom and left/right) */
+  margin-left: 2em; /* Adds space on the left side of the button */
+  margin-right: 2em; /* Adds space on the right side of the button */
+  transition: all 0.3s ease; /* Smooth transition for background color and shadow changes */
+  border-color: transparent !important; /* Sets the border color to transparent */
+}
+
+.fc-button:hover,
+.fc-button:active {
+  background-color: darkgreen !important; /* Neon green background color on hover */
+  color: white; /* Change text color to ensure it contrasts well with the neon green */
+  border-color: transparent !important;
+  /* box-shadow: 0 0 15px 5px rgba(57, 255, 20, 0.75) !important;  */
+  /* Adds a glowing neon effect */
+}
+
+.fc-center {
+  h2 {
+    font-size: 1.5em; /* Adjust the font size as needed */
+  }
+}
+
+/* Style for the table element */
+table {
+  border-collapse: collapse; /* Ensures borders between cells are merged into a single border */
+  width: 100%; /* Optional: Makes the table width 100% of its container */
+}
+
+/* Style for table headers and cells */
+th,
+td {
+  border: 0.1px solid #f0fff080 !important; /* Sets a solid white border with a thickness of 2px */
+  padding: 8px; /* Optional: Adds padding inside each cell for spacing */
+}
+
+/* Optional: Style for the table header row */
+thead th {
+  background-color: #333; /* Optional: Sets a background color for the table headers for better contrast */
+  color: white; /* Ensures the text in the header is white for contrast */
+}

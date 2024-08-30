@@ -1,3 +1,5 @@
+// constants/themes.js
+
 const themes = {
   orange: {
     primary: "#FF8C00",
@@ -9,11 +11,13 @@ const themes = {
     iconHover: "#FFFF00",
     textActive: "#FFFF00",
     selectedBorder: "#FFFF00",
-    panelBackground: "#F8F9FA", // Added
-    panelBorderColor: "#E0E0E0", // Added
-    infoboxBackground: "#FFFFFF", // Added
-    fontSize: "14px", // Font size for dropdown items
-    padding: "10px 15px", // Padding for dropdown items
+    panelBackground: "#F8F9FA",
+    panelBorderColor: "#E0E0E0",
+    infoboxBackground: "#FFFFFF",
+    fontSize: "14px",
+    padding: "10px 15px",
+    leaveColor: "#FFD700",
+    leaveTextColor: "#000000",
   },
   blue: {
     primary: "#0066CC",
@@ -25,11 +29,13 @@ const themes = {
     iconHover: "#33CCFF",
     textActive: "#33CCFF",
     selectedBorder: "#33CCFF",
-    panelBackground: "#F0F4F8", // Added
-    panelBorderColor: "#D0D0D0", // Added
-    infoboxBackground: "#FFFFFF", // Added
-    fontSize: "14px", // Font size for dropdown items
-    padding: "10px 15px", // Padding for dropdown items
+    panelBackground: "#F0F4F8",
+    panelBorderColor: "#D0D0D0",
+    infoboxBackground: "#FFFFFF",
+    fontSize: "14px",
+    padding: "10px 15px",
+    leaveColor: "#4682B4",
+    leaveTextColor: "#000000",
   },
   green: {
     primary: "#006633",
@@ -41,11 +47,17 @@ const themes = {
     iconHover: "#00CC66",
     textActive: "#00CC66",
     selectedBorder: "#00CC66",
-    panelBackground: "#E8F5E9", // Added
-    panelBorderColor: "#C8E6C9", // Added
-    infoboxBackground: "#FFFFFF", // Added
-    fontSize: "14px", // Font size for dropdown items
-    padding: "10px 15px", // Padding for dropdown items
+    panelBackground: "#E8F5E9",
+    panelBorderColor: "#C8E6C9",
+    infoboxBackground: "#FFFFFF",
+    fontSize: "14px",
+    padding: "10px 15px",
+    leaveColor: "#32CD32",
+    leaveTextColor: "#000000",
+    topColor: "#32CD32", // Lime Green for top
+    bottomColor: "#98FB98", // Pale Green for bottom
+    textColor: "#000000", // Black text color
+    progressColor: "#32CD32", // Lime Green for the progress bar
   },
   red: {
     primary: "#FF0000",
@@ -60,8 +72,10 @@ const themes = {
     panelBackground: "#FFE5E5",
     panelBorderColor: "#FFCCCC",
     infoboxBackground: "#FFFFFF",
-    fontSize: "14px", // Font size for dropdown items
-    padding: "10px 15px", // Padding for dropdown items
+    fontSize: "14px",
+    padding: "10px 15px",
+    leaveColor: "#FF6347",
+    leaveTextColor: "#000000",
   },
   purple: {
     primary: "#800080",
@@ -76,8 +90,10 @@ const themes = {
     panelBackground: "#F3E5F5",
     panelBorderColor: "#E1BEE7",
     infoboxBackground: "#FFFFFF",
-    fontSize: "14px", // Font size for dropdown items
-    padding: "10px 15px", // Padding for dropdown items
+    fontSize: "14px",
+    padding: "10px 15px",
+    leaveColor: "#BA55D3",
+    leaveTextColor: "#000000",
   },
   yellow: {
     primary: "#FFD700",
@@ -92,8 +108,10 @@ const themes = {
     panelBackground: "#FFF9C4",
     panelBorderColor: "#FFF59D",
     infoboxBackground: "#FFFFFF",
-    fontSize: "14px", // Font size for dropdown items
-    padding: "10px 15px", // Padding for dropdown items
+    fontSize: "14px",
+    padding: "10px 15px",
+    leaveColor: "#FFD700",
+    leaveTextColor: "#000000",
   },
   pink: {
     primary: "#FF69B4",
@@ -108,8 +126,10 @@ const themes = {
     panelBackground: "#F8BBD0",
     panelBorderColor: "#F48FB1",
     infoboxBackground: "#FFFFFF",
-    fontSize: "14px", // Font size for dropdown items
-    padding: "10px 15px", // Padding for dropdown items
+    fontSize: "14px",
+    padding: "10px 15px",
+    leaveColor: "#FF69B4",
+    leaveTextColor: "#000000",
   },
   teal: {
     primary: "#008080",
@@ -124,8 +144,10 @@ const themes = {
     panelBackground: "#E0F7FA",
     panelBorderColor: "#B2EBF2",
     infoboxBackground: "#FFFFFF",
-    fontSize: "14px", // Font size for dropdown items
-    padding: "10px 15px", // Padding for dropdown items
+    fontSize: "14px",
+    padding: "10px 15px",
+    leaveColor: "#20B2AA",
+    leaveTextColor: "#000000",
   },
 };
 

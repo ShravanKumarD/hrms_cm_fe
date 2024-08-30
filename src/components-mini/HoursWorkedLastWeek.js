@@ -2,22 +2,51 @@ import React, { useState, useEffect } from "react";
 import { Container, Card } from "react-bootstrap";
 import { Bar } from "react-chartjs-2";
 import axios from "axios";
+import styled from "styled-components";
 
-const HoursWorkedLastWeek = () => {
+const HoursContainer = styled.div`
+  width: 100%;
+  height: 280px;
+  background: ${(props) => props.theme.panelBackground || "#f0f0f0"};
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  padding: 20px;
+  box-sizing: border-box;
+`;
+
+const Header = styled.div`
+  background: ${(props) => props.theme.primaryColor || "#4CAF50"};
+  color: ${(props) => props.theme.textColor || "#f0f0f0"};
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+`;
+
+const Title = styled.h3`
+  margin: 0;
+  font-size: 18px;
+`;
+
+const AverageHours = styled.p`
+  font-size: 18px;
+  margin: 0;
+`;
+
+const ChartContainer = styled.div`
+  height: 220px;
+  margin-top: 10px;
+`;
+
+const HoursWorkedLastWeek = ({ theme }) => {
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [
       {
         data: [],
-        backgroundColor: [
-          "#4285F4",
-          "#FBBC05",
-          "#34A853",
-          "#EA4335",
-          "#4285F4",
-          "#FBBC05",
-          "#34A853",
-        ],
+        backgroundColor: theme.primaryColor || "#4CAF50",
       },
     ],
   });
@@ -46,7 +75,7 @@ const HoursWorkedLastWeek = () => {
 
   const transformData = (data) => {
     const today = new Date();
-    const last7Days = Array.from({ length: 8 }, (_, i) => {
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       return d.toISOString().split("T")[0];
@@ -62,23 +91,11 @@ const HoursWorkedLastWeek = () => {
 
   const makeArrayStructure = (data) => {
     return {
-      labels: data.map((d) => {
-        const date = new Date(d.date);
-        return date.toLocaleString("default", { weekday: "short" });
-      }),
+      labels: ["Fri", "Thu", "Wed", "Tue", "Mon", "Sun", "Sat"],
       datasets: [
         {
-          data: data.map((d) => d.workedHours),
-          backgroundColor: [
-            "#4285F4",
-            "#FBBC05",
-            "#34A853",
-            "#EA4335",
-            "#4285F4",
-            "#FBBC05",
-            "#34A853",
-            "#EA4335",
-          ],
+          data: data.map((d) => d.workedHours).reverse(),
+          backgroundColor: theme.primaryColor || "#4CAF50",
         },
       ],
     };
@@ -91,30 +108,29 @@ const HoursWorkedLastWeek = () => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    legend: { display: false }, // Hide legend
-    tooltips: { enabled: false }, // Disable tooltips
+    legend: { display: false },
+    tooltips: { enabled: false },
     scales: {
       xAxes: [
         {
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
+          gridLines: { display: false },
           ticks: {
-            display: true, // Hide x-axis
+            fontColor: theme.textColor || "#333",
           },
         },
       ],
       yAxes: [
         {
           gridLines: {
-            display: true,
             drawBorder: false,
+            color: theme.gridColor || "#e0e0e0",
           },
           ticks: {
-            // display: false, // Hide y-axis
             beginAtZero: true,
             stepSize: 2,
+            max: 14,
+            fontColor: theme.textColor || "#333",
+            callback: (value) => value,
           },
         },
       ],
@@ -124,49 +140,27 @@ const HoursWorkedLastWeek = () => {
   return (
     <Container
       fluid
-      className="d-flex flex-column justify-content-center align-items-center mt-4"
+      className="d-flex flex-column justify-content-center align-items-center"
     >
       <Card
         className="shadow-sm"
         style={{
           maxWidth: "400px",
           width: "100%",
-          fontSize: "0.95rem",
-          borderRadius: "10px", // Added border radius
+          fontSize: theme.fontSize,
+          borderRadius: "10px",
+          overflow: "hidden",
         }}
       >
-        <div
-          style={{
-            height: "100%",
-            width: "100%",
-            padding: "15px",
-            fontFamily: "Arial, sans-serif",
-            backgroundColor: "white",
-            borderRadius: "10px", // Added border radius
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "10px",
-            }}
-          >
-            <span style={{ margin: 0 }}>Working hours</span>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <span style={{ fontWeight: "bold" }}>
-                {(totalHours / 7).toFixed(1)} hrs
-              </span>
-              <span style={{ fontSize: "0.5rem", textAlign: "center" }}>
-                on avg
-              </span>
-            </div>
-          </div>
-          <div style={{ height: "calc(100%)" }}>
+        <Header theme={theme}>
+          <Title>Working hours</Title>
+          <AverageHours>{(totalHours / 7).toFixed(1)} hrs on avg</AverageHours>
+        </Header>
+        <HoursContainer theme={theme}>
+          <ChartContainer>
             <Bar data={chartData} options={options} />
-          </div>
-        </div>
+          </ChartContainer>
+        </HoursContainer>
       </Card>
     </Container>
   );

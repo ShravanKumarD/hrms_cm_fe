@@ -9,8 +9,159 @@ import {
   Modal,
   ProgressBar,
 } from "react-bootstrap";
-import "../startwork.css";
+import styled from "styled-components";
 import API_BASE_URL from "../env";
+
+// Styled components
+const WorkContainer = styled.div`
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(
+    to bottom right,
+    ${(props) => props.theme.topColor}40,
+    ${(props) => props.theme.bottomColor}20
+  );
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 15px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(
+      to right,
+      ${(props) => props.theme.topColor},
+      ${(props) => props.theme.bottomColor}80
+    );
+    z-index: 0;
+  }
+`;
+
+const Header = styled.h3`
+  margin: -5px;
+  padding-bottom: 10px;
+  font-size: 18px;
+  color: ${(props) => props.theme.textColor};
+  z-index: 1;
+  position: relative;
+`;
+
+// Helper functions
+const getLighterColor = (color) => {
+  const rgb = color.match(/\w\w/g).map((c) => parseInt(c, 16));
+  const lightenFactor = 0.5; // Factor to lighten the color
+
+  const lightenColor = rgb.map((c) =>
+    Math.round(c + (255 - c) * lightenFactor)
+  );
+
+  return `rgb(${lightenColor[0]}, ${lightenColor[1]}, ${lightenColor[2]})`;
+};
+
+const getColor = (progress, color) => {
+  const rgb = color.match(/\w\w/g).map((c) => parseInt(c, 16));
+  const factor = 1 - Math.min(progress / 100, 1); // As progress increases, factor decreases
+
+  const darkenColor = rgb.map((c) => Math.round(c * factor));
+
+  return `rgb(${darkenColor[0]}, ${darkenColor[1]}, ${darkenColor[2]})`;
+};
+
+// Styled Components
+const WorkTime = styled.div`
+  font-size: 24px;
+  font-weight: bold;
+  color: ${(props) => props.theme.textColor};
+`;
+
+const ProgressBarWrapper = styled.div`
+  width: 100%;
+  height: 10px;
+  background-color: ${(props) => getLighterColor(props.theme.progressColor)};
+  // border-radius: 5px;
+  overflow: hidden;
+`;
+
+const StyledProgressBar = styled.div`
+  height: 100%;
+  background-color: ${(props) => props.style.backgroundColor};
+`;
+
+const ProgressText = styled.div`
+  color: ${(props) => props.theme.textColor};
+  margin-top: 10px;
+`;
+
+const WorkButton = styled(Button)`
+  align-self: center;
+  margin-top: 10px;
+`;
+
+// Timeline subcomponent
+const Timeline = ({ todayAttendance, theme }) => {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (todayAttendance && todayAttendance.clockinTime) {
+      const updateProgress = () => {
+        const now = moment();
+        const clockin = moment(todayAttendance.clockinTime, "HH:mm:ss");
+        let hoursWorked = todayAttendance.totalHours || 0;
+        if (todayAttendance.clockoutTime) {
+          const clockout = moment(todayAttendance.clockoutTime, "HH:mm:ss");
+          hoursWorked = clockout.diff(clockin, "hours", true);
+        } else {
+          hoursWorked = now.diff(clockin, "hours", true);
+        }
+        setProgress((hoursWorked / 9) * 100); // Assuming 9 hours workday
+      };
+
+      updateProgress();
+      const interval = setInterval(updateProgress, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [todayAttendance]);
+
+  const getProgressText = () => {
+    if (progress === 0) {
+      return todayAttendance && todayAttendance.clockoutTime
+        ? "0%"
+        : "Work just started (0%)";
+    } else if (progress < 100) {
+      return `${parseFloat(progress.toFixed(0))}% completed`;
+    } else if (progress === 100) {
+      return "Work completed (100%)";
+    } else {
+      return `${parseFloat(progress.toFixed(0))}% supercharged!`;
+    }
+  };
+
+  return (
+    <>
+      <ProgressBarWrapper theme={theme}>
+        <StyledProgressBar
+          now={progress}
+          style={{
+            width: `${progress}%`,
+            backgroundColor: getColor(progress, theme.progressColor),
+            transition:
+              "width 0.5s ease-in-out, background-color 0.5s ease-in-out",
+          }}
+        />
+      </ProgressBarWrapper>
+      <ProgressText theme={theme}>{getProgressText()}</ProgressText>
+    </>
+  );
+};
 
 // Custom Hooks
 const useLocation = () => {
@@ -26,7 +177,7 @@ const useLocation = () => {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             });
-            setLocationError(""); // Clear any previous errors
+            setLocationError("");
             resolve();
           },
           (error) => reject(error)
@@ -66,7 +217,6 @@ const useAttendance = () => {
       console.error("Error fetching attendance records:", error);
       if (retries > 0) {
         console.log(`Retrying... (${retries} retries left)`);
-        // Wait for a short period before retrying
         await new Promise((res) => setTimeout(res, 1000));
         await fetchAttendanceRecords(retries - 1);
       } else {
@@ -134,172 +284,27 @@ const useAttendance = () => {
     incompleteAttendance,
     fetchAttendanceRecords,
     closeIncompleteAttendance,
+    setIsWorking,
   };
 };
 
-const WorkControls = ({
-  isWorking,
-  onStart,
-  onEnd,
-  todayAttendance,
-  incompleteAttendance,
-}) => (
-  <div className="text-center mb-3">
-    {!isWorking && (
-      <Button
-        variant="success"
-        size="sm"
-        onClick={onStart}
-        disabled={todayAttendance && todayAttendance.clockoutTime}
-      >
-        <strong>
-          {incompleteAttendance ? "Start New Work Day" : "Start Work"}
-        </strong>
-      </Button>
-    )}
-    {isWorking && (
-      <Button variant="danger" size="sm" onClick={onEnd}>
-        End Work
-      </Button>
-    )}
-    {todayAttendance && todayAttendance.clockoutTime && (
-      <div className="text-muted mt-2" style={{ fontSize: "0.7rem" }}>
-        You've already ended work for today.
-      </div>
-    )}
-  </div>
-);
-
-const WorkTimes = ({ record }) => {
-  if (!record) return null;
-  const { clockinTime, clockoutTime, status } = record;
-  const clockin = moment(clockinTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
-  const clockout = moment(clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]);
-
-  return (
-    <div
-      className="d-flex justify-content-between mx-2"
-      style={{ fontSize: "0.7rem" }}
-    >
-      {clockin && <div>{clockin.format("h:mm A")}</div>}
-      {clockout && clockout.isValid() && <div>{clockout.format("h:mm A")}</div>}
-    </div>
-  );
-};
-
-const Timeline = ({ todayAttendance }) => {
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    if (todayAttendance && todayAttendance.clockinTime) {
-      const updateProgress = () => {
-        const now = moment();
-        const clockin = moment(todayAttendance.clockinTime, "HH:mm:ss");
-        let hoursWorked = todayAttendance.totalHours || 0;
-        if (todayAttendance.clockoutTime) {
-          const clockout = moment(todayAttendance.clockoutTime, "HH:mm:ss");
-          hoursWorked = clockout.diff(clockin, "hours", true);
-        } else {
-          hoursWorked = now.diff(clockin, "hours", true);
-        }
-        setProgress((hoursWorked / 9) * 100); // Assuming 9 hours workday
-      };
-
-      updateProgress();
-      const interval = setInterval(updateProgress, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [todayAttendance]);
-
-  if (!todayAttendance || !todayAttendance.clockinTime) return null;
-
-  const getColor = (progress) => {
-    if (progress > 100) {
-      const red = Math.round(255 * (1 - progress / 200));
-      const green = Math.round(255 * (progress / 200));
-      return `rgb(${red}, ${green}, 0)`;
-    }
-    const red = Math.round(255 * (1 - progress / 100));
-    const green = Math.round(255 * (progress / 100));
-    return `rgb(${red}, ${green}, 0)`;
-  };
-
-  return (
-    <div className="container mt-3">
-      <div
-        style={{
-          height: "20px",
-          borderRadius: "10px",
-          backgroundColor: "#e9ecef",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            width: `${progress}%`,
-            height: "100%",
-            backgroundColor: getColor(progress),
-            transition:
-              "width 0.5s ease-in-out, background-color 0.5s ease-in-out",
-          }}
-        />
-      </div>
-      <div className="text-center mt-2" style={{ fontSize: "0.7rem" }}>
-        <div>
-          {progress === 0
-            ? todayAttendance.clockoutTime
-              ? "0%"
-              : "Work just started (0%)"
-            : progress < 100
-            ? `${parseFloat(progress.toFixed(2))}% completed`
-            : progress === 100
-            ? "Work completed (100%)"
-            : `${parseFloat(progress.toFixed(2))}% supercharged!`}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const ConfirmationModal = ({ show, onHide, onConfirm, totalTime }) => (
-  <Modal show={show} onHide={onHide} size="sm">
-    <Modal.Header closeButton>
-      <Modal.Title style={{ fontSize: "1rem" }}>Confirm End Work</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      <p style={{ fontSize: "0.7rem" }}>
-        Are you sure you want to end work now? You've worked a total of{" "}
-        <strong>{totalTime}</strong>.
-      </p>
-    </Modal.Body>
-    <Modal.Footer>
-      <Button variant="secondary" size="sm" onClick={onHide}>
-        Cancel
-      </Button>
-      <Button variant="primary" size="sm" onClick={onConfirm}>
-        Confirm
-      </Button>
-    </Modal.Footer>
-  </Modal>
-);
-
-const StartWork = () => {
+// Main component
+const LightweightStartWork = ({ theme }) => {
   const {
     userId,
     date,
     status,
-    attendanceRecords,
     todayAttendance,
     isWorking,
     incompleteAttendance,
     fetchAttendanceRecords,
     closeIncompleteAttendance,
+    setIsWorking,
   } = useAttendance();
 
   const { location, fetchUserLocation, locationError } = useLocation();
 
   const [showModal, setShowModal] = useState(false);
-  const [totalTime, setTotalTime] = useState("0 hours");
 
   useEffect(() => {
     fetchAttendanceRecords();
@@ -316,12 +321,14 @@ const StartWork = () => {
       await fetchUserLocation();
       if (locationError) return;
 
+      const currentTime = moment();
+
       await axios.post(
         `/api/attendance/clock-in`,
         {
           userId,
           date,
-          clockinTime: moment().format("HH:mm:ss"),
+          clockinTime: currentTime.format("HH:mm:ss"),
           latitudeClockin: location.latitude,
           longitudeClockin: location.longitude,
           status,
@@ -333,6 +340,7 @@ const StartWork = () => {
         }
       );
 
+      setIsWorking(true);
       await fetchAttendanceRecords();
     } catch (error) {
       console.error("Error starting work:", error);
@@ -343,15 +351,6 @@ const StartWork = () => {
     try {
       await fetchUserLocation();
       if (locationError) return;
-
-      const startTime = moment(todayAttendance.clockinTime, "HH:mm:ss");
-      const endTime = moment();
-      const totalWorkTime = moment.duration(endTime.diff(startTime));
-      setTotalTime(
-        `${Math.floor(
-          totalWorkTime.asHours()
-        )} hours ${totalWorkTime.minutes()} minutes`
-      );
 
       setShowModal(true);
     } catch (error) {
@@ -377,8 +376,9 @@ const StartWork = () => {
         }
       );
 
-      await fetchAttendanceRecords();
+      setIsWorking(false);
       setShowModal(false);
+      await fetchAttendanceRecords();
     } catch (error) {
       console.error("Error confirming end work:", error);
     }
@@ -387,54 +387,59 @@ const StartWork = () => {
   return (
     <Container
       fluid
-      className="d-flex flex-column justify-content-center align-items-center mt-4"
+      className="d-flex justify-content-center align-items-center"
     >
       <Card
         className="shadow-sm"
-        style={{
-          maxWidth: "400px",
-          width: "100%",
-          fontSize: "0.95rem",
-          borderRadius: "10px", // Added border radius
-        }}
+        style={{ maxWidth: "400px", width: "100%", borderRadius: "10px" }}
       >
-        <div
-          style={{
-            paddingTop: "20px",
-            paddingLeft: "15px",
-            paddingRight: "15px",
-            paddingBottom: "15px",
-            borderRadius: "10px", // Added border radius
-          }}
-        >
-          {/* <div className="text-center mb-3" style={{ fontSize: "1rem" }}>
-            {moment().format("MMMM Do YYYY")}
-          </div> */}
-          <WorkControls
-            isWorking={isWorking}
-            onStart={handleStartWork}
-            onEnd={handleEndWork}
-            todayAttendance={todayAttendance}
-            incompleteAttendance={incompleteAttendance}
-          />
-          <WorkTimes record={todayAttendance} />
-          {locationError && (
-            <Alert variant="danger" className="mt-2">
-              {locationError}
-            </Alert>
-          )}
-          <Timeline todayAttendance={todayAttendance} />
-        </div>
+        <WorkContainer theme={theme}>
+          <Header theme={theme}>Let's Get to Work</Header>
+          <WorkTime theme={theme}>
+            {isWorking ? moment().format("h:mm A") : "Not working"}
+          </WorkTime>
+          <Timeline todayAttendance={todayAttendance} theme={theme} />
+          <WorkButton
+            variant={isWorking ? "danger" : "success"}
+            onClick={isWorking ? handleEndWork : handleStartWork}
+          >
+            {isWorking ? "End Work" : "Start Work"}
+          </WorkButton>
+        </WorkContainer>
       </Card>
 
-      <ConfirmationModal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        onConfirm={confirmEndWork}
-        totalTime={totalTime}
-      />
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm End Work</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to end work?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={confirmEndWork}>
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {locationError && (
+        <Alert variant="danger" className="mt-2">
+          {locationError}
+        </Alert>
+      )}
     </Container>
   );
 };
 
-export default StartWork;
+// Provide a default theme if needed
+LightweightStartWork.defaultProps = {
+  theme: {
+    topColor: "#32CD32", // Lime Green for top
+    bottomColor: "#98FB98", // Pale Green for bottom
+    textColor: "#000000", // Black text color
+    progressColor: "#32CD32", // Lime Green for the progress bar
+  },
+};
+
+export default LightweightStartWork;
