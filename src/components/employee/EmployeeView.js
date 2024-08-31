@@ -1,275 +1,291 @@
-import React, { Component } from "react";
-import { Card, Row, Col, Form } from "react-bootstrap";
-import { Redirect } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 import API_BASE_URL from "../../env";
 
-export default class EmployeeViewEmployee extends Component {
-  constructor(props) {
-    super(props);
+const theme = {
+  colors: {
+    primary: "#004d00",
+    secondary: "#007a00",
+    background: "#ffffff",
+    text: "#333333",
+    lightText: "#666666",
+    cardHeader: "#006400",
+    cardBody: "#e0ffe0",
+  },
+  gradients: {
+    primary: "linear-gradient(135deg, #004d00 0%, #007a00 100%)",
+    secondary: "linear-gradient(135deg, #002200 0%, #004d00 100%)",
+    cardHeader: "linear-gradient(135deg, #4CAF4F 0%, #85E184 100%)",
+  },
+  fontSizes: {
+    small: "0.875rem",
+    medium: "1rem",
+    large: "1.25rem",
+    xlarge: "1.5rem",
+  },
+};
 
-    this.state = {
-      user: {},
-      department: {
-        departmentName: null,
-      },
-      job: {
-        jobTitle: null,
-      },
-      userPersonalInfo: {
-        dateOfBirth: null,
-        gender: null,
-        maritalStatus: null,
-        fatherName: null,
-        country: null,
-        address: null,
-        mobile: null,
-        emailAddress: null,
-      },
-      userFinancialInfo: {
-        bankName: null,
-        accountName: null,
-        accountNumber: null,
-        iban: null,
-      },
-      falseRedirect: false,
-      editRedirect: false,
-    };
-  }
+const Card = ({ title, children, extraContent }) => (
+  <div
+    style={{
+      borderRadius: "8px",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      marginBottom: "1.5rem",
+      overflow: "hidden",
+      backgroundColor: theme.colors.background,
+      height: "100%",
+    }}
+  >
+    <div
+      style={{
+        background: theme.gradients.cardHeader,
+        padding: "1rem",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <h3
+        style={{
+          fontSize: theme.fontSizes.large,
+          fontWeight: "bold",
+          color: theme.colors.background,
+          margin: 0,
+        }}
+      >
+        {title}
+      </h3>
+      {extraContent}
+    </div>
+    <div
+      style={{
+        background: theme.colors.cardBody,
+        padding: "1rem",
+        height: "calc(100% - 3.5rem)",
+        overflowY: "auto",
+      }}
+    >
+      {children}
+    </div>
+  </div>
+);
 
-  componentDidMount() {
-    axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "get",
-      url: "api/users/" + JSON.parse(localStorage.getItem("user")).id,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then((res) => {
-        let user = res.data;
-        this.setState({ user: user }, () => {
-          if (user.jobs) {
-            let jobs = user.jobs;
-            jobs.map((job) => {
-              if (
-                new Date(job.startDate) <= Date.now() &&
-                new Date(job.endDate) >= Date.now()
-              ) {
-                this.setState({ job: job });
-              }
-            });
+const DataItem = ({ label, value }) => (
+  <p style={{ margin: "0.5rem 0" }}>
+    <span
+      style={{
+        fontSize: theme.fontSizes.small,
+        color: theme.colors.lightText,
+        display: "block",
+      }}
+    >
+      {label}
+    </span>
+    <span
+      style={{
+        fontSize: theme.fontSizes.medium,
+        color: theme.colors.text,
+        fontWeight: "500",
+      }}
+    >
+      {value || "N/A"}
+    </span>
+  </p>
+);
+
+const EmployeeDashboard = () => {
+  const [userData, setUserData] = useState({
+    user: {},
+    department: { departmentName: null },
+    job: { jobTitle: null },
+    userPersonalInfo: {},
+    userFinancialInfo: {},
+  });
+
+  const history = useHistory();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const { data } = await axios.get(
+          `${API_BASE_URL}/api/users/${
+            JSON.parse(localStorage.getItem("user")).id
+          }`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
-          if (user.department) {
-            this.setState({ department: user.department });
-          }
-          if (user.user_personal_info) {
-            if (user.user_personal_info.dateOfBirth) {
-              user.user_personal_info.dateOfBirth = moment(
-                user.user_personal_info.dateOfBirth
-              ).format("D MMM YYYY");
-            }
-            this.setState({ userPersonalInfo: user.user_personal_info });
-          }
-          if (user.user_financial_info) {
-            this.setState({ userFinancialInfo: user.user_financial_info });
-          }
+        );
+
+        const currentJob = data.jobs?.find(
+          (job) =>
+            new Date(job.startDate) <= Date.now() &&
+            new Date(job.endDate) >= Date.now()
+        );
+
+        setUserData({
+          user: data,
+          department: data.department || {},
+          job: currentJob || {},
+          userPersonalInfo: {
+            ...data.user_personal_info,
+            dateOfBirth: data.user_personal_info?.dateOfBirth
+              ? moment(data.user_personal_info.dateOfBirth).format("D MMM YYYY")
+              : null,
+          },
+          userFinancialInfo: data.user_financial_info || {},
         });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        history.push("/error");
+      }
+    };
 
-  render() {
-    return (
-      <div className="container-fluid pt-3">
-        <Row>
-          <Col sm={12}>
-            <Card>
-              <Card.Header
+    fetchUserData();
+  }, [history]);
+
+  const { user, department, job, userPersonalInfo, userFinancialInfo } =
+    userData;
+
+  return (
+    <div
+      style={{
+        maxWidth: "1200px",
+        margin: "0 auto",
+        padding: "2rem",
+        fontFamily: "Arial, sans-serif",
+        backgroundColor: theme.colors.background,
+        color: theme.colors.text,
+      }}
+    >
+      <h1
+        style={{
+          fontSize: theme.fontSizes.xlarge,
+          fontWeight: "bold",
+          textAlign: "center",
+          marginBottom: "2rem",
+          background: theme.gradients.primary,
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+        }}
+      >
+        Employee Dashboard
+      </h1>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem" }}>
+        <div style={{ flex: "1 1 100%", minWidth: "300px" }}>
+          <Card title="Profile">
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div
                 style={{
-                  backgroundColor: "#515e73",
-                  color: "white",
-                  fontSize: "17px",
+                  width: "64px",
+                  height: "64px",
+                  borderRadius: "50%",
+                  background: theme.gradients.secondary,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  fontSize: theme.fontSizes.xlarge,
+                  fontWeight: "bold",
                 }}
               >
-                My Profile
-              </Card.Header>
-              <Card.Body>
-                <Card.Title>
-                  <strong>{this.state.user.fullName}</strong>
-                </Card.Title>
-                <div>
-                  <Col lg={12}>
-                    <Row className="pt-4">
-                      <Col lg={3}>
-                        <img
-                          className="img-circle elevation-1 bp-2"
-                          src={process.env.PUBLIC_URL + "/user-128.png"}
-                        ></img>
-                      </Col>
-                      <Col className="pt-4" lg={9}>
-                        <div className="emp-view-list">
-                          <ul>
-                            <li>
-                              <span>Employee ID: </span> {this.state.user.id}
-                            </li>
-                            <li>
-                              <span>Department: </span>{" "}
-                              {this.state.department.departmentName}
-                            </li>
-                            <li>
-                              <span>Job Title: </span> {this.state.job.jobTitle}
-                            </li>
-                            <li>
-                              <span>Role: </span>
-                              {this.state.user.role === "ROLE_ADMIN"
-                                ? "Admin"
-                                : this.state.user.role === "ROLE_MANAGER"
-                                ? "Manager"
-                                : "Employee"}
-                            </li>
-                          </ul>
-                        </div>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col sm={6}>
-                        <Card className="secondary-card emp-view">
-                          <Card.Header>Personal Details</Card.Header>
-                          <Card.Body>
-                            <Card.Text id="emp-view-personal">
-                              <Form.Group as={Row}>
-                                <Form.Label className="label">
-                                  Date of Birth:
-                                </Form.Label>
-                                <span>
-                                  {this.state.userPersonalInfo.dateOfBirth}
-                                </span>
-                              </Form.Group>
-                              <Form.Group as={Row}>
-                                <Form.Label className="label">
-                                  Gender:
-                                </Form.Label>
-                                <span>
-                                  {this.state.userPersonalInfo.gender}
-                                </span>
-                              </Form.Group>
-                              <Form.Group as={Row}>
-                                <Form.Label className="label">
-                                  Marital Status:
-                                </Form.Label>
-                                <span>
-                                  {this.state.userPersonalInfo.maritalStatus}
-                                </span>
-                              </Form.Group>
-                              <Form.Group as={Row}>
-                                <Form.Label className="label">
-                                  Father's Name:
-                                </Form.Label>
-                                <span>
-                                  {this.state.userPersonalInfo.fatherName}
-                                </span>
-                              </Form.Group>
-                            </Card.Text>
-                          </Card.Body>
-                        </Card>
-                      </Col>
-                      <Col sm={6}>
-                        <Card className="secondary-card emp-view">
-                          <Card.Header>Contact Details</Card.Header>
-                          <Card.Body>
-                            <Card.Text id="emp-view-contact">
-                              <Form.Group as={Row}>
-                                <Form.Label className="label">
-                                  Location:
-                                </Form.Label>
-                                <span>
-                                  {this.state.userPersonalInfo.country},{" "}
-                                  {this.state.userPersonalInfo.city}
-                                </span>
-                              </Form.Group>
-                              <Form.Group as={Row}>
-                                <Form.Label className="label">
-                                  Address:
-                                </Form.Label>
-                                <span>
-                                  {this.state.userPersonalInfo.address}
-                                </span>
-                              </Form.Group>
-                              <Form.Group as={Row}>
-                                <Form.Label className="label">
-                                  Mobile:
-                                </Form.Label>
-                                <span>
-                                  {this.state.userPersonalInfo.mobile}{" "}
-                                  {this.state.userPersonalInfo.phone
-                                    ? " (" +
-                                      this.state.userPersonalInfo.phone +
-                                      ")"
-                                    : null}
-                                </span>
-                              </Form.Group>
-                              <Form.Group as={Row}>
-                                <Form.Label className="label">
-                                  Email Address:
-                                </Form.Label>
-                                <span>
-                                  {this.state.userPersonalInfo.emailAddress}
-                                </span>
-                              </Form.Group>
-                            </Card.Text>
-                          </Card.Body>
-                        </Card>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col cm={6}>
-                        <Card className="secondary-card">
-                          <Card.Header>Bank Information</Card.Header>
-                          <Card.Body>
-                            <Card.Text id="emp-view-bank">
-                              <Form.Group as={Row}>
-                                <Form.Label className="label">
-                                  Bank Name:
-                                </Form.Label>
-                                <span>
-                                  {this.state.userFinancialInfo.bankName}
-                                </span>
-                              </Form.Group>
-                              <Form.Group as={Row}>
-                                <Form.Label className="label">
-                                  Account Name:
-                                </Form.Label>
-                                <span>
-                                  {this.state.userFinancialInfo.accountName}
-                                </span>
-                              </Form.Group>
-                              <Form.Group as={Row}>
-                                <Form.Label className="label">
-                                  Mobile:
-                                </Form.Label>
-                                <span>
-                                  {this.state.userFinancialInfo.accountNumber}
-                                </span>
-                              </Form.Group>
-                              <Form.Group as={Row}>
-                                <Form.Label className="label">IBAN:</Form.Label>
-                                <span>{this.state.userFinancialInfo.iban}</span>
-                              </Form.Group>
-                            </Card.Text>
-                          </Card.Body>
-                        </Card>
-                      </Col>
-                      <Col sm={6}></Col>
-                    </Row>
-                  </Col>
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+                {user.fullName?.charAt(0) || "U"}
+              </div>
+              <div>
+                <h2
+                  style={{
+                    fontSize: theme.fontSizes.large,
+                    fontWeight: "bold",
+                    margin: "0 0 0.5rem 0",
+                    color: theme.colors.text,
+                  }}
+                >
+                  {user.fullName}
+                </h2>
+                <p
+                  style={{ color: theme.colors.lightText, margin: "0 0 0.25rem 0" }}
+                >
+                  {job.jobTitle}
+                </p>
+                <p
+                  style={{
+                    fontSize: theme.fontSizes.small,
+                    color: theme.colors.lightText,
+                    margin: 0,
+                  }}
+                >
+                  {department.departmentName}
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        <div style={{ flex: "1 1 calc(50% - 0.75rem)", minWidth: "300px" }}>
+          <Card title="Work Information">
+            <DataItem label="Employee ID" value={user.id} />
+            <DataItem label="Department" value={department.departmentName} />
+            <DataItem label="Job Title" value={job.jobTitle} />
+            <DataItem
+              label="Role"
+              value={
+                user.role === "ROLE_ADMIN"
+                  ? "Admin"
+                  : user.role === "ROLE_MANAGER"
+                  ? "Manager"
+                  : "Employee"
+              }
+            />
+          </Card>
+        </div>
+
+        <div style={{ flex: "1 1 calc(50% - 0.75rem)", minWidth: "300px" }}>
+          <Card title="Personal Details">
+            <DataItem label="Date of Birth" value={userPersonalInfo.dateOfBirth} />
+            <DataItem label="Gender" value={userPersonalInfo.gender} />
+            <DataItem
+              label="Marital Status"
+              value={userPersonalInfo.maritalStatus}
+            />
+            <DataItem label="Father's Name" value={userPersonalInfo.fatherName} />
+          </Card>
+        </div>
+
+        <div style={{ flex: "1 1 calc(50% - 0.75rem)", minWidth: "300px" }}>
+          <Card title="Contact Details">
+            <DataItem
+              label="Location"
+              value={`${userPersonalInfo.country}, ${userPersonalInfo.city}`}
+            />
+            <DataItem label="Address" value={userPersonalInfo.address} />
+            <DataItem
+              label="Mobile"
+              value={`${userPersonalInfo.mobile} ${
+                userPersonalInfo.phone ? `(${userPersonalInfo.phone})` : ""
+              }`}
+            />
+            <DataItem label="Email Address" value={userPersonalInfo.emailAddress} />
+          </Card>
+        </div>
+
+        <div style={{ flex: "1 1 calc(50% - 0.75rem)", minWidth: "300px" }}>
+          <Card title="Bank Information">
+            <DataItem label="Bank Name" value={userFinancialInfo.bankName} />
+            <DataItem label="Account Name" value={userFinancialInfo.accountName} />
+            <DataItem
+              label="Account Number"
+              value={userFinancialInfo.accountNumber}
+            />
+            <DataItem label="IBAN" value={userFinancialInfo.iban} />
+          </Card>
+        </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
+export default EmployeeDashboard;

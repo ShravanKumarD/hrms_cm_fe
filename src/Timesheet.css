@@ -251,20 +251,3 @@
 }
 
 /* Style for the table element */
-table {
-  border-collapse: collapse; /* Ensures borders between cells are merged into a single border */
-  width: 100%; /* Optional: Makes the table width 100% of its container */
-}
-
-/* Style for table headers and cells */
-th,
-td {
-  border: 0.1px solid #f0fff080 !important; /* Sets a solid white border with a thickness of 2px */
-  padding: 8px; /* Optional: Adds padding inside each cell for spacing */
-}
-
-/* Optional: Style for the table header row */
-thead th {
-  background-color: #333; /* Optional: Sets a background color for the table headers for better contrast */
-  color: white; /* Ensures the text in the header is white for contrast */
-}

@@ -39,13 +39,8 @@ const Dashboard = () => {
 
         {/* Right column (1/3 width) */}
         <div className="col-md-4">
-          {/* StartWork section */}
           <LightweightStartWork theme={selectedTheme} />
-
-          {/* HoursWorked section */}
           <HoursWorkedLastWeek theme={selectedTheme} />
-
-          {/* LeaveBalance section */}
           <LeaveBalance theme={selectedTheme} />
         </div>
       </div>

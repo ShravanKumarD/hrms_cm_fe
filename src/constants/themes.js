@@ -58,6 +58,7 @@ const themes = {
     bottomColor: "#98FB98", // Pale Green for bottom
     textColor: "#000000", // Black text color
     progressColor: "#32CD32", // Lime Green for the progress bar
+    textSidebar: "#FFFFFF", // White text color for the sidebar
   },
   red: {
     primary: "#FF0000",
