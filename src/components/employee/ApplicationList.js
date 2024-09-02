@@ -43,7 +43,7 @@ const ApplicationList = () => {
   const theme = createTheme({
     palette: {
       primary: {
-        main: "#2E8B57", // Dark leaf green
+        main: "#E0FFE0", // Dark leaf green
       },
       secondary: {
         main: "#98FB98", // Light leaf green
@@ -52,20 +52,20 @@ const ApplicationList = () => {
         default: "#e0ffe0", // Light green background
       },
       text: {
-        primary: "#FFF", // Ensure text is white
+        primary: "#000", // Ensure text is white
       },
     },
     overrides: {
       MuiTableCell: {
         root: {
-          color: "#FFF", // White text
+          // color: "#000", // White text
           padding: "10px", // Consistent padding for table cells
         },
       },
       MuiButton: {
         root: {
-          color: "#FFF",
-          backgroundColor: "#2E8B57",
+          color: "#000",
+          backgroundColor: "#E0FFE0",
           "&:hover": {
             backgroundColor: "#006400", // Darker green on hover
           },
@@ -74,9 +74,10 @@ const ApplicationList = () => {
       },
       MuiToolbar: {
         root: {
-          backgroundColor: "#2E8B57", // Dark leaf green
-          color: "#FFF", // White text color
-          borderRadius: "8px 8px 0 0", // Rounded corners for the toolbar
+          backgroundColor: "#4CAF4F", // Dark leaf green
+          color: "#000", // White text color
+          borderRadius: "8px 8px 8px 8px", // Rounded corners for the toolbar
+          borderCollapse: "collapse",
         },
       },
       MuiTypography: {
@@ -94,9 +95,9 @@ const ApplicationList = () => {
         elevation2: {
           boxShadow: "none", // Remove default shadow
           borderRadius: "12px", // Rounded border for the table
-          border: "2px solid #2E8B57", // Dark leaf green border
-          backgroundColor: "#2E8B57", // Dark leaf green background
-          color: "#FFF", // White text inside the table
+          border: "2px solid #E0FFE0", // Dark leaf green border
+          backgroundColor: "#E0FFE0", // Dark leaf green background
+          color: "#000", // White text inside the table
         },
       },
       MuiTable: {
@@ -107,17 +108,64 @@ const ApplicationList = () => {
       },
       MuiTableRow: {
         root: {
-          backgroundColor: "#2E8B57", // Dark leaf green background for rows
+          backgroundColor: "#E0FFE0",
         },
       },
       MuiTableHead: {
         root: {
-          backgroundColor: "#2E8B57", // Dark leaf green background for header
+          backgroundColor: "#E0FFE0",
         },
       },
       MuiTableBody: {
         root: {
-          backgroundColor: "#e0ffe0", // Light green background for body rows
+          backgroundColor: "#E0FFE0",
+        },
+      },
+      MuiInputBase: {
+        root: {
+          color: "#FFF", // White text color in the search input
+        },
+      },
+      MuiInputAdornment: {
+        root: {
+          color: "#FFF",
+        },
+      },
+      MuiIconButton: {
+        root: {
+          color: "#000",
+        },
+      },
+      MuiInput: {
+        underline: {
+          "&:before": {
+            borderBottomColor: "#FFF", // White underline before focus
+          },
+          "&:hover:not(.Mui-disabled):before": {
+            borderBottomColor: "#FFF", // White underline on hover
+          },
+          "&:after": {
+            borderBottomColor: "#FFF", // White underline after focus
+          },
+        },
+      },
+      MuiSelect: {
+        icon: {
+          color: "#FFF", // White dropdown icon
+        },
+      },
+      MuiTablePagination: {
+        toolbar: {
+          color: "#FFF", // White color for pagination toolbar
+        },
+        selectIcon: {
+          color: "#FFF", // White dropdown icon in pagination
+        },
+        caption: {
+          color: "#FFF", // White text for "1-4 of 4"
+        },
+        actions: {
+          color: "#FFF", // White color for pagination actions (icons)
         },
       },
     },
@@ -130,86 +178,90 @@ const ApplicationList = () => {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <MaterialTable
-          columns={[
-            { title: "APP ID", field: "id", cellStyle: { color: "#FFF" } },
-            {
-              title: "Full Name",
-              field: "user.fullName",
-              cellStyle: { color: "#FFF" },
-            },
-            {
-              title: "Start Date",
-              field: "startDate",
-              cellStyle: { color: "#FFF" },
-            },
-            {
-              title: "End Date",
-              field: "endDate",
-              cellStyle: { color: "#FFF" },
-            },
-            {
-              title: "Leave Type",
-              field: "type",
-              cellStyle: { color: "#FFF" },
-            },
-            {
-              title: "Comments",
-              field: "reason",
-              cellStyle: { color: "#FFF" },
-            },
-            {
-              title: "Status",
-              field: "status",
-              render: (rowData) => (
-                <Button
-                  size="sm"
-                  variant={
-                    rowData.status === "Approved"
-                      ? "success"
-                      : rowData.status === "Pending"
-                      ? "warning"
-                      : "danger"
-                  }
-                  style={{
-                    backgroundColor:
+        <div style={{ paddingTop: "5px" }}>
+          {" "}
+          {/* Add padding above the table */}
+          <MaterialTable
+            columns={[
+              { title: "APP ID", field: "id", cellStyle: { color: "#000" } },
+              {
+                title: "Full Name",
+                field: "user.fullName",
+                cellStyle: { color: "#000" },
+              },
+              {
+                title: "Start Date",
+                field: "startDate",
+                cellStyle: { color: "#000" },
+              },
+              {
+                title: "End Date",
+                field: "endDate",
+                cellStyle: { color: "#000" },
+              },
+              {
+                title: "Leave Type",
+                field: "type",
+                cellStyle: { color: "#000" },
+              },
+              {
+                title: "Comments",
+                field: "reason",
+                cellStyle: { color: "#000" },
+              },
+              {
+                title: "Status",
+                field: "status",
+                render: (rowData) => (
+                  <Button
+                    size="sm"
+                    variant={
                       rowData.status === "Approved"
-                        ? "#2E8B57"
+                        ? "success"
                         : rowData.status === "Pending"
-                        ? "#FFD700"
-                        : "#DC143C",
-                    color: "#FFF",
-                    borderRadius: "12px", // More rounded buttons
-                    padding: "6px 12px", // Consistent padding for buttons
-                  }}
-                >
-                  {rowData.status}
-                </Button>
-              ),
-            },
-          ]}
-          data={applications}
-          options={{
-            toolbar: true,
-            toolbarStyle: {
-              backgroundColor: "#2E8B57", // Dark leaf green
-              color: "#FFF", // White text color
-            },
-            headerStyle: {
-              backgroundColor: "#2E8B57", // Dark leaf green
-              color: "#FFF", // White text color
-            },
-            rowStyle: {
-              backgroundColor: "#2E8B57", // Dark leaf green background color for rows
-              color: "#FFF", // Ensure text is white
-            },
-            pageSize: 10,
-            pageSizeOptions: [10, 20, 30, 50, 75, 100],
-            emptyRowsWhenPaging: false,
-            showEmptyDataSourceMessage: true,
-          }}
-          title="Applications"
-        />
+                        ? "warning"
+                        : "danger"
+                    }
+                    style={{
+                      backgroundColor:
+                        rowData.status === "Approved"
+                          ? "#4CAF4F"
+                          : rowData.status === "Pending"
+                          ? "#FFD700"
+                          : "#DC143C",
+                      color: "#FFF",
+                      borderRadius: "12px", // More rounded buttons
+                      padding: "6px 12px", // Consistent padding for buttons
+                    }}
+                  >
+                    {rowData.status}
+                  </Button>
+                ),
+              },
+            ]}
+            data={applications}
+            options={{
+              toolbar: true,
+              toolbarStyle: {
+                backgroundColor: "#E0FFE0", // Dark leaf green
+                color: "#000", // White text color
+              },
+              headerStyle: {
+                backgroundColor: "#E0FFE0", // Dark leaf green
+                color: "#000", // White text color
+              },
+              rowStyle: {
+                backgroundColor: "#E0FFE0", // Dark leaf green background color for rows
+                color: "#000", // Ensure text is black #000
+              },
+              pageSize: 10,
+              pageSizeOptions: [10, 20, 30, 50, 75, 100],
+              emptyRowsWhenPaging: false,
+              showEmptyDataSourceMessage: true,
+            }}
+            title="Applications"
+          />
+        </div>
       </ThemeProvider>
       {hasError && (
         <Alert variant="danger" className="m-3" block="true">

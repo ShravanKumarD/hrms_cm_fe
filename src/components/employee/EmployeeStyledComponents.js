@@ -27,7 +27,8 @@ export const theme = {
 export const DashboardContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  // padding: 2rem;
+  padding-top: 0.9rem;
   font-family: Arial, sans-serif;
   background-color: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.text};

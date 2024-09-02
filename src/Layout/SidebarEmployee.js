@@ -35,8 +35,8 @@ const theme = {
 const Sidebar = styled.aside`
   position: fixed;
   left: ${(props) => (props.isCollapsed ? "20px" : "20px")};
-  top: 38%;
-  transform: translateY(-38%);
+  top: 42.7%;
+  transform: translateY(-42.7%);
   height: 70vh;
   width: ${(props) => (props.isCollapsed ? "70px" : "250px")};
   background: linear-gradient(135deg, #2f631e, rgba(39, 174, 96, 0.8));

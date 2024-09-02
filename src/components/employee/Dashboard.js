@@ -24,7 +24,7 @@ const Dashboard = () => {
   return (
     <div>
       {/* First Row with Attendance and Start Work/Hours Worked */}
-      <div className="row pt-4">
+      <div className="row">
         {/* Attendance section (2/3 width) */}
         <div className="col-md-8">
           <div

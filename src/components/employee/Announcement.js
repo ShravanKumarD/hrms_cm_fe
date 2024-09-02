@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Alert } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
 import axios from "axios";
 import MaterialTable from "material-table";
 import { ThemeProvider, createTheme } from "@material-ui/core/styles";
@@ -29,46 +29,40 @@ const Announcement = () => {
   const theme = createTheme({
     palette: {
       primary: {
-        main: "#2E8B57", // Dark leaf green
+        main: "#E0FFE0", // Dark leaf green
+      },
+      secondary: {
+        main: "#98FB98", // Light leaf green
       },
       background: {
         default: "#e0ffe0", // Light green background
       },
       text: {
-        primary: "#FFF", // White text
+        primary: "#000", // Ensure text is black
       },
     },
     overrides: {
       MuiTableCell: {
         root: {
-          color: "#FFF", // White text
           padding: "10px", // Consistent padding for table cells
         },
       },
-      MuiTableHead: {
+      MuiButton: {
         root: {
-          backgroundColor: "#2E8B57", // Dark leaf green background for header
-        },
-      },
-      MuiTableBody: {
-        root: {
-          backgroundColor: "#2E8B57", // Dark leaf green background for body rows
+          color: "#000",
+          backgroundColor: "#E0FFE0",
+          "&:hover": {
+            backgroundColor: "#006400", // Darker green on hover
+          },
+          borderRadius: "12px", // More rounded buttons
         },
       },
       MuiToolbar: {
         root: {
-          backgroundColor: "#2E8B57", // Dark leaf green
-          color: "#FFF", // White text color
-          borderRadius: "8px 8px 0 0", // Rounded corners for the toolbar
-        },
-      },
-      MuiPaper: {
-        elevation2: {
-          boxShadow: "none", // Remove default shadow
-          borderRadius: "12px", // Rounded border for the table
-          border: "2px solid #2E8B57", // Dark leaf green border
-          backgroundColor: "#2E8B57", // Dark leaf green background
-          color: "#FFF", // White text inside the table
+          backgroundColor: "#4CAF4F", // Dark leaf green
+          color: "#000", // White text color
+          borderRadius: "8px 8px 8px 8px", // Rounded corners for the toolbar
+          borderCollapse: "collapse",
         },
       },
       MuiTypography: {
@@ -80,6 +74,83 @@ const Announcement = () => {
         },
         h4: {
           color: "#FFF", // White color for the subtitle
+        },
+      },
+      MuiPaper: {
+        elevation2: {
+          boxShadow: "none", // Remove default shadow
+          borderRadius: "12px", // Rounded border for the table
+          border: "2px solid #E0FFE0", // Dark leaf green border
+          backgroundColor: "#E0FFE0", // Dark leaf green background
+          color: "#000", // Black text inside the table
+        },
+      },
+      MuiTable: {
+        root: {
+          borderCollapse: "separate",
+          borderSpacing: "0 8px", // Adds space between rows for a rounded effect
+        },
+      },
+      MuiTableRow: {
+        root: {
+          backgroundColor: "#E0FFE0",
+        },
+      },
+      MuiTableHead: {
+        root: {
+          backgroundColor: "#E0FFE0",
+        },
+      },
+      MuiTableBody: {
+        root: {
+          backgroundColor: "#E0FFE0",
+        },
+      },
+      MuiInputBase: {
+        root: {
+          color: "#FFF", // White text color in the search input
+        },
+      },
+      MuiInputAdornment: {
+        root: {
+          color: "#FFF",
+        },
+      },
+      MuiIconButton: {
+        root: {
+          color: "#000",
+        },
+      },
+      MuiInput: {
+        underline: {
+          "&:before": {
+            borderBottomColor: "#FFF", // White underline before focus
+          },
+          "&:hover:not(.Mui-disabled):before": {
+            borderBottomColor: "#FFF", // White underline on hover
+          },
+          "&:after": {
+            borderBottomColor: "#FFF", // White underline after focus
+          },
+        },
+      },
+      MuiSelect: {
+        icon: {
+          color: "#FFF", // White dropdown icon
+        },
+      },
+      MuiTablePagination: {
+        toolbar: {
+          color: "#FFF", // White color for pagination toolbar
+        },
+        selectIcon: {
+          color: "#FFF", // White dropdown icon in pagination
+        },
+        caption: {
+          color: "#FFF", // White text for "1-4 of 4"
+        },
+        actions: {
+          color: "#FFF", // White color for pagination actions (icons)
         },
       },
     },
@@ -94,46 +165,44 @@ const Announcement = () => {
               <ThemeProvider theme={theme}>
                 <MaterialTable
                   columns={[
-                    { title: "ID", field: "id", cellStyle: { color: "#FFF" } },
+                    { title: "ID", field: "id", cellStyle: { color: "#000" } },
                     {
                       title: "Title",
                       field: "announcementTitle",
-                      cellStyle: { color: "#FFF" },
+                      cellStyle: { color: "#000" },
                     },
                     {
                       title: "Description",
                       field: "announcementDescription",
-                      cellStyle: { color: "#FFF" },
+                      cellStyle: { color: "#000" },
                     },
                     {
                       title: "Created By",
                       field: "user.fullName",
-                      cellStyle: { color: "#FFF" },
+                      cellStyle: { color: "#000" },
                     },
                     {
                       title: "Department",
                       field: "department.departmentName",
-                      cellStyle: { color: "#FFF" },
+                      cellStyle: { color: "#000" },
                     },
                   ]}
                   data={announcements}
                   options={{
-                    rowStyle: (rowData, index) => {
-                      if (index % 2) {
-                        return { backgroundColor: "#98FB98" }; // Light leaf green for alternating rows
-                      }
-                      return { backgroundColor: "#2E8B57" }; // Dark leaf green for default rows
+                    rowStyle: {
+                      backgroundColor: "#E0FFE0", // Dark leaf green background color for rows
+                      color: "#000", // Ensure text is black
                     },
-                    pageSize: 8,
-                    pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
+                    pageSize: 10,
+                    pageSizeOptions: [10, 20, 30, 50, 75, 100],
                     headerStyle: {
-                      backgroundColor: "#2E8B57", // Dark leaf green for header
-                      color: "#FFF", // White text color for header
+                      backgroundColor: "#E0FFE0", // Dark leaf green for header
+                      color: "#000", // Black text color for header
                     },
                     toolbar: true,
                     toolbarStyle: {
-                      backgroundColor: "#2E8B57", // Dark leaf green for toolbar
-                      color: "#FFF", // White text color for toolbar
+                      backgroundColor: "#E0FFE0", // Dark leaf green for toolbar
+                      color: "#000", // Black text color for toolbar
                     },
                   }}
                   title="Announcements"

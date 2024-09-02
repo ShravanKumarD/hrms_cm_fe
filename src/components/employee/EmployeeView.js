@@ -97,8 +97,7 @@ const EmployeeDashboard = () => {
   return (
     <ThemeProvider theme={theme}>
       <DashboardContainer>
-        <DashboardTitle>Employee Dashboard</DashboardTitle>
-
+        {/* <DashboardTitle>Employee Dashboard</DashboardTitle> */}
         <FlexContainer>
           <FlexItem fullWidth>
             <Card title="Profile">
