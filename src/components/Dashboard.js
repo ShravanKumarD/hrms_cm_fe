@@ -6,7 +6,7 @@ import ExpenseChartsPage from "./ExpenseChartsPage";
 import PaymentChartsPage from "./PaymentChartsPage";
 import RecentApplications from "./RecentApplications";
 import RecentAnnouncements from "./RecentAnnouncements";
-import StartWork from "./StartWork";
+// import StartWork from "./StartWork";
 // import LightweightStartWork from "../components-mini/LightweightStartWork";
 import axios from "axios";
 // import HoursWorkedLastWeek from "../components-mini/HoursWorkedLastWeek";
@@ -102,7 +102,7 @@ const Dashboard = () => {
         <div className="col-sm-6">
           <Calendar />
           <RecentApplications />
-          <StartWork />
+          {/* <StartWork /> */}
         </div>
 
         {/* Expense Report & Recent Applications */}

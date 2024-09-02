@@ -52,44 +52,43 @@ export default class JobList extends Component {
   // }
   componentDidMount() {
     const selectedDepartment = this.props.location.state
-        ? this.props.location.state.selectedDepartment
-        : null;
+      ? this.props.location.state.selectedDepartment
+      : null;
 
     axios.defaults.baseURL = API_BASE_URL;
     axios({
-        method: "get",
-        url: "/api/departments",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      method: "get",
+      url: "/api/departments",
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
-        .then((res) => {
-            this.setState({ departments: res.data, selectedDepartment }, () => {
-                // If no department is selected, fetch data for all departments
-                if (!this.state.selectedDepartment) {
-                    this.setState({ selectedDepartment: "all" }, () => {
-                        this.fetchDataAll();
-                    });
-                } else {
-                    this.fetchData();
-                }
+      .then((res) => {
+        this.setState({ departments: res.data, selectedDepartment }, () => {
+          // If no department is selected, fetch data for all departments
+          if (!this.state.selectedDepartment) {
+            this.setState({ selectedDepartment: "all" }, () => {
+              this.fetchDataAll();
             });
-        })
-        .catch((err) => {
-            console.log(err);
+          } else {
+            this.fetchData();
+          }
         });
-}
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
-handleChange = (event) => {
+  handleChange = (event) => {
     const selectedDepartment = event.target.value;
 
     this.setState({ selectedDepartment }, () => {
-        if (selectedDepartment === "all" || !selectedDepartment) {
-            this.fetchDataAll();
-        } else {
-            this.fetchData();
-        }
+      if (selectedDepartment === "all" || !selectedDepartment) {
+        this.fetchDataAll();
+      } else {
+        this.fetchData();
+      }
     });
-};
-
+  };
 
   fetchData = () => {
     axios.defaults.baseURL = API_BASE_URL;
@@ -258,23 +257,18 @@ handleChange = (event) => {
         </div>
         <div className="row">
           <div className="col-sm-12">
-            <h4>
-              <a
-                className="fa fa-plus mb-2 ml-2"
-                onClick={this.addJob}
-                style={{ color: "blue", cursor: "pointer" }}
-              >
-                Add Job
-              </a>
-            </h4>
-            <Card className="main-card">
-              <Card.Header>
-                <div className="panel-title">
-                  <strong>Job List</strong>
-                </div>
-              </Card.Header>
-              <Card.Body>
-                <ThemeProvider theme={theme}>
+            <ThemeProvider theme={theme}>
+              <h4>
+                <a
+                  className="fa fa-plus mb-2 ml-2"
+                  onClick={this.addJob}
+                  style={{ color: "blue", cursor: "pointer" }}
+                >
+                  Add Job
+                </a>
+              </h4>
+              <div className="main-card">
+                <div>
                   <MaterialTable
                     columns={[
                       { title: "JOB ID", field: "id" },
@@ -342,26 +336,26 @@ handleChange = (event) => {
                     }}
                     title={this.selectedUser ? this.selectedUser.fullName : ""}
                   />
-                </ThemeProvider>
-              </Card.Body>
-            </Card>
-            {this.state.showEditModel ? (
-              <JobEditModal
-                show={true}
-                onHide={closeEditModel}
-                data={this.state.selectedJob}
-              />
-            ) : this.state.showAddModel ? (
-              <JobAddModal show={true} onHide={closeAddModel} />
-            ) : this.state.showDeleteModel ? (
-              <JobDeleteModal
-                show={true}
-                onHide={closeDeleteModel}
-                data={this.state.selectedJob}
-              />
-            ) : (
-              <></>
-            )}
+                </div>
+              </div>
+              {this.state.showEditModel ? (
+                <JobEditModal
+                  show={true}
+                  onHide={closeEditModel}
+                  data={this.state.selectedJob}
+                />
+              ) : this.state.showAddModel ? (
+                <JobAddModal show={true} onHide={closeAddModel} />
+              ) : this.state.showDeleteModel ? (
+                <JobDeleteModal
+                  show={true}
+                  onHide={closeDeleteModel}
+                  data={this.state.selectedJob}
+                />
+              ) : (
+                <></>
+              )}
+            </ThemeProvider>
           </div>
         </div>
         {/* {this.state.hasError ? (

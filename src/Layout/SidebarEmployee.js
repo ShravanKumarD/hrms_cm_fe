@@ -35,8 +35,8 @@ const theme = {
 const Sidebar = styled.aside`
   position: fixed;
   left: ${(props) => (props.isCollapsed ? "20px" : "20px")};
-  top: 50%;
-  transform: translateY(-50%);
+  top: 38%;
+  transform: translateY(-38%);
   height: 70vh;
   width: ${(props) => (props.isCollapsed ? "70px" : "250px")};
   background: linear-gradient(135deg, #2f631e, rgba(39, 174, 96, 0.8));
@@ -195,7 +195,7 @@ const SidebarEmployee = ({ onToggle }) => {
           </NavItem>
           <NavItem to="/employee-view">
             <FaAddressCard />
-            {!isCollapsed && "My Profile"}
+            {!isCollapsed && "Profile"}
           </NavItem>
           {/* <NavItem to="/attendance/timesheet">
             <FaCalendarAlt />
@@ -207,11 +207,11 @@ const SidebarEmployee = ({ onToggle }) => {
           </NavItem> */}
           <NavItem to="/application-list">
             <FaRocket />
-            {!isCollapsed && "My Applications"}
+            {!isCollapsed && "Applications"}
           </NavItem>
           <NavItem to="/salary-view">
             <FaRupeeSign />
-            {!isCollapsed && "My Salary Details"}
+            {!isCollapsed && "Salary"}
           </NavItem>
           <NavItem to="/announcement">
             <FaBell />
