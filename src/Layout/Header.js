@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import styled, { ThemeProvider, keyframes, css } from "styled-components";
 import NewPasswordModal from "../components/NewPasswordModal";
 import GlobalStyle from "../constants/GlobalStyleSidebar";
@@ -140,12 +140,14 @@ const Header = () => {
   const [completed, setCompleted] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const history = useHistory();
 
   const onLogout = (event) => {
     event.preventDefault();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setCompleted(true);
+    history.push("/login");
   };
 
   const newPassword = (event) => {
@@ -162,7 +164,6 @@ const Header = () => {
       <GlobalStyle />
       <ThemeProvider theme={theme}>
         <HeaderWrapper>
-          {completed ? <Redirect to="/login" /> : null}
           {showModal ? (
             <NewPasswordModal show={true} onHide={closeModal} />
           ) : null}
