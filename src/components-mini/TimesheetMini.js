@@ -225,7 +225,12 @@ const Timesheet = () => {
         />
       </div>
       <Modal show={showModal} onHide={() => setShowModal(false)} closeButton>
-        <LightweightStartWork />
+        <Modal.Header closeButton>
+          <Modal.Title>Start Work</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <LightweightStartWork />
+        </Modal.Body>
       </Modal>
       <ApplicationModal
         show={showApplicationModal}
