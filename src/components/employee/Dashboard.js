@@ -48,14 +48,10 @@ const Dashboard = () => {
       {/* Fourth Row with Recent Applications and Announcements */}
       <div className="row pt-4">
         <div className="col-md-6">
-          <div className="panel panel-default">
-            <RecentApplications />
-          </div>
+          <RecentApplications />
         </div>
         <div className="col-md-6">
-          <div className="panel panel-default">
-            <RecentAnnouncements />
-          </div>
+          <RecentAnnouncements />
         </div>
       </div>
     </div>

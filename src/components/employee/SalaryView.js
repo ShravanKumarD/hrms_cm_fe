@@ -1,7 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Card, Row, Col, Form } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
+import { ThemeProvider } from "styled-components";
+import {
+  DashboardContainer,
+  DashboardTitle,
+  CardContainer,
+  CardHeader,
+  CardTitle,
+  CardBody,
+  DataItemContainer,
+  DataItemLabel,
+  DataItemValue,
+  ProfileContainer,
+  ProfileImage,
+  ProfileDetails,
+  FlexContainer,
+  FlexItem,
+  theme, // Import the theme
+} from "./EmployeeStyledComponents"; // Assuming EmployeeStyledComponents is in the same directory
 import API_BASE_URL from "../../env";
 
 const SalaryViewEmployee = () => {
@@ -76,206 +93,195 @@ const SalaryViewEmployee = () => {
     (financialInfo.deductionOther || 0);
 
   return (
-    <Row>
-      <Col sm={12}>
-        <div id="tableContainer">
-          <Card>
-            {/* Employee Salary Detail */}
-            <Card.Body>
-              <Card.Title>
-                <strong>{fullName}</strong>
-              </Card.Title>
-              <div>
-                <Col lg={12}>
-                  <Row className="pt-4">
-                    <Col lg={0}>
-                      <img
-                        className="img-circle elevation-1 bp-2"
-                        src={`${process.env.PUBLIC_URL}/user-128.png`}
-                        alt="User"
-                      />
-                    </Col>
-                    <Col className="pt-4" lg={7}>
-                      <div className="emp-view-list">
-                        <ul>
-                          <li>
-                            <span>Employee ID: </span> {user.id}
-                          </li>
-                          <li>
-                            <span>Department: </span>
-                            {department?.departmentName || (
-                              <Redirect to="/employee-list" />
-                            )}
-                          </li>
-                          <li>
-                            <span>Job Title: </span> {currentJobTitle}
-                          </li>
-                          <li>
-                            <span>Role: </span>
-                            {role === "ROLE_ADMIN"
-                              ? "Admin"
-                              : role === "ROLE_MANAGER"
-                              ? "Manager"
-                              : "Employee"}
-                          </li>
-                        </ul>
-                      </div>
-                    </Col>
-                  </Row>
-                  <Row className="pt-4">
-                    <Col sm={6}>
-                      <Card className="secondary-card sal-view">
-                        <Card.Header>Salary Details</Card.Header>
-                        <Card.Body>
-                          <Card.Text id="sal-view-details">
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Employment Type:
-                              </Form.Label>
-                              <span>
-                                {financialInfo.employmentType ||
-                                  user.jobs[0].employmentType}
-                              </span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Basic Salary:
-                              </Form.Label>
-                              <span>₹ {financialInfo.salaryBasic || 0}</span>
-                            </Form.Group>
-                          </Card.Text>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                    <Col sm={6}>
-                      <Card className="secondary-card sal-view">
-                        <Card.Header>Allowances</Card.Header>
-                        <Card.Body>
-                          <Card.Text id="sal-view-allowances">
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                House Rent Allowance:
-                              </Form.Label>
-                              <span>
-                                ₹ {financialInfo.allowanceHouseRent || 0}
-                              </span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Medical Allowance:
-                              </Form.Label>
-                              <span>
-                                ₹ {financialInfo.allowanceMedical || 0}
-                              </span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Special Allowance:
-                              </Form.Label>
-                              <span>
-                                ₹ {financialInfo.allowanceSpecial || 0}
-                              </span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Fuel Allowance:
-                              </Form.Label>
-                              <span>₹ {financialInfo.allowanceFuel || 0}</span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Phone Bill Allowance:
-                              </Form.Label>
-                              <span>
-                                ₹ {financialInfo.allowancePhoneBill || 0}
-                              </span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Other Allowance:
-                              </Form.Label>
-                              <span>₹ {financialInfo.allowanceOther || 0}</span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Total Allowance:
-                              </Form.Label>
-                              <span>₹ {totalAllowance}</span>
-                            </Form.Group>
-                          </Card.Text>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col sm={6}>
-                      <Card className="secondary-card">
-                        <Card.Header>Deductions</Card.Header>
-                        <Card.Body>
-                          <Card.Text id="sal-view-deductions">
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Tax Deduction:
-                              </Form.Label>
-                              <span>₹ {financialInfo.deductionTax || 0}</span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">PF:</Form.Label>
-                              <span>₹ {financialInfo.pf || 0}</span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">PT:</Form.Label>
-                              <span>₹ {financialInfo.pt || 0}</span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">TDS:</Form.Label>
-                              <span>₹ {financialInfo.tds || 0}</span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Other Deduction:
-                              </Form.Label>
-                              <span>₹ {financialInfo.deductionOther || 0}</span>
-                            </Form.Group>
-                          </Card.Text>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                    <Col sm={6}>
-                      <Card className="secondary-card">
-                        <Card.Header>Total Salary Details</Card.Header>
-                        <Card.Body>
-                          <Card.Text id="sal-view-total">
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Gross Salary:
-                              </Form.Label>
-                              <span>₹ {financialInfo.salaryGross || 0}</span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Total Deduction:
-                              </Form.Label>
-                              <span>₹ {totalDeduction}</span>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                              <Form.Label className="label">
-                                Net Salary:
-                              </Form.Label>
-                              <span>₹ {financialInfo.salaryNet || 0}</span>
-                            </Form.Group>
-                          </Card.Text>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  </Row>
-                </Col>
-              </div>
-            </Card.Body>
-          </Card>
-        </div>
-      </Col>
-    </Row>
+    <ThemeProvider theme={theme}>
+      <DashboardContainer>
+        {/* <DashboardTitle>Employee Salary Detail</DashboardTitle> */}
+        <CardContainer>
+          <CardHeader>
+            <CardTitle>Samcint Solutions Private Limited</CardTitle>
+          </CardHeader>
+          <CardBody>
+            <ProfileContainer>
+              <ProfileImage>
+                <img
+                  src={`${process.env.PUBLIC_URL}/user-128.png`}
+                  alt="User"
+                  style={{ borderRadius: "50%", width: "100%", height: "100%" }}
+                />
+              </ProfileImage>
+              <ProfileDetails>
+                <h2>{fullName}</h2>
+                <DataItemContainer>
+                  <DataItemLabel>Employee ID</DataItemLabel>
+                  <DataItemValue>{user.id}</DataItemValue>
+                </DataItemContainer>
+
+                <DataItemContainer>
+                  <DataItemLabel>Department</DataItemLabel>
+                  <DataItemValue>
+                    {department?.departmentName || (
+                      <Redirect to="/employee-list" />
+                    )}
+                  </DataItemValue>
+                </DataItemContainer>
+
+                <DataItemContainer>
+                  <DataItemLabel>Job Title</DataItemLabel>
+                  <DataItemValue>{currentJobTitle}</DataItemValue>
+                </DataItemContainer>
+
+                <DataItemContainer>
+                  <DataItemLabel>Role</DataItemLabel>
+                  <DataItemValue>
+                    {role === "ROLE_ADMIN"
+                      ? "Admin"
+                      : role === "ROLE_MANAGER"
+                      ? "Manager"
+                      : "Employee"}
+                  </DataItemValue>
+                </DataItemContainer>
+              </ProfileDetails>
+            </ProfileContainer>
+          </CardBody>
+        </CardContainer>
+        <FlexContainer>
+          <FlexItem>
+            <CardContainer>
+              <CardHeader>
+                <CardTitle>Salary Details</CardTitle>
+              </CardHeader>
+              <CardBody>
+                <DataItemContainer>
+                  <DataItemLabel>Employment Type:</DataItemLabel>
+                  <DataItemValue>
+                    {financialInfo.employmentType ||
+                      user.jobs[0].employmentType}
+                  </DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>Basic Salary:</DataItemLabel>
+                  <DataItemValue>
+                    ₹ {financialInfo.salaryBasic || 0}
+                  </DataItemValue>
+                </DataItemContainer>
+              </CardBody>
+            </CardContainer>
+          </FlexItem>
+
+          <FlexItem>
+            <CardContainer>
+              <CardHeader>
+                <CardTitle>Total Salary Details</CardTitle>
+              </CardHeader>
+              <CardBody>
+                <DataItemContainer>
+                  <DataItemLabel>Gross Salary:</DataItemLabel>
+                  <DataItemValue>
+                    ₹ {financialInfo.salaryGross || 0}
+                  </DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>Total Deduction:</DataItemLabel>
+                  <DataItemValue>₹ {totalDeduction}</DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>Net Salary:</DataItemLabel>
+                  <DataItemValue>
+                    ₹ {financialInfo.salaryNet || 0}
+                  </DataItemValue>
+                </DataItemContainer>
+              </CardBody>
+            </CardContainer>
+          </FlexItem>
+        </FlexContainer>
+        <br />
+        <FlexContainer>
+          <FlexItem>
+            <CardContainer>
+              <CardHeader>
+                <CardTitle>Allowances</CardTitle>
+              </CardHeader>
+              <CardBody>
+                <DataItemContainer>
+                  <DataItemLabel>House Rent Allowance:</DataItemLabel>
+                  <DataItemValue>
+                    ₹ {financialInfo.allowanceHouseRent || 0}
+                  </DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>Medical Allowance:</DataItemLabel>
+                  <DataItemValue>
+                    ₹ {financialInfo.allowanceMedical || 0}
+                  </DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>Special Allowance:</DataItemLabel>
+                  <DataItemValue>
+                    ₹ {financialInfo.allowanceSpecial || 0}
+                  </DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>Fuel Allowance:</DataItemLabel>
+                  <DataItemValue>
+                    ₹ {financialInfo.allowanceFuel || 0}
+                  </DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>Phone Bill Allowance:</DataItemLabel>
+                  <DataItemValue>
+                    ₹ {financialInfo.allowancePhoneBill || 0}
+                  </DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>Other Allowance:</DataItemLabel>
+                  <DataItemValue>
+                    ₹ {financialInfo.allowanceOther || 0}
+                  </DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>Total Allowance:</DataItemLabel>
+                  <DataItemValue>₹ {totalAllowance}</DataItemValue>
+                </DataItemContainer>
+              </CardBody>
+            </CardContainer>
+          </FlexItem>
+
+          <FlexItem>
+            <CardContainer>
+              <CardHeader>
+                <CardTitle>Deductions</CardTitle>
+              </CardHeader>
+              <CardBody>
+                <DataItemContainer>
+                  <DataItemLabel>Tax Deduction:</DataItemLabel>
+                  <DataItemValue>
+                    ₹ {financialInfo.deductionTax || 0}
+                  </DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>PF:</DataItemLabel>
+                  <DataItemValue>₹ {financialInfo.pf || 0}</DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>PT:</DataItemLabel>
+                  <DataItemValue>₹ {financialInfo.pt || 0}</DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>TDS:</DataItemLabel>
+                  <DataItemValue>₹ {financialInfo.tds || 0}</DataItemValue>
+                </DataItemContainer>
+                <DataItemContainer>
+                  <DataItemLabel>Other Deduction:</DataItemLabel>
+                  <DataItemValue>
+                    ₹ {financialInfo.deductionOther || 0}
+                  </DataItemValue>
+                </DataItemContainer>
+              </CardBody>
+            </CardContainer>
+          </FlexItem>
+        </FlexContainer>
+      </DashboardContainer>
+    </ThemeProvider>
   );
 };
 
