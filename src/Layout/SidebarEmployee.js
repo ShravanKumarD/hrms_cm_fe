@@ -12,10 +12,13 @@ import {
   FaBriefcase,
   FaListUl,
   FaFile,
+  FaInfoCircle,
+  FaAddressCard,
 } from "react-icons/fa";
 import LogoWhite from "../assets/samcintlogowhite.png";
 import Logo from "../assets/samcint_logo_2.png";
 import LogoMini from "../assets/10.png";
+import { GiFallingBlob } from "react-icons/gi";
 
 // Define your theme
 const theme = {
@@ -167,37 +170,19 @@ const SidebarEmployee = ({ onToggle }) => {
             {!isCollapsed && "Dashboard"}
           </NavItem>
           <NavItem to="/employee-view">
-            <FaFile />
+            <FaAddressCard />
             {!isCollapsed && "My Profile"}
           </NavItem>
-          <NavItem as="div" onClick={() => toggleSubMenu("attendance")}>
-            <FaCalendarCheck />
-            {!isCollapsed && "Attendance"}
-            {!isCollapsed && (
-              <FaAngleLeft
-                style={{
-                  marginLeft: "auto",
-                  transform: expandedMenus.attendance
-                    ? "rotate(-90deg)"
-                    : "none",
-                }}
-              />
-            )}
-          </NavItem>
-          {expandedMenus.attendance && !isCollapsed && (
-            <>
-              <SubNavItem to="/attendance/timesheet">
-                <FaCalendarAlt />
-                Timesheet
-              </SubNavItem>
-              <SubNavItem to="/attendance/startwork">
-                <FaBriefcase />
-                Start Work
-              </SubNavItem>
-            </>
-          )}
+          {/* <NavItem to="/attendance/timesheet">
+            <FaCalendarAlt />
+            {!isCollapsed && "Timesheet"}
+          </NavItem> */}
+          {/* <NavItem to="/attendance/startwork">
+            <FaBriefcase />
+            {!isCollapsed && "Start Work"}
+          </NavItem> */}
           <NavItem to="/application-list">
-            <FaListUl />
+            <FaRocket />
             {!isCollapsed && "My Applications"}
           </NavItem>
           <NavItem to="/salary-view">
@@ -208,10 +193,10 @@ const SidebarEmployee = ({ onToggle }) => {
             <FaBell />
             {!isCollapsed && "Announcements"}
           </NavItem>
-          <NavItem to="/documents">
+          {/* <NavItem to="/documents">
             <FaFile />
             {!isCollapsed && "My Documents"}
-          </NavItem>
+          </NavItem> */}
         </NavMenu>
       </Sidebar>
     </ThemeProvider>

@@ -467,11 +467,11 @@ const EmployeeContainer = () => {
                 path="/attendance/timesheet"
                 component={withAuth(Timesheet)}
               />
-              <Route
+              {/* <Route
                 exact
                 path="/documents"
                 component={withAuth(MyDocuments)}
-              />
+              /> */}
               <Route exact path="/register" component={Register} />
               <Route exact path="/login" component={Login} />
             </Switch>

@@ -6,9 +6,10 @@ import ExpenseChartsPage from "./ExpenseChartsPage";
 import PaymentChartsPage from "./PaymentChartsPage";
 import RecentApplications from "./RecentApplications";
 import RecentAnnouncements from "./RecentAnnouncements";
-import LightweightStartWork from "../components-mini/LightweightStartWork";
+import StartWork from "./StartWork";
+// import LightweightStartWork from "../components-mini/LightweightStartWork";
 import axios from "axios";
-import HoursWorkedLastWeek from "../components-mini/HoursWorkedLastWeek";
+// import HoursWorkedLastWeek from "../components-mini/HoursWorkedLastWeek";
 
 const Dashboard = () => {
   const [totalEmployees, setTotalEmployees] = useState(0);
@@ -100,58 +101,16 @@ const Dashboard = () => {
       <div className="row pt-4">
         <div className="col-sm-6">
           <Calendar />
-          <div className="panel panel-default">
-            <div
-              className="panel-heading with-border"
-              style={{ backgroundColor: "#515e73", color: "white" }}
-            >
-              <h3 className="panel-title">Recent Applications</h3>
-            </div>
-            <RecentApplications />
-            <LightweightStartWork />
-          </div>
+          <RecentApplications />
+          <StartWork />
         </div>
 
         {/* Expense Report & Recent Applications */}
         <div className="col-md-6">
-          <div className="panel panel-default">
-            <div
-              className="panel-heading with-border"
-              style={{ backgroundColor: "#515e73", color: "white" }}
-            >
-              <h3 className="panel-title">Expense Report</h3>
-            </div>
-            <ExpenseChartsPage />
-          </div>
-          <div className="panel panel-default">
-            <div
-              className="panel-heading with-border"
-              style={{ backgroundColor: "#515e73", color: "white" }}
-            >
-              <h3 className="panel-title">Payment Report</h3>
-            </div>
-            <PaymentChartsPage />
-          </div>
-          <div className="panel panel-default">
-            <div
-              className="panel-heading with-border"
-              style={{ backgroundColor: "#515e73", color: "white" }}
-            >
-              <h3 className="panel-title">Recent Announcements</h3>
-            </div>
-            <RecentAnnouncements />
-          </div>
-          <div className="panel panel-default">
-            <div
-              className="panel-heading with-border"
-              style={{ backgroundColor: "#515e73", color: "white" }}
-            >
-              <h3 className="panel-title">Hours Worked Last Week</h3>
-            </div>
-            <div className="panel-body" style={{ height: "300px" }}>
-              <HoursWorkedLastWeek />
-            </div>
-          </div>
+          <ExpenseChartsPage />
+          <PaymentChartsPage />
+          <RecentAnnouncements />
+          {/* <HoursWorkedLastWeek /> */}
         </div>
       </div>
     </div>

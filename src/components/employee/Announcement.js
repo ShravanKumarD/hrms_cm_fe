@@ -1,116 +1,89 @@
-import React, { Component } from "react";
-import { Card, Button, Form, Alert } from "react-bootstrap";
-import { Redirect, NavLink } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Card, Alert } from "react-bootstrap";
 import axios from "axios";
 import MaterialTable from "material-table";
-import { ThemeProvider } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
+import { ThemeProvider, createTheme } from "@material-ui/core/styles";
 import API_BASE_URL from "../../env";
 
-export default class Announcement extends Component {
-  constructor(props) {
-    super(props);
+const Announcement = () => {
+  const [announcements, setAnnouncements] = useState([]);
+  const [hasError, setHasError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-    this.state = {
-      announcements: [],
-      departments: [],
-      title: "",
-      description: "",
-      userId: null,
-      departmentId: null,
-      hasError: false,
-      errorMsg: "",
-      completed: false,
-      showEditModel: false,
-      showAlertModel: false,
-    };
-  }
-
-  componentDidMount() {
-    let deptId = JSON.parse(localStorage.getItem("user")).departmentId;
-    console.log(deptId,'dd')
+  useEffect(() => {
+    const deptId = JSON.parse(localStorage.getItem("user")).departmentId;
     axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "get",
-      url: "/api/departmentAnnouncements/department/" + deptId,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    }).then((res) => {
-      console.log(res,'resssssojdii')
-      this.setState({ announcements: res.data });
-    });
-  }
+    axios
+      .get(`/api/departmentAnnouncements/department/${deptId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then((res) => {
+        setAnnouncements(res.data);
+      })
+      .catch((err) => {
+        setHasError(true);
+        setErrorMsg(err.message || "Failed to fetch announcements");
+      });
+  }, []);
 
-  handleChange = (event) => {
-    const { name, value } = event.target;
-    this.setState({
-      [name]: value,
-    });
-  };
-
-  render() {
-    let closeAlertModel = () => this.setState({ showAlertModel: false });
-
-    const theme = createTheme({
-      overrides: {
-        MuiTableCell: {
-          root: {
-            padding: "6px 6px 6px 6px",
-          },
+  const theme = createTheme({
+    overrides: {
+      MuiTableCell: {
+        root: {
+          padding: "6px",
         },
       },
-    });
+    },
+  });
 
-    return (
-      <div className="container-fluid pt-2">
-        <div className="row">
-          <div className="col-sm-12">
-            <Card className="main-card">
-              <Card.Header>
-                <div className="panel-title">
-                  <strong>Announcement List</strong>
-                </div>
-              </Card.Header>
-              <Card.Body>
-                <ThemeProvider theme={theme}>
-                  <MaterialTable
-                    columns={[
-                      { title: "ID", field: "id" },
-                      { title: "Title", field: "announcementTitle" },
-                      {
-                        title: "Description",
-                        field: "announcementDescription",
-                      },
-                      { title: "Created By", field: "user.fullName" },
-                      {
-                        title: "Department",
-                        field: "department.departmentName",
-                      },
-                    ]}
-                    data={this.state.announcements}
-                    options={{
-                      rowStyle: (rowData, index) => {
-                        if (index % 2) {
-                          return { backgroundColor: "#f2f2f2" };
-                        }
-                      },
-                      pageSize: 8,
-                      pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
-                    }}
-                    title="Announcements"
-                  />
-                </ThemeProvider>
-              </Card.Body>
-            </Card>
-          </div>
+  return (
+    <div className="container-fluid pt-2">
+      <div className="row">
+        <div className="col-sm-12">
+          <Card className="main-card">
+            <Card.Header>
+              <strong>Announcement List</strong>
+            </Card.Header>
+            <Card.Body>
+              <ThemeProvider theme={theme}>
+                <MaterialTable
+                  columns={[
+                    { title: "ID", field: "id" },
+                    { title: "Title", field: "announcementTitle" },
+                    {
+                      title: "Description",
+                      field: "announcementDescription",
+                    },
+                    { title: "Created By", field: "user.fullName" },
+                    {
+                      title: "Department",
+                      field: "department.departmentName",
+                    },
+                  ]}
+                  data={announcements}
+                  options={{
+                    rowStyle: (rowData, index) => {
+                      if (index % 2) {
+                        return { backgroundColor: "#f2f2f2" };
+                      }
+                    },
+                    pageSize: 8,
+                    pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
+                  }}
+                  title="Announcements"
+                />
+              </ThemeProvider>
+            </Card.Body>
+          </Card>
         </div>
-        {this.state.hasError ? (
-          <Alert variant="danger" className="m-3" block>
-            {this.state.errMsg}
-          </Alert>
-        ) : (
-          <></>
-        )}
       </div>
-    );
-  }
-}
+      {hasError && (
+        <Alert variant="danger" className="m-3">
+          {errorMsg}
+        </Alert>
+      )}
+    </div>
+  );
+};
+
+export default Announcement;
