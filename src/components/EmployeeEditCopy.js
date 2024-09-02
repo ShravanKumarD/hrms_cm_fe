@@ -8,7 +8,7 @@ import API_BASE_URL from "../env";
 
 export default class EmployeeEdit extends Component {
   constructor(props) {
-    console.log(props,"props in edit")
+    console.log(props, "props in edit");
     super(props);
 
     this.state = {
@@ -306,11 +306,8 @@ export default class EmployeeEdit extends Component {
           )}
 
           {/* Main Card */}
-          <Card className="col-sm-12 main-card">
-            <Card.Header>
-              <b>Add Employee</b>
-            </Card.Header>
-            <Card.Body>
+          <div className="col-sm-12 main-card">
+            <div>
               <div className="row">
                 {/* Personal Details Card */}
                 <div className="col-sm-6">
@@ -632,17 +629,13 @@ export default class EmployeeEdit extends Component {
                   </Button>
                 </div>
               </div>
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
         </div>
       </Form>
     );
   }
 }
-
-
-
-
 
 // import React, { Component } from "react";
 // import { Card, Form, Button, Alert } from "react-bootstrap";

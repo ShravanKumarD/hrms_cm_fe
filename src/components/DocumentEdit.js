@@ -305,11 +305,8 @@ export default class EmployeeEdit extends Component {
           )}
 
           {/* Main Card */}
-          <Card className="col-sm-12 main-card">
-            <Card.Header>
-              <b>Add Employee</b>
-            </Card.Header>
-            <Card.Body>
+          <div className="col-sm-12 main-card">
+            <div>
               <div className="row">
                 {/* Personal Details Card */}
                 <div className="col-sm-6">
@@ -631,8 +628,8 @@ export default class EmployeeEdit extends Component {
                   </Button>
                 </div>
               </div>
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
         </div>
       </Form>
     );
