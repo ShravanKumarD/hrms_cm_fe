@@ -88,9 +88,8 @@ const Calendar = () => {
           },
         }}
         header={{
-          left: "prev,next today button",
-          center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+          left: "title",
+          right: "prev,next",
         }}
       />
       <AddEventPopup show={showAddModel} onHide={closeAddModel} />

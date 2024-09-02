@@ -89,13 +89,8 @@ const EmployeeList = () => {
         </a>
       </h4>
       <div className="col-sm-12">
-        <Card>
-          <Card.Header style={{ backgroundColor: "#515e73", color: "white" }}>
-            <div className="panel-title">
-              <strong>Employee List</strong>
-            </div>
-          </Card.Header>
-          <Card.Body>
+        <div>
+          <div>
             <ThemeProvider theme={theme}>
               <MaterialTable
                 columns={[
@@ -182,8 +177,8 @@ const EmployeeList = () => {
                 title="Employees"
               />
             </ThemeProvider>
-          </Card.Body>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
