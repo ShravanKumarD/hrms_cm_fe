@@ -333,106 +333,103 @@ const AttendanceList = () => {
               <i className="fa fa-plus" /> Add Attendance Record
             </Button>
           </h4>
-          <Card className="main-card" elevation={3}>
-            <Card.Header className="bg-primary text-white">
-              <strong>Attendance List</strong>
-            </Card.Header>
-            <Card.Body>
-              <ThemeProvider theme={theme}>
-                <MaterialTable
-                  columns={[
-                    // { title: "ID", field: "id" },
-                    // { title: "User ID", field: "userId" },
-                    { title: "Name", field: "user.fullName" },
-                    { title: "Date", field: "date" },
 
-                    { title: "Clock In Time", field: "clockinTime" },
-                    // { title: "Clock In Latitude", field: "latitudeClockin" },
-                    // { title: "Clock In Longitude", field: "longitudeClockin" },
-                    { title: "Clock Out Time", field: "clockoutTime" },
-                    { title: "Hours", field: "totalHours" },
-                    // { title: "Clock Out Latitude", field: "latitudeClockout" },
-                    // {
-                    //   title: "Clock Out Longitude",
-                    //   field: "longitudeClockout",
-                    // },
-                    {
-                      title: "Status",
-                      field: "status",
-                      render: (rowData) => (
-                        <span
-                          style={{
-                            color: getStatusColor(rowData.status),
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {rowData.status}
-                        </span>
-                      ),
-                    },
-                    {
-                      title: "Action",
-                      render: (rowData) => (
-                        <div className="text-center">
-                          <ActionButton
-                            variant="info"
-                            icon="edit"
-                            label="Edit"
-                            onClick={() => handleModalShow("edit", rowData)}
-                          />
-                          <ActionButton
-                            variant="primary"
-                            icon="eye"
-                            label="Preview"
-                            onClick={() => handleModalShow("preview", rowData)}
-                          />
-                          <ActionButton
-                            variant="danger"
-                            icon="trash"
-                            label="Delete"
-                            onClick={() => handleModalShow("delete", rowData)}
-                          />
-                        </div>
-                      ),
-                    },
-                  ]}
-                  data={attendances}
-                  options={{
-                    rowStyle: (rowData, index) =>
-                      index % 2 ? { backgroundColor: "#f2f2f2" } : {},
-                    pageSize: 10,
-                    pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
-                    exportButton: true,
-                    exportPdf: () => exportPDF(),
-                    // filtering: true,
-                    sorting: true,
-                    columnsButton: true,
-                  }}
-                  title="Attendance Records"
-                  actions={[
-                    {
-                      icon: () => <i className="fas fa-calendar-day"></i>,
-                      tooltip: "Download Today's Attendance",
-                      isFreeAction: true,
-                      onClick: () => downloadTodaysAttendance(),
-                    },
-                    {
-                      icon: () => <i className="fas fa-calendar-week"></i>,
-                      tooltip: "Download Month's Attendance",
-                      isFreeAction: true,
-                      onClick: () => downloadThisMonthsAttendance(),
-                    },
-                    {
-                      icon: () => <i className="fas fa-calendar"></i>,
-                      tooltip: "Download Year's Attendance",
-                      isFreeAction: true,
-                      onClick: () => downloadThisYearsAttendance(),
-                    },
-                  ]}
-                />
-              </ThemeProvider>
-            </Card.Body>
-          </Card>
+          <div>
+            <ThemeProvider theme={theme}>
+              <MaterialTable
+                columns={[
+                  // { title: "ID", field: "id" },
+                  // { title: "User ID", field: "userId" },
+                  { title: "Name", field: "user.fullName" },
+                  { title: "Date", field: "date" },
+
+                  { title: "Clock In Time", field: "clockinTime" },
+                  // { title: "Clock In Latitude", field: "latitudeClockin" },
+                  // { title: "Clock In Longitude", field: "longitudeClockin" },
+                  { title: "Clock Out Time", field: "clockoutTime" },
+                  { title: "Hours", field: "totalHours" },
+                  // { title: "Clock Out Latitude", field: "latitudeClockout" },
+                  // {
+                  //   title: "Clock Out Longitude",
+                  //   field: "longitudeClockout",
+                  // },
+                  {
+                    title: "Status",
+                    field: "status",
+                    render: (rowData) => (
+                      <span
+                        style={{
+                          color: getStatusColor(rowData.status),
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {rowData.status}
+                      </span>
+                    ),
+                  },
+                  {
+                    title: "Action",
+                    render: (rowData) => (
+                      <div className="text-center">
+                        <ActionButton
+                          variant="info"
+                          icon="edit"
+                          label="Edit"
+                          onClick={() => handleModalShow("edit", rowData)}
+                        />
+                        <ActionButton
+                          variant="primary"
+                          icon="eye"
+                          label="Preview"
+                          onClick={() => handleModalShow("preview", rowData)}
+                        />
+                        <ActionButton
+                          variant="danger"
+                          icon="trash"
+                          label="Delete"
+                          onClick={() => handleModalShow("delete", rowData)}
+                        />
+                      </div>
+                    ),
+                  },
+                ]}
+                data={attendances}
+                options={{
+                  rowStyle: (rowData, index) =>
+                    index % 2 ? { backgroundColor: "#f2f2f2" } : {},
+                  pageSize: 10,
+                  pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
+                  exportButton: true,
+                  exportPdf: () => exportPDF(),
+                  // filtering: true,
+                  sorting: true,
+                  columnsButton: true,
+                }}
+                title="Attendance Records"
+                actions={[
+                  {
+                    icon: () => <i className="fas fa-calendar-day"></i>,
+                    tooltip: "Download Today's Attendance",
+                    isFreeAction: true,
+                    onClick: () => downloadTodaysAttendance(),
+                  },
+                  {
+                    icon: () => <i className="fas fa-calendar-week"></i>,
+                    tooltip: "Download Month's Attendance",
+                    isFreeAction: true,
+                    onClick: () => downloadThisMonthsAttendance(),
+                  },
+                  {
+                    icon: () => <i className="fas fa-calendar"></i>,
+                    tooltip: "Download Year's Attendance",
+                    isFreeAction: true,
+                    onClick: () => downloadThisYearsAttendance(),
+                  },
+                ]}
+              />
+            </ThemeProvider>
+          </div>
+
           {showModal.edit && (
             <AttendanceEditModal
               show={showModal.edit}

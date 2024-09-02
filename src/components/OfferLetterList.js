@@ -110,123 +110,112 @@ const OfferLetterList = () => {
               Add Offer Letter
             </Button>
           </h4>
-          <Card className="main-card">
-            <Card.Header>
-              <div className="panel-title">
-                <strong>Offer Letter List</strong>
-              </div>
-            </Card.Header>
-            <Card.Body>
-              <ThemeProvider theme={theme}>
-                <MaterialTable
-                  columns={[
-                    { title: "ID", field: "id" },
-                    { title: "Full Name", field: "full_name" },
-                    { title: "Role", field: "role" },
-                    { title: "Department", field: "department" },
-                    { title: "Start Date", field: "start_date" },
-                    { title: "End Date", field: "end_date" },
-                    {
-                      title: "Status",
-                      field: "end_date",
-                      render: (rowData) => {
-                        const today = new Date();
-                        if (new Date(rowData.start_date) > today) {
-                          return <Badge variant="warning">Future</Badge>;
-                        }
-                        if (
-                          !rowData.end_date ||
-                          new Date(rowData.end_date) >= today
-                        ) {
-                          return <Badge variant="success">Active</Badge>;
-                        }
-                        return <Badge variant="danger">Expired</Badge>;
-                      },
+          <div>
+            <ThemeProvider theme={theme}>
+              <MaterialTable
+                columns={[
+                  { title: "ID", field: "id" },
+                  { title: "Full Name", field: "full_name" },
+                  { title: "Role", field: "role" },
+                  { title: "Department", field: "department" },
+                  { title: "Start Date", field: "start_date" },
+                  { title: "End Date", field: "end_date" },
+                  {
+                    title: "Status",
+                    field: "end_date",
+                    render: (rowData) => {
+                      const today = new Date();
+                      if (new Date(rowData.start_date) > today) {
+                        return <Badge variant="warning">Future</Badge>;
+                      }
+                      if (
+                        !rowData.end_date ||
+                        new Date(rowData.end_date) >= today
+                      ) {
+                        return <Badge variant="success">Active</Badge>;
+                      }
+                      return <Badge variant="danger">Expired</Badge>;
                     },
-                    {
-                      title: "Action",
-                      render: (rowData) => (
-                        // <Form className="row">
-                        //   <div className="col pl-5">
-                        //     <Button
-                        //       size="sm"
-                        //       variant="info"
-                        //       onClick={() => openModal("edit", rowData)}
-                        //     >
-                        //       <i className="fas fa-edit"></i> Edit
-                        //     </Button>
-                        //   </div>
+                  },
+                  {
+                    title: "Action",
+                    render: (rowData) => (
+                      // <Form className="row">
+                      //   <div className="col pl-5">
+                      //     <Button
+                      //       size="sm"
+                      //       variant="info"
+                      //       onClick={() => openModal("edit", rowData)}
+                      //     >
+                      //       <i className="fas fa-edit"></i> Edit
+                      //     </Button>
+                      //   </div>
 
+                      //   <div className="col pr-5">
+                      //     <Button
+                      //       size="sm"
+                      //       variant="danger"
+                      //       onClick={() => openModal("delete", rowData)}
+                      //     >
+                      //       <i className="fas fa-trash"></i> Delete
+                      //     </Button>
+                      //   </div>
 
-                        //   <div className="col pr-5">
-                        //     <Button
-                        //       size="sm"
-                        //       variant="danger"
-                        //       onClick={() => openModal("delete", rowData)}
-                        //     >
-                        //       <i className="fas fa-trash"></i> Delete
-                        //     </Button>
-                        //   </div>
-                        
-                        //   <div className="col pr-5">
-                        //     <Button
-                        //       size="sm"
-                        //       variant="secondary"
-                        //       onClick={() => openModal("preview", rowData)}
-                        //     >
-                        //       <i className="fas fa-eye"></i> Preview
-                        //     </Button>
-                        //   </div>
-                        // </Form>
-                        <Form className="row">
-  <div className="col d-flex justify-content-center">
-    <Button
-      size="sm"
-      variant="info"
-      onClick={() => openModal("edit", rowData)}
-    >
-      <i className="fas fa-edit"></i> Edit
-    </Button>
-  </div>
+                      //   <div className="col pr-5">
+                      //     <Button
+                      //       size="sm"
+                      //       variant="secondary"
+                      //       onClick={() => openModal("preview", rowData)}
+                      //     >
+                      //       <i className="fas fa-eye"></i> Preview
+                      //     </Button>
+                      //   </div>
+                      // </Form>
+                      <Form className="row">
+                        <div className="col d-flex justify-content-center">
+                          <Button
+                            size="sm"
+                            variant="info"
+                            onClick={() => openModal("edit", rowData)}
+                          >
+                            <i className="fas fa-edit"></i> Edit
+                          </Button>
+                        </div>
 
-  <div className="col d-flex justify-content-center">
-    <Button
-      size="sm"
-      variant="secondary"
-      onClick={() => openModal("preview", rowData)}
-    >
-      <i className="fas fa-eye"></i> Preview
-    </Button>
-  </div>
-  <div className="col d-flex justify-content-center">
-    <Button
-      size="sm"
-      variant="danger"
-      onClick={() => openModal("delete", rowData)}
-    >
-      <i className="fas fa-trash"></i> Delete
-    </Button>
-  </div>
-
-
-</Form>
-
-                      ),
-                    },
-                  ]}
-                  data={offerLetters}
-                  options={{
-                    rowStyle: (rowData, index) => ({
-                      backgroundColor: index % 2 ? "#f2f2f2" : "#ffffff",
-                    }),
-                    pageSize: 8,
-                    pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
-                  }}
-                  title="Offer Letter List"
-                />
-              </ThemeProvider>
-            </Card.Body>
-          </Card>
+                        <div className="col d-flex justify-content-center">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => openModal("preview", rowData)}
+                          >
+                            <i className="fas fa-eye"></i> Preview
+                          </Button>
+                        </div>
+                        <div className="col d-flex justify-content-center">
+                          <Button
+                            size="sm"
+                            variant="danger"
+                            onClick={() => openModal("delete", rowData)}
+                          >
+                            <i className="fas fa-trash"></i> Delete
+                          </Button>
+                        </div>
+                      </Form>
+                    ),
+                  },
+                ]}
+                data={offerLetters}
+                options={{
+                  rowStyle: (rowData, index) => ({
+                    backgroundColor: index % 2 ? "#f2f2f2" : "#ffffff",
+                  }),
+                  pageSize: 8,
+                  pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
+                }}
+                title="Offer Letter List"
+              />
+            </ThemeProvider>
+          </div>
         </div>
       </div>
       {showEdit && selectedOfferLetter && (

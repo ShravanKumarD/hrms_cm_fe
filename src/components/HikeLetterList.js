@@ -95,60 +95,55 @@ const HikeLetterList = () => {
               <i className="fa fa-plus" /> Add Hike Letter
             </Button>
           </h4>
-          <Card className="main-card">
-            <Card.Header>
-              <strong>Hike Letter List</strong>
-            </Card.Header>
-            <Card.Body>
-              <ThemeProvider theme={theme}>
-                <MaterialTable
-                  columns={[
-                    { title: "ID", field: "id" },
-                    { title: "Date", field: "date" },
-                    { title: "Name", field: "name" },
-                    { title: "Place", field: "place" },
-                    { title: "Effective Date", field: "effective_date" },
-                    { title: "New Salary", field: "new_salary" },
-                    { title: "Previous Salary", field: "previous_salary" },
-                    { title: "HR Name", field: "hr_name" },
-                    {
-                      title: "Action",
-                      render: (rowData) => (
-                        <div className="text-center">
-                          <ActionButton
-                            variant="info"
-                            icon="edit"
-                            label="Edit"
-                            onClick={() => handleModalShow("edit", rowData)}
-                          />
-                          <ActionButton
-                            variant="primary"
-                            icon="eye"
-                            label="Preview"
-                            onClick={() => handleModalShow("preview", rowData)}
-                          />
-                          <ActionButton
-                            variant="danger"
-                            icon="trash"
-                            label="Delete"
-                            onClick={() => handleModalShow("delete", rowData)}
-                          />
-                        </div>
-                      ),
-                    },
-                  ]}
-                  data={hikeLetters}
-                  options={{
-                    rowStyle: (rowData, index) =>
-                      index % 2 ? { backgroundColor: "#f2f2f2" } : {},
-                    pageSize: 8,
-                    pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
-                  }}
-                  title="Hike Letters"
-                />
-              </ThemeProvider>
-            </Card.Body>
-          </Card>
+          <div>
+            <ThemeProvider theme={theme}>
+              <MaterialTable
+                columns={[
+                  { title: "ID", field: "id" },
+                  { title: "Date", field: "date" },
+                  { title: "Name", field: "name" },
+                  { title: "Place", field: "place" },
+                  { title: "Effective Date", field: "effective_date" },
+                  { title: "New Salary", field: "new_salary" },
+                  { title: "Previous Salary", field: "previous_salary" },
+                  { title: "HR Name", field: "hr_name" },
+                  {
+                    title: "Action",
+                    render: (rowData) => (
+                      <div className="text-center">
+                        <ActionButton
+                          variant="info"
+                          icon="edit"
+                          label="Edit"
+                          onClick={() => handleModalShow("edit", rowData)}
+                        />
+                        <ActionButton
+                          variant="primary"
+                          icon="eye"
+                          label="Preview"
+                          onClick={() => handleModalShow("preview", rowData)}
+                        />
+                        <ActionButton
+                          variant="danger"
+                          icon="trash"
+                          label="Delete"
+                          onClick={() => handleModalShow("delete", rowData)}
+                        />
+                      </div>
+                    ),
+                  },
+                ]}
+                data={hikeLetters}
+                options={{
+                  rowStyle: (rowData, index) =>
+                    index % 2 ? { backgroundColor: "#f2f2f2" } : {},
+                  pageSize: 8,
+                  pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
+                }}
+                title="Hike Letters"
+              />
+            </ThemeProvider>
+          </div>
           {showModal.edit && (
             <HikeLetterEditModal
               show={showModal.edit}
@@ -166,9 +161,9 @@ const HikeLetterList = () => {
           )}
           {showModal.preview && (
             <HikeLetterPreviewModal
-            show={showModal.preview}
-            onHide={closeModal}
-            data={selectedHikeLetter} // Pass selected hike letter data to the preview modal
+              show={showModal.preview}
+              onHide={closeModal}
+              data={selectedHikeLetter} // Pass selected hike letter data to the preview modal
             />
           )}
           {showModal.delete && (

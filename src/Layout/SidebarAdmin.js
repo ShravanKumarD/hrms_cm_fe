@@ -203,11 +203,15 @@ const SidebarAdmin = ({ onToggle }) => {
             <FaTachometerAlt />
             {!isCollapsed && "Dashboard"}
           </NavItem>
-          <NavItem to="/fake-url" onClick={() => toggleSubMenu("attendance")}>
+          {/* <NavItem to="#" onClick={() => toggleSubMenu("attendance")}>
             <FaCalendarCheck />
             {!isCollapsed && "Attendance"}
+          </NavItem> */}
+          <NavItem to="/attendance-list">
+            <FaCalendarCheck />
+            {!isCollapsed && "Attendance List"}
           </NavItem>
-          {expandedMenus.attendance && !isCollapsed && (
+          {/* {expandedMenus.attendance && !isCollapsed && (
             <>
               <SubNavItem to="/attendance/timesheet">
                 <FaCalendarAlt />
@@ -223,8 +227,8 @@ const SidebarAdmin = ({ onToggle }) => {
                 Attendance List
               </SubNavItem>
             </>
-          )}
-          <NavItem to="/fake-url" onClick={() => toggleSubMenu("applications")}>
+          )} */}
+          <NavItem to="#" onClick={() => toggleSubMenu("applications")}>
             <FaRocket />
             {!isCollapsed && "Applications"}
           </NavItem>
@@ -240,7 +244,7 @@ const SidebarAdmin = ({ onToggle }) => {
               </SubNavItem>
             </>
           )}
-          <NavItem to="/fake-url" onClick={() => toggleSubMenu("departments")}>
+          <NavItem to="#" onClick={() => toggleSubMenu("departments")}>
             <FaSitemap />
             {!isCollapsed && "Departments"}
           </NavItem>
@@ -256,7 +260,7 @@ const SidebarAdmin = ({ onToggle }) => {
               </SubNavItem>
             </>
           )}
-          <NavItem to="/fake-url" onClick={() => toggleSubMenu("employee")}>
+          <NavItem to="#" onClick={() => toggleSubMenu("employee")}>
             <FaUser />
             {!isCollapsed && "Employee"}
           </NavItem>
@@ -272,7 +276,7 @@ const SidebarAdmin = ({ onToggle }) => {
               </SubNavItem>
             </>
           )}
-          <NavItem to="/fake-url" onClick={() => toggleSubMenu("documents")}>
+          <NavItem to="#" onClick={() => toggleSubMenu("documents")}>
             <FaFileAlt />
             {!isCollapsed && "Documents"}
           </NavItem>
@@ -296,7 +300,7 @@ const SidebarAdmin = ({ onToggle }) => {
               </SubNavItem>
             </>
           )}
-          <NavItem to="/fake-url" onClick={() => toggleSubMenu("payroll")}>
+          <NavItem to="#" onClick={() => toggleSubMenu("payroll")}>
             <FaRupeeSign />
             {!isCollapsed && "Payroll"}
           </NavItem>
@@ -316,7 +320,7 @@ const SidebarAdmin = ({ onToggle }) => {
               </SubNavItem>
             </>
           )}
-          <NavItem to="/fake-url" onClick={() => toggleSubMenu("expense")}>
+          <NavItem to="#" onClick={() => toggleSubMenu("expense")}>
             <FaMoneyBill />
             {!isCollapsed && "Expense"}
           </NavItem>

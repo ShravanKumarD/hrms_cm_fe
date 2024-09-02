@@ -94,72 +94,65 @@ export default class DepartmentList extends Component {
         </div>
         <div className="row">
           <div className="col-sm-12">
-            <Card className="main-card">
-              <Card.Header>
-                <div className="panel-title">
-                  <strong>Department List</strong>
-                </div>
-              </Card.Header>
-              <Card.Body>
-                <ThemeProvider theme={theme}>
-                  <MaterialTable
-                    columns={[
-                      { title: "DEPT ID", field: "id" },
-                      { title: "Department Name", field: "departmentName" },
-                      {
-                        title: "Jobs",
-                        render: (dept) => (
-                          <NavLink
-                            to={{
-                              pathname: "/job-list",
-                              state: { selectedDepartment: dept.id },
-                            }}
-                          >
-                            Go to Job List
-                          </NavLink>
-                        ),
-                      },
-                      {
-                        title: "Action",
-                        render: (rowData) => (
-                          <Form className="row">
-                            <div className="col pl-5">
-                              <Button
-                                size="sm"
-                                variant="info"
-                                onClick={this.onEdit(rowData)}
-                              >
-                                <i className="fas fa-edit"></i>Edit
-                              </Button>
-                            </div>
-                            <div className="col pr-5">
-                              <Button
-                                onClick={this.onDelete(rowData)}
-                                size="sm"
-                                variant="danger"
-                              >
-                                <i className="fas fa-trash"></i>Delete
-                              </Button>
-                            </div>
-                          </Form>
-                        ),
-                      },
-                    ]}
-                    data={this.state.departments}
-                    options={{
-                      rowStyle: (rowData, index) => {
-                        if (index % 2) {
-                          return { backgroundColor: "#f2f2f2" };
-                        }
-                      },
-                      pageSize: 8,
-                      pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
-                    }}
-                    title="Departments"
-                  />
-                </ThemeProvider>
-              </Card.Body>
-            </Card>
+            <div>
+              <ThemeProvider theme={theme}>
+                <MaterialTable
+                  columns={[
+                    { title: "DEPT ID", field: "id" },
+                    { title: "Department Name", field: "departmentName" },
+                    {
+                      title: "Jobs",
+                      render: (dept) => (
+                        <NavLink
+                          to={{
+                            pathname: "/job-list",
+                            state: { selectedDepartment: dept.id },
+                          }}
+                        >
+                          Go to Job List
+                        </NavLink>
+                      ),
+                    },
+                    {
+                      title: "Action",
+                      render: (rowData) => (
+                        <Form className="row">
+                          <div className="col pl-5">
+                            <Button
+                              size="sm"
+                              variant="info"
+                              onClick={this.onEdit(rowData)}
+                            >
+                              <i className="fas fa-edit"></i>Edit
+                            </Button>
+                          </div>
+                          <div className="col pr-5">
+                            <Button
+                              onClick={this.onDelete(rowData)}
+                              size="sm"
+                              variant="danger"
+                            >
+                              <i className="fas fa-trash"></i>Delete
+                            </Button>
+                          </div>
+                        </Form>
+                      ),
+                    },
+                  ]}
+                  data={this.state.departments}
+                  options={{
+                    rowStyle: (rowData, index) => {
+                      if (index % 2) {
+                        return { backgroundColor: "#f2f2f2" };
+                      }
+                    },
+                    pageSize: 8,
+                    pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
+                  }}
+                  title="Departments"
+                />
+              </ThemeProvider>
+            </div>
             {this.state.showEditModel ? (
               <EditDepartmentModal
                 show={true}

@@ -131,35 +131,30 @@ const RelievingLetterList = () => {
               <i className="fa fa-plus" /> Add Relieving Letter
             </Button>
           </h4>
-          <Card className="main-card">
-            <Card.Header>
-              <strong>Relieving Letter List</strong>
-            </Card.Header>
-            <Card.Body>
-              <ThemeProvider theme={theme}>
-                <MaterialTable
-                  columns={columns}
-                  data={relievingLetters}
-                  options={{
-                    rowStyle: (rowData, index) =>
-                      index % 2 ? { backgroundColor: "#f2f2f2" } : {},
-                    pageSize: 10,
-                    pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
-                    headerStyle: {
-                      backgroundColor: "#f8f9fa",
-                      color: "#495057",
-                      fontWeight: "bold",
-                    },
-                    actionsColumnIndex: -1,
-                    actionsCellStyle: {
-                      paddingRight: "8px",
-                    },
-                  }}
-                  title="Relieving Letters"
-                />
-              </ThemeProvider>
-            </Card.Body>
-          </Card>
+          <div>
+            <ThemeProvider theme={theme}>
+              <MaterialTable
+                columns={columns}
+                data={relievingLetters}
+                options={{
+                  rowStyle: (rowData, index) =>
+                    index % 2 ? { backgroundColor: "#f2f2f2" } : {},
+                  pageSize: 10,
+                  pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
+                  headerStyle: {
+                    backgroundColor: "#f8f9fa",
+                    color: "#495057",
+                    fontWeight: "bold",
+                  },
+                  actionsColumnIndex: -1,
+                  actionsCellStyle: {
+                    paddingRight: "8px",
+                  },
+                }}
+                title="Relieving Letters"
+              />
+            </ThemeProvider>
+          </div>
           {showModal.edit && (
             <RelievingLetterEditModal
               show={showModal.edit}

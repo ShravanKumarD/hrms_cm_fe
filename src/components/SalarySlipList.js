@@ -165,98 +165,93 @@ const SalarySlipList = () => {
               <i className="fa fa-plus" /> Add Salary Slip
             </Button>
           </h4>
-          <Card className="main-card">
-            <Card.Header>
-              <strong>Salary Slip List</strong>
-            </Card.Header>
-            <Card.Body>
-              <ThemeProvider theme={theme}>
-                <MaterialTable
-                  columns={[
-                    {
-                      title: "Action",
-                      render: (rowData) => (
-                        <div className="text-center">
-                          <ActionButton
-                            variant="primary"
-                            icon="eye"
-                            label="Preview"
-                            onClick={() => handleModalShow("preview", rowData)}
-                          />
-                          <ActionButton
-                            variant="danger"
-                            icon="trash"
-                            label="Delete"
-                            onClick={() => handleModalShow("delete", rowData)}
-                          />
-                        </div>
-                      ),
+          <div>
+            <ThemeProvider theme={theme}>
+              <MaterialTable
+                columns={[
+                  {
+                    title: "Action",
+                    render: (rowData) => (
+                      <div className="text-center">
+                        <ActionButton
+                          variant="primary"
+                          icon="eye"
+                          label="Preview"
+                          onClick={() => handleModalShow("preview", rowData)}
+                        />
+                        <ActionButton
+                          variant="danger"
+                          icon="trash"
+                          label="Delete"
+                          onClick={() => handleModalShow("delete", rowData)}
+                        />
+                      </div>
+                    ),
+                  },
+                  { title: "ID", field: "id" },
+                  { title: "Name", field: "name" },
+                  { title: "User ID", field: "userId" },
+                  { title: "Address", field: "address" },
+                  { title: "Designation", field: "designation" },
+                  {
+                    title: "Month",
+                    field: "month",
+                    render: (rowData) =>
+                      moment(rowData.month, "M, YYYY").format("MMM, YYYY"),
+                  },
+                  { title: "Date of Joining", field: "date_of_joining" },
+                  { title: "Basic Salary", field: "basic_salary" },
+                  { title: "HRA", field: "hra" },
+                  {
+                    title: "Conveyance Allowance",
+                    field: "conveyance_allowance",
+                  },
+                  { title: "Special Allowance", field: "special_allowance" },
+                  { title: "Medical Allowance", field: "medical_allowance" },
+                  { title: "Total Earnings", field: "total_earnings" },
+                  { title: "TDS", field: "tds" },
+                  { title: "Professional Tax", field: "professional_tax" },
+                  { title: "Employee PF", field: "employee_pf" },
+                  { title: "Other Deductions", field: "other_deductions" },
+                  { title: "Total Deductions", field: "total_deductions" },
+                ]}
+                data={salarySlips}
+                options={{
+                  rowStyle: (rowData, index) =>
+                    index % 2 ? { backgroundColor: "#f2f2f2" } : {},
+                  pageSize: 8,
+                  pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
+                }}
+                title="Salary Slips"
+                actions={[
+                  {
+                    icon: () => <i className="fas fa-download"></i>,
+                    tooltip: "Download All Salary Slips",
+                    isFreeAction: true,
+                    onClick: () => downloadCSV(salarySlips, {}),
+                  },
+                  {
+                    icon: () => <i className="fas fa-file-invoice"></i>,
+                    tooltip: "Download Current Month's Salary Slips",
+                    isFreeAction: true,
+                    onClick: () => {
+                      const currentMonth = moment().format("MMM-YYYY");
+                      downloadCSV(salarySlips, { month: currentMonth });
                     },
-                    { title: "ID", field: "id" },
-                    { title: "Name", field: "name" },
-                    { title: "User ID", field: "userId" },
-                    { title: "Address", field: "address" },
-                    { title: "Designation", field: "designation" },
-                    {
-                      title: "Month",
-                      field: "month",
-                      render: (rowData) =>
-                        moment(rowData.month, "M, YYYY").format("MMM, YYYY"),
+                  },
+                  {
+                    icon: () => <i className="fas fa-calendar-check"></i>,
+                    tooltip: "Download Current Year's Salary Slips",
+                    isFreeAction: true,
+                    onClick: () => {
+                      const currentYear = moment().format("YYYY");
+                      downloadCSV(salarySlips, { year: currentYear });
                     },
-                    { title: "Date of Joining", field: "date_of_joining" },
-                    { title: "Basic Salary", field: "basic_salary" },
-                    { title: "HRA", field: "hra" },
-                    {
-                      title: "Conveyance Allowance",
-                      field: "conveyance_allowance",
-                    },
-                    { title: "Special Allowance", field: "special_allowance" },
-                    { title: "Medical Allowance", field: "medical_allowance" },
-                    { title: "Total Earnings", field: "total_earnings" },
-                    { title: "TDS", field: "tds" },
-                    { title: "Professional Tax", field: "professional_tax" },
-                    { title: "Employee PF", field: "employee_pf" },
-                    { title: "Other Deductions", field: "other_deductions" },
-                    { title: "Total Deductions", field: "total_deductions" },
-                  ]}
-                  data={salarySlips}
-                  options={{
-                    rowStyle: (rowData, index) =>
-                      index % 2 ? { backgroundColor: "#f2f2f2" } : {},
-                    pageSize: 8,
-                    pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
-                  }}
-                  title="Salary Slips"
-                  actions={[
-                    {
-                      icon: () => <i className="fas fa-download"></i>,
-                      tooltip: "Download All Salary Slips",
-                      isFreeAction: true,
-                      onClick: () => downloadCSV(salarySlips, {}),
-                    },
-                    {
-                      icon: () => <i className="fas fa-file-invoice"></i>,
-                      tooltip: "Download Current Month's Salary Slips",
-                      isFreeAction: true,
-                      onClick: () => {
-                        const currentMonth = moment().format("MMM-YYYY");
-                        downloadCSV(salarySlips, { month: currentMonth });
-                      },
-                    },
-                    {
-                      icon: () => <i className="fas fa-calendar-check"></i>,
-                      tooltip: "Download Current Year's Salary Slips",
-                      isFreeAction: true,
-                      onClick: () => {
-                        const currentYear = moment().format("YYYY");
-                        downloadCSV(salarySlips, { year: currentYear });
-                      },
-                    },
-                  ]}
-                />
-              </ThemeProvider>
-            </Card.Body>
-          </Card>
+                  },
+                ]}
+              />
+            </ThemeProvider>
+          </div>
           {showModal.edit && (
             <SalarySlipEditModal
               show={showModal.edit}

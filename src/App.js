@@ -124,91 +124,174 @@ const DefaultContainer = () => (
   </div>
 );
 
-const AdminContainer = () => (
-  <div>
-    <Header />
-    <SidebarAdmin />
-    <Layout>
-      <Switch>
-        <Route exact path="/" component={withAuth(Dashboard)} />
-        <Route exact path="/employee-list" component={withAuth(EmployeeList)} />
-        <Route exact path="/employee-add" component={withAuth(EmployeeAdd)} />
-        <Route exact path="/employee-view" component={withAuth(EmployeeView)} />
-        <Route exact path="/employee-edit" component={withAuth(EmployeeEdit)} />
-        <Route exact path="/document-list" component={withAuth(DocumentList)} />
-        <Route exact path="/document-add" component={withAuth(DocumentAdd)} />
-        <Route exact path="/document-view" component={withAuth(DocumentView)} />
-        <Route exact path="/document-edit" component={withAuth(DocumentEdit)} />
-        <Route exact path="/departments" component={withAuth(DepartmentList)} />
-        <Route
-          exact
-          path="/hike-letter-list"
-          component={withAuth(HikeLetterList)}
-        />
-        <Route
-          exact
-          path="/salary-slip-list"
-          component={withAuth(SalarySlipList)}
-        />
-        <Route
-          exact
-          path="/offer-letter-list"
-          component={withAuth(OfferLetterList)}
-        />
-        <Route
-          exact
-          path="/relieving-letter-list"
-          component={withAuth(RelievingLetterList)}
-        />
-        <Route exact path="/job-list" component={withAuth(JobList)} />
-        <Route
-          exact
-          path="/application-list"
-          component={withAuth(ApplicationList)}
-        />
-        <Route exact path="/application" component={withAuth(Application)} />
-        {/* <Route
+// Styled components for Pusher and MainContent
+const Pusher = styled.div`
+  transition: margin-left 0.3s ease;
+  margin-left: ${(props) => (props.isCollapsed ? "70px" : "70px")};
+`;
+
+const MainContent = styled.div`
+  margin-left: ${(props) => (props.isCollapsed ? "30px" : "210px")};
+  transition: margin-left 0.3s ease;
+  padding: 20px;
+`;
+
+const AdminContainer = () => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    const savedState = localStorage.getItem("sidebar-collapsed");
+    if (savedState !== null) {
+      setIsCollapsed(JSON.parse(savedState));
+    }
+  }, []);
+
+  const handleSidebarToggle = (collapsed) => {
+    setIsCollapsed(collapsed);
+  };
+
+  return (
+    <div>
+      <Header />
+      <SidebarAdmin onToggle={handleSidebarToggle} />
+      <Pusher isCollapsed={isCollapsed}>
+        <MainContent isCollapsed={isCollapsed}>
+          <Layout>
+            <Switch>
+              <Route exact path="/" component={withAuth(Dashboard)} />
+              <Route
+                exact
+                path="/employee-list"
+                component={withAuth(EmployeeList)}
+              />
+              <Route
+                exact
+                path="/employee-add"
+                component={withAuth(EmployeeAdd)}
+              />
+              <Route
+                exact
+                path="/employee-view"
+                component={withAuth(EmployeeView)}
+              />
+              <Route
+                exact
+                path="/employee-edit"
+                component={withAuth(EmployeeEdit)}
+              />
+              <Route
+                exact
+                path="/document-list"
+                component={withAuth(DocumentList)}
+              />
+              <Route
+                exact
+                path="/document-add"
+                component={withAuth(DocumentAdd)}
+              />
+              <Route
+                exact
+                path="/document-view"
+                component={withAuth(DocumentView)}
+              />
+              <Route
+                exact
+                path="/document-edit"
+                component={withAuth(DocumentEdit)}
+              />
+              <Route
+                exact
+                path="/departments"
+                component={withAuth(DepartmentList)}
+              />
+              <Route
+                exact
+                path="/hike-letter-list"
+                component={withAuth(HikeLetterList)}
+              />
+              <Route
+                exact
+                path="/salary-slip-list"
+                component={withAuth(SalarySlipList)}
+              />
+              <Route
+                exact
+                path="/offer-letter-list"
+                component={withAuth(OfferLetterList)}
+              />
+              <Route
+                exact
+                path="/relieving-letter-list"
+                component={withAuth(RelievingLetterList)}
+              />
+              <Route exact path="/job-list" component={withAuth(JobList)} />
+              <Route
+                exact
+                path="/application-list"
+                component={withAuth(ApplicationList)}
+              />
+              <Route
+                exact
+                path="/application"
+                component={withAuth(Application)}
+              />
+              {/* <Route
           exact
           path="/attendance/mark"
           component={withAuth(MarkAttendance)}
         /> */}
-        <Route
-          exact
-          path="/attendance/startwork"
-          component={withAuth(StartWork)}
-        />
-        <Route
-          exact
-          path="/attendance-list"
-          component={withAuth(AttendanceList)}
-        />
-        <Route
-          exact
-          path="/attendance/timesheet"
-          component={withAuth(Timesheet)}
-        />
-        <Route
-          exact
-          path="/salary-details"
-          component={withAuth(SalaryDetails)}
-        />
-        <Route exact path="/salary-list" component={withAuth(SalaryList)} />
-        <Route exact path="/salary-view" component={withAuth(SalaryView)} />
-        <Route exact path="/payment" component={withAuth(Payment)} />
-        <Route exact path="/expense" component={withAuth(Expense)} />
-        <Route
-          exact
-          path="/expense-report"
-          component={withAuth(ExpenseReport)}
-        />
-        <Route exact path="/announcement" component={withAuth(Announcement)} />
-        <Route exact path="/register" component={Register} />
-        <Route exact path="/login" component={Login} />
-      </Switch>
-    </Layout>
-    <Footer />
-  </div>
-);
+              <Route
+                exact
+                path="/attendance/startwork"
+                component={withAuth(StartWork)}
+              />
+              <Route
+                exact
+                path="/attendance-list"
+                component={withAuth(AttendanceList)}
+              />
+              <Route
+                exact
+                path="/attendance/timesheet"
+                component={withAuth(Timesheet)}
+              />
+              <Route
+                exact
+                path="/salary-details"
+                component={withAuth(SalaryDetails)}
+              />
+              <Route
+                exact
+                path="/salary-list"
+                component={withAuth(SalaryList)}
+              />
+              <Route
+                exact
+                path="/salary-view"
+                component={withAuth(SalaryView)}
+              />
+              <Route exact path="/payment" component={withAuth(Payment)} />
+              <Route exact path="/expense" component={withAuth(Expense)} />
+              <Route
+                exact
+                path="/expense-report"
+                component={withAuth(ExpenseReport)}
+              />
+              <Route
+                exact
+                path="/announcement"
+                component={withAuth(Announcement)}
+              />
+              <Route exact path="/register" component={Register} />
+              <Route exact path="/login" component={Login} />
+            </Switch>
+          </Layout>
+        </MainContent>
+      </Pusher>
+      <Footer />
+    </div>
+  );
+};
 
 const HRContainer = () => (
   <div>
@@ -396,18 +479,6 @@ const ManagerContainer = () => (
     <Footer />
   </div>
 );
-
-// Styled components for Pusher and MainContent
-const Pusher = styled.div`
-  transition: margin-left 0.3s ease;
-  margin-left: ${(props) => (props.isCollapsed ? "70px" : "70px")};
-`;
-
-const MainContent = styled.div`
-  margin-left: ${(props) => (props.isCollapsed ? "30px" : "210px")};
-  transition: margin-left 0.3s ease;
-  padding: 20px;
-`;
 
 const EmployeeContainer = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
