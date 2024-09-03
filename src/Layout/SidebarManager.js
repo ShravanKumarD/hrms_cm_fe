@@ -5,6 +5,7 @@ import Logo from "../assets/samcintlogowhite.png";
 import TodaysWorkStatus from "../components-mini/TodaysWorkStatus";
 
 const SidebarManager = () => {
+  console.log('manager')
   const [user, setUser] = useState({});
   const userId = JSON.parse(localStorage.getItem("user")).id;
 
