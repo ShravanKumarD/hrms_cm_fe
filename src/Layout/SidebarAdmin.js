@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState, useEffect, useCallback } from "react";
 import styled, { ThemeProvider } from "styled-components";
 import {
   FaTachometerAlt,
@@ -12,7 +11,6 @@ import {
   FaMoneyBill,
   FaBell,
   FaAngleLeft,
-  FaCalendarAlt,
   FaBriefcase,
   FaList,
   FaPlus,
@@ -27,9 +25,9 @@ import {
 } from "react-icons/fa";
 import LogoWhite from "../assets/samcintlogowhite.png";
 import LogoMini from "../assets/10.png";
-import TodaysWorkStatus from "../components-mini/TodaysWorkStatus";
+import { useHistory } from "react-router-dom";
 
-// Define your theme (same as SidebarEmployee)
+// Define your theme
 const theme = {
   primary: "#27ae60",
   secondary: "#27ae60",
@@ -40,7 +38,7 @@ const theme = {
   scrollbarTrack: "rgba(255, 255, 255, 0.1)",
 };
 
-// Styled components (same as SidebarEmployee)
+// Styled components
 const Sidebar = styled.aside`
   position: fixed;
   left: ${(props) => (props.isCollapsed ? "20px" : "20px")};
@@ -53,9 +51,6 @@ const Sidebar = styled.aside`
   border-radius: 20px;
   transition: all 0.3s ease;
   overflow-y: auto;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
   color: ${(props) => props.theme.text};
   z-index: 1001;
 `;
@@ -64,7 +59,6 @@ const LogoContainer = styled.div`
   padding: 20px;
   text-align: center;
   cursor: pointer;
-  // background: rgba(255, 255, 255, 0.2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 20px 20px 0 0;
   backdrop-filter: blur(10px);
@@ -86,16 +80,14 @@ const NavMenu = styled.nav`
   flex-grow: 1;
   overflow-y: auto;
   padding: 10px 0;
-  // background: rgba(255, 255, 255, 0.2);
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
   backdrop-filter: blur(10px);
 
-  // dont show scrollbar when not hovering
-  scrollbar-width: none;
-
-  &:hover {
   /* Scrollbar Styles */
+  scrollbar-width: thin;
+  scrollbar-color: ${(props) => props.theme.scrollbarThumb} ${(props) => props.theme.scrollbarTrack};
+
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -113,29 +105,19 @@ const NavMenu = styled.nav`
   &::-webkit-scrollbar-thumb:hover {
     background: ${(props) => props.theme.hover};
   }
-
-  scrollbar-width: thin;
-  scrollbar-color: ${(props) => props.theme.scrollbarThumb}
-    ${(props) => props.theme.scrollbarTrack};
-    
 `;
 
-const NavItem = styled(NavLink)`
+const NavItem = styled.div`
   display: flex;
   align-items: center;
   padding: 15px;
   color: ${(props) => props.theme.text};
   text-decoration: none;
   transition: background-color 0.3s, color 0.3s;
+  cursor: pointer;
 
   &:hover {
     background-color: ${(props) => props.theme.hover};
-    color: ${(props) => props.theme.text};
-  }
-
-  &.active {
-    // background-color: ${(props) => props.theme.active};
-    color: ${(props) => props.theme.text};
   }
 
   svg {
@@ -163,6 +145,7 @@ const SidebarAdmin = ({ onToggle }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState({});
   const userId = JSON.parse(localStorage.getItem("user")).id;
+  const history = useHistory();
 
   useEffect(() => {
     const savedState = localStorage.getItem("sidebar-collapsed");
@@ -171,18 +154,18 @@ const SidebarAdmin = ({ onToggle }) => {
     }
   }, []);
 
-  const toggleSidebar = () => {
+  const toggleSidebar = useCallback(() => {
     const newState = !isCollapsed;
     setIsCollapsed(newState);
     localStorage.setItem("sidebar-collapsed", JSON.stringify(newState));
     if (onToggle) {
       onToggle(newState);
     }
-  };
+  }, [isCollapsed, onToggle]);
 
-  const toggleSubMenu = (menu) => {
+  const toggleSubMenu = useCallback((menu) => {
     setExpandedMenus((prev) => ({ ...prev, [menu]: !prev[menu] }));
-  };
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -199,144 +182,123 @@ const SidebarAdmin = ({ onToggle }) => {
           />
         </LogoContainer>
         <NavMenu>
-          <NavItem to="/" exact>
+          <NavItem onClick={() => {history.push("/") }}>
             <FaTachometerAlt />
             {!isCollapsed && "Dashboard"}
           </NavItem>
-          {/* <NavItem to="#" onClick={() => toggleSubMenu("attendance")}>
-            <FaCalendarCheck />
-            {!isCollapsed && "Attendance"}
-          </NavItem> */}
-          <NavItem to="/attendance-list">
+          <NavItem onClick={() => { history.push("/attendance-list")}}>
             <FaCalendarCheck />
             {!isCollapsed && "Attendance List"}
           </NavItem>
-          {/* {expandedMenus.attendance && !isCollapsed && (
-            <>
-              <SubNavItem to="/attendance/timesheet">
-                <FaCalendarAlt />
-                Timesheet
-              </SubNavItem>
-              <SubNavItem to="/attendance/startwork">
-                <FaBriefcase />
-                Start Work
-                <TodaysWorkStatus userId={userId} />
-              </SubNavItem>
-              <SubNavItem to="/attendance-list">
-                <FaList />
-                Attendance List
-              </SubNavItem>
-            </>
-          )} */}
-          <NavItem to="#" onClick={() => toggleSubMenu("applications")}>
+          <NavItem onClick={() => toggleSubMenu("applications")}>
             <FaRocket />
             {!isCollapsed && "Applications"}
           </NavItem>
           {expandedMenus.applications && !isCollapsed && (
             <>
-              <SubNavItem to="/application">
+              <SubNavItem onClick={() => { history.push("/application")}}>
                 <FaPlus />
                 Add Application
               </SubNavItem>
-              <SubNavItem to="/application-list">
+              <SubNavItem onClick={() => { history.push("/application-list")}}>
                 <FaList />
                 Application List
               </SubNavItem>
             </>
           )}
-          <NavItem to="#" onClick={() => toggleSubMenu("departments")}>
+          <NavItem onClick={() => toggleSubMenu("departments")}>
             <FaSitemap />
             {!isCollapsed && "Departments"}
           </NavItem>
           {expandedMenus.departments && !isCollapsed && (
             <>
-              <SubNavItem to="/departments">
+              <SubNavItem onClick={() => { history.push("/departments")}}>
                 <FaBuilding />
                 Department List
               </SubNavItem>
-              <SubNavItem to="/job-list">
+              <SubNavItem onClick={() => { history.push("/job-list")}}>
                 <FaBriefcase />
                 Job List
               </SubNavItem>
             </>
           )}
-          <NavItem to="#" onClick={() => toggleSubMenu("employee")}>
+          <NavItem onClick={() => toggleSubMenu("employee")}>
             <FaUser />
             {!isCollapsed && "Employee"}
           </NavItem>
           {expandedMenus.employee && !isCollapsed && (
             <>
-              <SubNavItem to="/employee-add">
+              <SubNavItem onClick={() => { history.push("/employee-add")}}>
                 <FaPlus />
                 Add Employee
               </SubNavItem>
-              <SubNavItem to="/employee-list">
+              <SubNavItem onClick={() => { history.push("/employee-list")}}>
                 <FaUsers />
                 Employee List
               </SubNavItem>
             </>
           )}
-          <NavItem to="#" onClick={() => toggleSubMenu("documents")}>
+          <NavItem onClick={() => toggleSubMenu("documents")}>
             <FaFileAlt />
             {!isCollapsed && "Documents"}
           </NavItem>
           {expandedMenus.documents && !isCollapsed && (
             <>
-              <SubNavItem to="/salary-slip-list">
+              <SubNavItem onClick={() => { history.push("/salary-slip-list")}}>
                 <FaFileInvoiceDollar />
                 Salary Slip
-              </SubNavItem>
-              <SubNavItem to="/offer-letter-list">
+              </SubNavItem >
+              <SubNavItem onClick={() => { history.push("/offer-letter-list")}}>
                 <FaFileSignature />
                 Offer Letter
               </SubNavItem>
-              <SubNavItem to="/hike-letter-list">
+              <SubNavItem onClick={() => { history.push("/hike-letter-list")}}>
                 <FaFileAlt />
                 Hike Letter
               </SubNavItem>
-              <SubNavItem to="/relieving-letter-list">
+              <SubNavItem onClick={() => { history.push("/relieving-letter-list")}}>
                 <FaFileExport />
                 Relieving Letter
               </SubNavItem>
             </>
           )}
-          <NavItem to="#" onClick={() => toggleSubMenu("payroll")}>
+          <NavItem onClick={() => toggleSubMenu("payroll")}>
             <FaRupeeSign />
             {!isCollapsed && "Payroll"}
           </NavItem>
           {expandedMenus.payroll && !isCollapsed && (
             <>
-              <SubNavItem to="/salary-details">
+              <SubNavItem onClick={() => { history.push("/salary-details")}}>
                 <FaRupeeSign />
                 Manage Salary Details
               </SubNavItem>
-              <SubNavItem to="/salary-list">
+              <SubNavItem onClick={() => { history.push("/salary-list")}}>
                 <FaUsers />
                 Employee Salary List
               </SubNavItem>
-              <SubNavItem to="/payment">
+              <SubNavItem onClick={() => { history.push("/payment")}}>
                 <FaMoneyCheck />
                 Make Payment
               </SubNavItem>
             </>
           )}
-          <NavItem to="#" onClick={() => toggleSubMenu("expense")}>
+          <NavItem onClick={() => toggleSubMenu("expense")}>
             <FaMoneyBill />
             {!isCollapsed && "Expense"}
           </NavItem>
           {expandedMenus.expense && !isCollapsed && (
             <>
-              <SubNavItem to="/expense">
+              <SubNavItem onClick={() => { history.push("/expense")}}>
                 <FaShoppingCart />
                 Make Expense
               </SubNavItem>
-              <SubNavItem to="/expense-report">
+              <SubNavItem onClick={() => { history.push("/expense-report")}}>
                 <FaFileInvoice />
                 Expense Report
               </SubNavItem>
             </>
           )}
-          <NavItem to="/announcement">
+          <NavItem onClick={() => { history.push("/announcement") }}>
             <FaBell />
             {!isCollapsed && "Announcements"}
           </NavItem>
@@ -346,4 +308,4 @@ const SidebarAdmin = ({ onToggle }) => {
   );
 };
 
-export default SidebarAdmin;
+export default React.memo(SidebarAdmin);

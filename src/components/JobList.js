@@ -262,7 +262,7 @@ export default class JobList extends Component {
                 <a
                   className="fa fa-plus mb-2 ml-2"
                   onClick={this.addJob}
-                  style={{ color: "blue", cursor: "pointer" }}
+                  style={{ color: "blue", cursor: "pointer",color:"040404" }}
                 >
                   Add Job
                 </a>

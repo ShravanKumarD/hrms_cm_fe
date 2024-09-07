@@ -328,7 +328,7 @@ const AttendanceList = () => {
               variant="link"
               onClick={() => handleModalShow("add")}
               className="p-0"
-              style={{ color: "blue", cursor: "pointer" }}
+              style={{ color: "blue", cursor: "pointer" ,color:"#040404"}}
             >
               <i className="fa fa-plus" /> Add Attendance Record
             </Button>
@@ -340,6 +340,7 @@ const AttendanceList = () => {
                 columns={[
                   // { title: "ID", field: "id" },
                   // { title: "User ID", field: "userId" },
+                  {title:"EMP ID",field:"user.username"},
                   { title: "Name", field: "user.fullName" },
                   { title: "Date", field: "date" },
 
@@ -393,7 +394,7 @@ const AttendanceList = () => {
                     ),
                   },
                 ]}
-                data={attendances}
+                data={attendances.reverse()}
                 options={{
                   rowStyle: (rowData, index) =>
                     index % 2 ? { backgroundColor: "#f2f2f2" } : {},

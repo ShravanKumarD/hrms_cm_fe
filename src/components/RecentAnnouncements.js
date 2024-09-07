@@ -3,10 +3,11 @@ import axios from "axios";
 import CalendarIcon from "react-calendar-icon";
 import { ThemeProvider } from "styled-components";
 import API_BASE_URL from "../env";
-
+import './RecentAnnouncements.css'; // Assuming styles are moved to this CSS file
 
 const RecentAnnouncements = () => {
   const [recentAnnouncements, setRecentAnnouncements] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -15,81 +16,68 @@ const RecentAnnouncements = () => {
       method: "get",
       url: "/api/departmentAnnouncements/recent",
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    }).then((res) => {
-      console.log(res,'resss')
-      if (isMounted) {
-        setRecentAnnouncements(res.data);
-        // console.log(res.data);
-      }
-    });
+    })
+      .then((res) => {
+        if (isMounted) {
+          setRecentAnnouncements(res.data);
+        }
+      })
+      .catch((err) => {
+        setError("Failed to fetch announcements.");
+        console.error("Error fetching announcements:", err);
+      });
 
     return () => {
       isMounted = false;
     };
   }, []);
 
+  // Define theme for CalendarIcon
   const theme = {
     calendarIcon: {
-      textColor: "white", // text color of the header and footer
-      primaryColor: "#0da472", // background of the header and footer
+      textColor: "white",
+      primaryColor: "#0da472",
       backgroundColor: "#fafafa",
     },
   };
 
-  const days = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  // Helper function to format dates
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return {
+      day: date.toLocaleDateString('en-US', { weekday: 'long' }),
+      month: date.toLocaleDateString('en-US', { month: 'long' }),
+      date: date.getDate(),
+    };
+  };
 
   return (
-    <div className="card">
-      <div className="mt-1" style={{ textAlign: "center" }}></div>
-      <ul>
-        {recentAnnouncements.map((announcement) => (
-          <li
-            style={{ listStyle: "none" }}
-            key={announcement.id}
-            className="mb-2 mt-1"
-          >
-            <div className="float-left mr-2">
-              <time dateTime="2014-09-20" className="icon p-0">
-                <em>{days[new Date(announcement.createdAt).getDay()]}</em>
-                <strong>
-                  {monthNames[new Date(announcement.createdAt).getMonth()]}
-                </strong>
-                <span>{new Date(announcement.createdAt).getDate()}</span>
-              </time>
-            </div>
-            <span>
-              <strong>{announcement.announcementTitle}</strong>
-              {announcement.department && (
-                <span> ({announcement.department.departmentName})</span>
-              )}{" "}
-            </span>
-            <br className="p-1" />
-            <small>{announcement.announcementDescription}</small>
-            <hr className=" pt-2 pb-1 mb-0" />
-          </li>
-        ))}
+    <div className="recent-announcements">
+      {error && <div className="error-message">{error}</div>}
+      <ul className="announcement-list">
+        {recentAnnouncements.map((announcement) => {
+          const { day, month, date } = formatDate(announcement.createdAt);
+
+          return (
+            <li key={announcement.id} className="announcement-item">
+              <div className="date-icon">
+                <time dateTime={announcement.createdAt} className="icon">
+                  <em>{day}</em>
+                  <strong>{month}</strong>
+                  <span>{date}</span>
+                </time>
+              </div>
+              <div className="announcement-content">
+                <strong>{announcement.announcementTitle}</strong>
+                {announcement.department && (
+                  <span> ({announcement.department.departmentName})</span>
+                )}
+                <p>{announcement.announcementDescription}</p>
+              </div>
+              <hr className="separator" />
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

@@ -2,14 +2,15 @@ import React, { Component } from "react";
 import { Card, Badge, Button, Form, Modal } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
 import MaterialTable from "material-table";
-import DeleteModal from "./DeleteModal";
+import DeleteModal from "./../DeleteModal";
 import axios from "axios";
 import { ThemeProvider } from "@material-ui/core";
 import { createTheme } from "@material-ui/core/styles";
-import API_BASE_URL from "../env";
+import API_BASE_URL from "./../../env";
 import FileSaver from 'file-saver';
 import { Dropdown } from 'react-bootstrap';
 import * as XLSX from 'xlsx';
+
 
 
 export default class SalaryList extends Component {
@@ -157,14 +158,14 @@ export default class SalaryList extends Component {
         ) : (
           <></>
         )}
-        {/* <div className="col-sm-12"> */}
+        <div className="col-sm-12">
           <Card>
             {/* <Card.Header style={{ backgroundColor: "#515e73", color: "white" }}>
               <div className="panel-title">
                 <strong>List of Employees and Their Salaries</strong>
               </div>
             </Card.Header> */}
-            {/* <Card.Header style={{ backgroundColor: "#515e73", color: "white" }}> */}
+            <Card.Header style={{ backgroundColor: "#515e73", color: "white" }}>
   <div className="d-flex justify-content-between align-items-center">
     <strong>List of Employees and Their Salaries</strong>
     <Dropdown>
@@ -182,12 +183,12 @@ export default class SalaryList extends Component {
       </Dropdown.Menu>
     </Dropdown>
   </div>
-{/* </Card.Header> */}
-            {/* <Card.Body> */}
+</Card.Header>
+            <Card.Body>
               <ThemeProvider theme={theme}>
                 <MaterialTable
                   columns={[
-                    { title: "EMP ID", field: "user.username" },
+                    { title: "EMP ID", field: "user.id" },
                     { title: "Full Name", field: "user.fullName" },
                     { title: "Gross Salary", field: "salaryGross" },
                     { title: "Deductions", field: "deductionTotal" },
@@ -236,9 +237,9 @@ export default class SalaryList extends Component {
                   title="Employees"
                 />
               </ThemeProvider>
-            {/* </Card.Body> */}
+            </Card.Body>
           </Card>
-        {/* </div> */}
+        </div>
       </div>
     );
   }

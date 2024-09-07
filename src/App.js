@@ -13,6 +13,7 @@ import SidebarEmployee from "./Layout/SidebarEmployee";
 import Dashboard from "./components/Dashboard";
 import DashboardManager from "./components/manager/Dashboard";
 import DashboardEmployee from "./components/employee/Dashboard";
+import DashboardHr from "./components/hr/Dashboard";
 import Layout from "./Layout/Layout";
 import EmployeeList from "./components/EmployeeList";
 import EmployeeListManager from "./components/manager/EmployeeList";
@@ -40,11 +41,13 @@ import AttendanceList from "./components/AttendanceList";
 import Timesheet from "./components/Timesheet";
 import SalaryDetails from "./components/SalaryDetails";
 import SalaryList from "./components/SalaryList";
+import SalaryListManager from "./components/manager/SalaryList";
 import SalaryView from "./components/SalaryView";
 import SalaryViewManager from "./components/manager/SalaryView";
 import SalaryViewEmployee from "./components/employee/SalaryView";
 import SalaryViewHR from "./components/hr/SalaryView";
 import Payment from "./components/Payment";
+import PaymentManager from "./components/manager/Payment";
 import Expense from "./components/Expense";
 import ExpenseManager from "./components/manager/Expense";
 import ExpenseReport from "./components/ExpenseReport";
@@ -293,13 +296,33 @@ const AdminContainer = () => {
   );
 };
 
-const HRContainer = () => (
+const HRContainer = () => {
+  const[isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    const savedState = localStorage.getItem("sidebar-collapsed");
+    if (savedState !== null) {
+      setIsCollapsed(JSON.parse(savedState));
+    }
+  }, []);
+
+  const handleSidebarToggle = (collapsed) => {
+    setIsCollapsed(collapsed);
+  };
+return(
   <div>
     <Header />
-    <SidebarHr />
+    <SidebarHr onToggle={handleSidebarToggle}  />
+    <Pusher isCollapsed={isCollapsed}>
+    <MainContent isCollapsed={isCollapsed}>
+
     <Layout>
       <Switch>
-        <Route exact path="/" component={withAuth(Dashboard)} />
+        {/* <Route exact path="/" component={withAuth(Dashboard)} /> */}
+        <Route 
+        exact
+        path="/"
+        component={withAuth(DashboardHr)} />
         <Route exact path="/employee-list" component={withAuth(EmployeeList)} />
         <Route exact path="/employee-add" component={withAuth(EmployeeAdd)} />
         <Route exact path="/employee-view" component={withAuth(EmployeeView)} />
@@ -384,16 +407,37 @@ const HRContainer = () => (
           path="/announcement"
           component={withAuth(AnnouncementHR)}
         />
+     
+
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />
       </Switch>
-    </Layout>
+      </Layout>
+        </MainContent>
+      </Pusher>
+      <Footer />
   </div>
-);
-const ManagerContainer = () => (
+)
+}
+const ManagerContainer = () => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    const savedState = localStorage.getItem("sidebar-collapsed");
+    if (savedState !== null) {
+      setIsCollapsed(JSON.parse(savedState));
+    }
+  }, []);
+
+  const handleSidebarToggle = (collapsed) => {
+    setIsCollapsed(collapsed);
+  };
+  return(
   <div>
-    <Header />
-    <SidebarManager />
+     <Header />
+    <SidebarManager onToggle={handleSidebarToggle}  />
+    <Pusher isCollapsed={isCollapsed}>
+    <MainContent isCollapsed={isCollapsed}>
     <Layout>
       <Switch>
         <Route exact path="/" component={withAuth(DashboardManager)} />
@@ -470,16 +514,25 @@ const ManagerContainer = () => (
           path="/relieving-letter-list"
           component={withAuth(RelievingLetterList)}
         />
+             <Route
+          exact
+          path="/salary-view"
+          component={withAuth(SalaryViewManager)}
+        />
+         <Route exact path="/salary-list" component={withAuth(SalaryListManager)} />
+         <Route exact path="/payment" component={withAuth(PaymentManager)} />
         <Route exact path="/employee-add" component={withAuth(EmployeeAdd)} />
         <Route exact path="/documents" component={withAuth(MyDocuments)} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />
       </Switch>
-    </Layout>
-    <Footer />
+      </Layout>
+        </MainContent>
+      </Pusher>
+      <Footer />
   </div>
-);
-
+  )
+}
 const EmployeeContainer = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 

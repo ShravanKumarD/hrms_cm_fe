@@ -1,204 +1,142 @@
-import React, { Component } from "react";
-import { Card, Button, Form, Alert } from "react-bootstrap";
-import { Redirect } from "react-router-dom";
+import React, { useState, useEffect, useCallback } from "react";
+import { Button, Alert } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import axios from "axios";
 import moment from "moment";
 import MaterialTable from "material-table";
-import { ThemeProvider } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
+import { ThemeProvider, createTheme } from "@material-ui/core/styles";
 import API_BASE_URL from "../env";
 
-export default class ApplicationList extends Component {
-  constructor(props) {
-    super(props);
+const ApplicationList = () => {
+  const [applications, setApplications] = useState([]);
+  const [hasError, setHasError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [completed, setCompleted] = useState(false);
+  const history = useHistory();
 
-    this.state = {
-      applications: [],
-      selectedApplications: null,
-      done: false,
-      hasError: false,
-      errorMsg: "",
-      completed: false,
-      showModel: false,
-    };
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "get",
-      url: "/api/applications",
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    }).then((res) => {
-      res.data.map((app) => {
-        app.startDate = moment(app.startDate, [
-          "YYYY-MM-DD HH:mm:ss",
-          "HH:mm:ss",
-        ]).format("Do MMM YYYY");
-        app.endDate = moment(app.endDate, [
-          "YYYY-MM-DD HH:mm:ss",
-          "HH:mm:ss",
-        ]).format("Do MMM YYYY");
-      });
-      this.setState({ applications: res.data }, () => {
-        console.log("applications", this.state.applications);
-      });
-    });
-  }
-
-  handleChange = (event) => {
-    const { value, name } = event.target;
-    this.setState({
-      [name]: value,
-    });
-  };
-
-  onApprove(app) {
-    return (event) => {
-      event.preventDefault();
-
-      axios.defaults.baseURL = API_BASE_URL;
-      axios({
-        method: "put",
-        url: "/api/applications/" + app.id,
-        data: {
-          status: "Approved",
-        },
+    axios
+      .get("/api/applications", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
-        .then((res) => {
-          this.setState({ completed: true });
-        })
-        .catch((err) => {
-          this.setState({
-            hasError: true,
-            errorMsg: err.response.data.message,
-          });
-        });
-    };
-  }
+      .then((res) => {
+        const formattedApplications = res.data.map((app) => ({
+          ...app,
+          startDate: moment(app.startDate, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]).format("Do MMM YYYY"),
+          endDate: moment(app.endDate, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]).format("Do MMM YYYY"),
+        }));
+        console.log(formattedApplications,"formattedApplications")
+        setApplications(formattedApplications.reverse());
+      })
+      .catch((err) => {
+        setHasError(true);
+        setErrorMsg(err.response?.data?.message || "An error occurred");
+      });
+  }, []);
 
-  onReject(app) {
-    return (event) => {
-      event.preventDefault();
-
-      axios.defaults.baseURL = API_BASE_URL;
-      axios({
-        method: "put",
-        url: "/api/applications/" + app.id,
-        data: {
-          status: "Rejected",
-        },
+  const handleStatusChange = useCallback((app, status) => {
+    axios.defaults.baseURL = API_BASE_URL;
+    axios
+      .put(`/api/applications/${app.id}`, { status }, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
-        .then((res) => {
-          this.setState({ completed: true });
-        })
-        .catch((err) => {
-          this.setState({
-            hasError: true,
-            errorMsg: err.response.data.message,
-          });
-        });
-    };
-  }
+      .then(() => {
+        setCompleted(true);
+        history.push("/application-list");
+      })
+      .catch((err) => {
+        setHasError(true);
+        setErrorMsg(err.response?.data?.message || "An error occurred");
+      });
+  }, [history]);
 
-  render() {
-    const theme = createTheme({
-      overrides: {
-        MuiTableCell: {
-          root: {
-            padding: "6px 6px 6px 6px",
-          },
+  const theme = createTheme({
+    overrides: {
+      MuiTableCell: {
+        root: {
+          padding: "6px 6px 6px 6px",
         },
       },
-    });
+    },
+  });
 
-    return (
-      <div>
-        <div>
-          <ThemeProvider theme={theme}>
-            <MaterialTable
-              columns={[
-                { title: "APP ID", field: "id" },
-                { title: "Full Name", field: "user.fullName" },
-                { title: "Start Date", field: "startDate" },
-                { title: "End Date", field: "endDate" },
-                { title: "Leave Type", field: "type" },
-                { title: "Comments", field: "reason" },
-                {
-                  title: "Status",
-                  field: "status",
-                  render: (rowData) => (
-                    <Button
-                      size="sm"
-                      variant={
-                        rowData.status === "Approved"
-                          ? "success"
-                          : rowData.status === "Pending"
-                          ? "warning"
-                          : "danger"
-                      }
-                    >
-                      {rowData.status}
-                    </Button>
-                  ),
-                },
-                {
-                  title: "Action",
-                  render: (rowData) =>
-                    rowData.user.id !=
-                    JSON.parse(localStorage.getItem("user")).id ? (
-                      rowData.status === "Pending" ? (
-                        <>
-                          <Button
-                            onClick={this.onApprove(rowData)}
-                            variant="success"
-                            size="sm"
-                            className="mr-2"
-                          >
-                            <i className="fas fa-edit"></i>Approve
-                          </Button>
-                          <Button
-                            onClick={this.onReject(rowData)}
-                            variant="danger"
-                            size="sm"
-                            className="ml-2"
-                          >
-                            <i className="fas fa-trash"></i>Reject
-                          </Button>
-                        </>
-                      ) : null
-                    ) : null,
-                },
-              ]}
-              data={this.state.applications}
-              options={{
-                rowStyle: (rowData, index) => {
-                  if (index % 2) {
-                    return { backgroundColor: "#f2f2f2" };
+  return (
+    <div>
+      <ThemeProvider theme={theme}>
+        <MaterialTable
+          columns={[
+            {title:"EMP ID",field:"user.username"},
+            { title: "Full Name", field: "user.fullName" },
+            { title: "Start Date", field: "startDate" },
+            { title: "End Date", field: "endDate" },
+            { title: "Leave Type", field: "type" },
+            { title: "Comments", field: "reason" },
+            {
+              title: "Status",
+              field: "status",
+              render: (rowData) => (
+                <Button
+                  size="sm"
+                  variant={
+                    rowData.status === "Approved"
+                      ? "success"
+                      : rowData.status === "Pending"
+                      ? "warning"
+                      : "danger"
                   }
-                },
-                pageSize: 10,
-                pageSizeOptions: [10, 20, 30, 50, 75, 100],
-              }}
-              title="Applications"
-            />
-          </ThemeProvider>
-        </div>
+                >
+                  {rowData.status}
+                </Button>
+              ),
+            },
+            {
+              title: "Action",
+              render: (rowData) =>
+                rowData.user.id !== JSON.parse(localStorage.getItem("user")).id ? (
+                  rowData.status === "Pending" ? (
+                    <>
+                      <Button
+                        onClick={() => handleStatusChange(rowData, "Approved")}
+                        variant="success"
+                        size="sm"
+                        className="mr-2"
+                      >
+                        <i className="fas fa-edit"></i>Approve
+                      </Button>
+                      <p>&nbsp;</p>
+                      <Button
+                        onClick={() => handleStatusChange(rowData, "Rejected")}
+                        variant="danger"
+                        size="sm"
+                        className="ml-2"
+                      >
+                        <i className="fas fa-trash"></i>Reject
+                      </Button>
+                    </>
+                  ) : null
+                ) : null,
+            },
+          ]}
+          data={applications}
+          options={{
+            rowStyle: (rowData, index) => (index % 2 ? { backgroundColor: "#f2f2f2" } : {}),
+            pageSize: 10,
+            pageSizeOptions: [10, 20, 30, 50, 75, 100],
+          }}
+          title="Applications"
+        />
+      </ThemeProvider>
 
-        {this.state.hasError ? (
-          <Alert variant="danger" className="m-3" block>
-            {this.state.errMsg}
-          </Alert>
-        ) : this.state.completed ? (
-          <Redirect to="/application-list" />
-        ) : (
-          <></>
-        )}
-      </div>
-    );
-  }
-}
+      {hasError && (
+        <Alert variant="danger" className="m-3" block>
+          {errorMsg}
+        </Alert>
+      )}
+    </div>
+  );
+};
+
+export default ApplicationList;

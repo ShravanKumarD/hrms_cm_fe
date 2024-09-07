@@ -3,7 +3,6 @@ import { Bar } from "react-chartjs-2";
 import axios from "axios";
 import API_BASE_URL from "../env";
 
-
 const ExpenseChartsPage = () => {
   const [chartData, setChartData] = useState({
     labels: [],
@@ -20,44 +19,38 @@ const ExpenseChartsPage = () => {
     fetchData();
   }, [expenseYear]);
 
-  const fetchData = () => {
-    axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "get",
-      url: `api/expenses/year/${expenseYear}`,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then((res) => {
-        const data = transformData(res.data);
-        const array = makeArrayStructure(data);
-        setChartData(array);
-      })
-      .catch((err) => {
-        console.error("err", err);
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`api/expenses/year/${expenseYear}`, {
+        baseURL: API_BASE_URL,
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+      const data = transformData(response.data);
+      const formattedData = formatChartData(data);
+      setChartData(formattedData);
+    } catch (error) {
+      console.error("Error fetching expense data:", error);
+    }
   };
 
-  const transformData = (data) => {
-    return data.map((obj) => ({
-      ...obj,
-      expenses: parseInt(obj.expenses, 10),
+  const transformData = (data) => 
+    data.map((item) => ({
+      ...item,
+      expenses: parseInt(item.expenses, 10),
     }));
-  };
 
-  const makeArrayStructure = (data) => {
-    return {
-      labels: data.map((d) => d.month),
-      datasets: [
-        {
-          data: data.map((d) => d.expenses),
-          backgroundColor: "#007fad",
-        },
-      ],
-    };
-  };
+  const formatChartData = (data) => ({
+    labels: data.map((item) => item.month),
+    datasets: [
+      {
+        data: data.map((item) => item.expenses),
+        backgroundColor: "#007fad",
+      },
+    ],
+  });
 
   const handleChange = (event) => {
-    setExpenseYear(event.target.value);
+    setExpenseYear(Number(event.target.value));
   };
 
   return (
@@ -65,14 +58,11 @@ const ExpenseChartsPage = () => {
       <div className="mt-1" style={{ textAlign: "center" }}>
         <span className="ml-4">Select Year: </span>
         <select onChange={handleChange} value={expenseYear}>
-          <option value="2024">2024</option>
-          <option value="2023">2023</option>
-          <option value="2022">2022</option>
-          <option value="2021">2021</option>
-          <option value="2020">2020</option>
-          <option value="2019">2019</option>
-          <option value="2018">2018</option>
-          <option value="2017">2017</option>
+          {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017].map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
         </select>
       </div>
       <div>
@@ -81,18 +71,14 @@ const ExpenseChartsPage = () => {
           height={300}
           options={{
             maintainAspectRatio: false,
-            legend: {
-              display: false,
-            },
+            legend: { display: false },
             scales: {
-              yAxes: [
-                {
-                  ticks: {
-                    min: 0,
-                    stepSize: 300,
-                  },
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 300,
                 },
-              ],
+              },
             },
           }}
           redraw

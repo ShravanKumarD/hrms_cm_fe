@@ -83,8 +83,8 @@ const EmployeeList = () => {
           data={selectedUser}
         />
       )}
-      <h4>
-        <a className="fa fa-plus mb-2 ml-2" href="/employee-add">
+      <h4 style={{color:"040404"}}>
+        <a className="fa fa-plus mb-2 ml-2" href="/employee-add" >
           Add Employee
         </a>
       </h4>

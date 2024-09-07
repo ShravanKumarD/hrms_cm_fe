@@ -74,10 +74,35 @@ div.myDiv input {
 }
 
 .main-card .card-header {
-  background-color: #515e73;
+  background-color: #2c7a02c4;
   color: white
 }
-
+.card-body{
+  background: #7dc35842;
+}
+.MTableToolbar-root-33 {
+  background-color: #2c7a02c4;
+  color: white
+}
+.MTableToolbar-root-19 {
+  background-color: #2c7a02c4;
+  color: white
+}
+.MTableToolbar-root-47 {
+  background-color: #2c7a02c4;
+  color: white 
+}
+.MTableToolbar-root-117{
+  background-color: #2c7a02c4;
+  color: white 
+}
+.MTableToolbar-root-61{
+  background-color: #2c7a02c4;
+  color: white  
+}
+.MuiTable-root {
+  background: #7dc35842;
+}
 .secondary-card {
   padding: 0px;
   border: 1px solid;
@@ -86,8 +111,8 @@ div.myDiv input {
 }
 
 .secondary-card .card-header {
-  background-color: #c6e8f8;
-  color: #31708f;
+  background-color: #2c7a02c4;
+  color: #fff;
   font-size: small;
   font-weight: bold;
 }
@@ -501,4 +526,19 @@ h3{
 h4{
   font-size: 16px;
   /* font-weight: 500; */
+}
+a{
+  color: #000000;
+  font-family: Poppins;
+}
+.mt-1, .my-1 {
+  margin-top: .25rem !important;
+  background-color: #2c7a02c4;
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+}
+.card {
+  background-color: #7dc35842;
+  color: white
 }
