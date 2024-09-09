@@ -15,6 +15,7 @@ const ApplicationList = () => {
   const [hasError, setHasError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [completed, setCompleted] = useState(false);
+  const [totalApplications, setTotalApplications] = useState(0);
 
   const history = useHistory();
 
@@ -27,18 +28,22 @@ const ApplicationList = () => {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then((res) => {
+        console.log(res, "data");
         const formattedData = res.data.map((app) => ({
           ...app,
           startDate: moment(app.startDate).format("YYYY-MM-DD"),
           endDate: moment(app.endDate).format("YYYY-MM-DD"),
+          appliedOn: moment(app.appliedOn).format("YYYY-MM-DD") || "NA  ",  // Format appliedOn date
         }));
-        setApplications(formattedData);
+        setApplications(formattedData.reverse());
+        setTotalApplications(formattedData.length);
       })
       .catch((err) => {
         setHasError(true);
         setErrorMsg(err.message || "An error occurred while fetching data.");
       });
   }, []);
+  
 
   const theme = createTheme({
     palette: {
@@ -182,85 +187,92 @@ const ApplicationList = () => {
           {" "}
           {/* Add padding above the table */}
           <MaterialTable
-            columns={[
-              { title: "APP ID", field: "id", cellStyle: { color: "#000" } },
-              {
-                title: "Full Name",
-                field: "user.fullName",
-                cellStyle: { color: "#000" },
-              },
-              {
-                title: "Start Date",
-                field: "startDate",
-                cellStyle: { color: "#000" },
-              },
-              {
-                title: "End Date",
-                field: "endDate",
-                cellStyle: { color: "#000" },
-              },
-              {
-                title: "Leave Type",
-                field: "type",
-                cellStyle: { color: "#000" },
-              },
-              {
-                title: "Comments",
-                field: "reason",
-                cellStyle: { color: "#000" },
-              },
-              {
-                title: "Status",
-                field: "status",
-                render: (rowData) => (
-                  <Button
-                    size="sm"
-                    variant={
-                      rowData.status === "Approved"
-                        ? "success"
-                        : rowData.status === "Pending"
-                        ? "warning"
-                        : "danger"
-                    }
-                    style={{
-                      backgroundColor:
-                        rowData.status === "Approved"
-                          ? "#4CAF4F"
-                          : rowData.status === "Pending"
-                          ? "#FFD700"
-                          : "#DC143C",
-                      color: "#FFF",
-                      borderRadius: "12px", // More rounded buttons
-                      padding: "6px 12px", // Consistent padding for buttons
-                    }}
-                  >
-                    {rowData.status}
-                  </Button>
-                ),
-              },
-            ]}
-            data={applications}
-            options={{
-              toolbar: true,
-              toolbarStyle: {
-                backgroundColor: "#E0FFE0", // Dark leaf green
-                color: "#000", // White text color
-              },
-              headerStyle: {
-                backgroundColor: "#E0FFE0", // Dark leaf green
-                color: "#000", // White text color
-              },
-              rowStyle: {
-                backgroundColor: "#E0FFE0", // Dark leaf green background color for rows
-                color: "#000", // Ensure text is black #000
-              },
-              pageSize: 10,
-              pageSizeOptions: [10, 20, 30, 50, 75, 100],
-              emptyRowsWhenPaging: false,
-              showEmptyDataSourceMessage: true,
-            }}
-            title="Applications"
-          />
+            title={`Applications (Total: ${totalApplications})`}
+  columns={[
+    { title: "APP ID", field: "id", cellStyle: { color: "#000" } },
+    {
+      title: "Full Name",
+      field: "user.fullName",
+      cellStyle: { color: "#000" },
+    },
+    {
+      title: "Start Date",
+      field: "startDate",
+      cellStyle: { color: "#000" },
+    },
+    {
+      title: "End Date",
+      field: "endDate",
+      cellStyle: { color: "#000" },
+    },
+    {
+      title: "Leave Type",
+      field: "type",
+      cellStyle: { color: "#000" },
+    },
+    {
+      title: "Comments",
+      field: "reason",
+      cellStyle: { color: "#000" },
+    },
+    {
+      title: "Status",
+      field: "status",
+      render: (rowData) => (
+        <Button
+          size="sm"
+          variant={
+            rowData.status === "Approved"
+              ? "success"
+              : rowData.status === "Pending"
+              ? "warning"
+              : "danger"
+          }
+          style={{
+            backgroundColor:
+              rowData.status === "Approved"
+                ? "#4CAF4F"
+                : rowData.status === "Pending"
+                ? "#FFD700"
+                : "#DC143C",
+            color: "#FFF",
+            borderRadius: "12px", // More rounded buttons
+            padding: "6px 12px", // Consistent padding for buttons
+          }}
+        >
+          {rowData.status}
+        </Button>
+      ),
+    },
+    {
+      title: "Applied On", // New column for the applied date
+      field: "appliedOn",
+      cellStyle: { color: "#000" },
+    },
+  ]}
+  data={applications}
+  options={{
+    toolbar: true,
+    toolbarStyle: {
+      backgroundColor: "#E0FFE0", // Dark leaf green
+      color: "#000", // White text color
+    },
+    headerStyle: {
+      backgroundColor: "#E0FFE0", // Dark leaf green
+      color: "#000", // White text color
+    },
+    rowStyle: {
+      backgroundColor: "#E0FFE0", // Dark leaf green background color for rows
+      color: "#000", // Ensure text is black #000
+    },
+    pageSize: 10,
+    pageSizeOptions: [10, 20, 30, 50, 75, 100],
+    emptyRowsWhenPaging: false,
+    showEmptyDataSourceMessage: true,
+  }}
+  // title="Applications"
+/>
+
         </div>
       </ThemeProvider>
       {hasError && (

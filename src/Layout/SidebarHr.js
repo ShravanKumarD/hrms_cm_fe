@@ -1,24 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { NavLink } from "react-router-dom";
 import { loadTree } from "../menuTreeHelper";
-// import Logo from "../assets/samcintlogowhite.png";
-import TodaysWorkStatus from "../components-mini/TodaysWorkStatus";
 import styled, { ThemeProvider } from "styled-components";
 import {
   FaTachometerAlt,
-  FaCalendarCheck,
   FaRocket,
-  FaSitemap,
   FaUser,
   FaFileAlt,
   FaRupeeSign,
   FaMoneyBill,
   FaBell,
   FaAngleLeft,
-  FaCalendarAlt,
-  FaBriefcase,
-  FaList,
   FaPlus,
+  FaList,
   FaUsers,
   FaBuilding,
   FaFileInvoiceDollar,
@@ -31,9 +25,7 @@ import {
 import LogoWhite from "../assets/samcintlogowhite.png";
 import Logo from "../assets/samcint_logo_2.png";
 import LogoMini from "../assets/10.png";
-import { GiFallingBlob } from "react-icons/gi";
 import './../App.css';
-
 
 const theme = {
   primary: "#27ae60",
@@ -55,7 +47,7 @@ const Sidebar = styled.aside`
   background: linear-gradient(135deg, #2f631e, rgba(39, 174, 96, 0.8));
   backdrop-filter: blur(10px);
   border-radius: 20px;
-  transition: all 0.3s ease;
+  transition: width 0.3s ease, left 0.3s ease; /* Animate only width and left */
   overflow-y: hidden; /* Hide the vertical scrollbar */
   overflow-x: hidden;
   display: flex;
@@ -68,14 +60,13 @@ const LogoContainer = styled.div`
   padding: 20px;
   text-align: center;
   cursor: pointer;
-  // background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 20px 20px 0 0;
   backdrop-filter: blur(10px);
   transition: box-shadow 0.3s ease;
 
   &:hover {
-    box-shadow: 0 0 15px rgba(57, 255, 20, 0.3); // Neon green shadow
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.3); /* Neon green shadow */
   }
 `;
 
@@ -90,38 +81,35 @@ const NavMenu = styled.nav`
   flex-grow: 1;
   overflow-y: auto;
   padding: 10px 0;
-  // background: rgba(255, 255, 255, 0.2);
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
   backdrop-filter: blur(10px);
 
-  // dont show scrollbar when not hovering
   scrollbar-width: none;
 
   &:hover {
-  /* Scrollbar Styles */
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
+    /* Scrollbar Styles */
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
 
-  &::-webkit-scrollbar-track {
-    background: ${(props) => props.theme.scrollbarTrack};
-    border-radius: 8px;
-  }
+    &::-webkit-scrollbar-track {
+      background: ${(props) => props.theme.scrollbarTrack};
+      border-radius: 8px;
+    }
 
-  &::-webkit-scrollbar-thumb {
-    background: ${(props) => props.theme.scrollbarThumb};
-    border-radius: 8px;
-  }
+    &::-webkit-scrollbar-thumb {
+      background: ${(props) => props.theme.scrollbarThumb};
+      border-radius: 8px;
+    }
 
-  &::-webkit-scrollbar-thumb:hover {
-    background: ${(props) => props.theme.hover};
-  }
+    &::-webkit-scrollbar-thumb:hover {
+      background: ${(props) => props.theme.hover};
+    }
 
-  scrollbar-width: thin;
-  scrollbar-color: ${(props) => props.theme.scrollbarThumb}
-    ${(props) => props.theme.scrollbarTrack};
-    
+    scrollbar-width: thin;
+    scrollbar-color: ${(props) => props.theme.scrollbarThumb} ${(props) => props.theme.scrollbarTrack};
+  }
 `;
 
 const NavItem = styled(NavLink)`
@@ -138,7 +126,6 @@ const NavItem = styled(NavLink)`
   }
 
   &.active {
-    // background-color: ${(props) => props.theme.active};
     color: ${(props) => props.theme.text};
   }
 
@@ -162,54 +149,61 @@ const ToggleButton = styled.button`
   cursor: pointer;
   font-size: 1.2em;
 `;
-const SidebarHr = ({onToggle}) => {
+
+const SidebarHr = ({ onToggle }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState({});
   const [user, setUser] = useState({});
-  const userId = JSON.parse(localStorage.getItem("user")).id;
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userData = JSON.parse(localStorage.getItem("user")) || {};
     setUser(userData);
     loadTree();
   }, []);
+
   useEffect(() => {
     const savedState = localStorage.getItem("sidebar-collapsed");
     if (savedState !== null) {
       setIsCollapsed(JSON.parse(savedState));
     }
   }, []);
-  const toggleSidebar = () => {
-    const newState = !isCollapsed;
-    setIsCollapsed(newState);
-    localStorage.setItem("sidebar-collapsed", JSON.stringify(newState));
-    if (onToggle) {
-      onToggle(newState);
-    }
-  };
-  const toggleSubMenu = (menu) => {
+
+  const toggleSidebar = useCallback(() => {
+    setIsCollapsed((prev) => {
+      const newState = !prev;
+      localStorage.setItem("sidebar-collapsed", JSON.stringify(newState));
+      if (onToggle) {
+        onToggle(newState);
+      }
+      return newState;
+    });
+  }, [onToggle]);
+
+  const toggleSubMenu = useCallback((menu, e) => {
+    e.preventDefault(); // Prevent default link behavior
     setExpandedMenus((prev) => ({ ...prev, [menu]: !prev[menu] }));
-  };
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
-        <Sidebar isCollapsed={isCollapsed}>
+      <Sidebar isCollapsed={isCollapsed}>
         <ToggleButton onClick={toggleSidebar}>
           <FaAngleLeft
             style={{ transform: isCollapsed ? "rotate(180deg)" : "none" }}
           />
-           </ToggleButton>
-           <LogoContainer onClick={toggleSidebar}>
+        </ToggleButton>
+        <LogoContainer onClick={toggleSidebar}>
           <StyledLogo
             src={isCollapsed ? LogoMini : LogoWhite}
             alt="Company Logo"
           />
-          </LogoContainer>
-          <NavMenu>
+        </LogoContainer>
+        <NavMenu>
           <NavItem to="/" exact>
             <FaTachometerAlt />
             {!isCollapsed && "Dashboard"}
           </NavItem>
-          <NavItem to="#" onClick={() => toggleSubMenu("applications")}>
+          <NavItem to="#" onClick={(e) => toggleSubMenu("applications", e)}>
             <FaRocket />
             {!isCollapsed && "Applications"}
           </NavItem>
@@ -225,7 +219,7 @@ const SidebarHr = ({onToggle}) => {
               </SubNavItem>
             </>
           )}
-  <NavItem to="#" onClick={() => toggleSubMenu("employee")}>
+          <NavItem to="#" onClick={(e) => toggleSubMenu("employee", e)}>
             <FaUser />
             {!isCollapsed && "Employee"}
           </NavItem>
@@ -235,9 +229,13 @@ const SidebarHr = ({onToggle}) => {
                 <FaUsers />
                 Employee List
               </SubNavItem>
+              <SubNavItem to ="/employee">
+              <FaUser/>
+              My Profile
+              </SubNavItem>
             </>
           )}
- <NavItem to="#" onClick={() => toggleSubMenu("documents")}>
+          <NavItem to="#" onClick={(e) => toggleSubMenu("documents", e)}>
             <FaFileAlt />
             {!isCollapsed && "Documents"}
           </NavItem>
@@ -261,7 +259,7 @@ const SidebarHr = ({onToggle}) => {
               </SubNavItem>
             </>
           )}
-        <NavItem to="#" onClick={() => toggleSubMenu("payroll")}>
+          <NavItem to="#" onClick={(e) => toggleSubMenu("payroll", e)}>
             <FaRupeeSign />
             {!isCollapsed && "Payroll"}
           </NavItem>
@@ -281,7 +279,7 @@ const SidebarHr = ({onToggle}) => {
               </SubNavItem>
             </>
           )}
-          <NavItem to="#" onClick={() => toggleSubMenu("expense")}>
+          <NavItem to="#" onClick={(e) => toggleSubMenu("expense", e)}>
             <FaMoneyBill />
             {!isCollapsed && "Expense"}
           </NavItem>
@@ -301,8 +299,8 @@ const SidebarHr = ({onToggle}) => {
             <FaBell />
             {!isCollapsed && "Announcements"}
           </NavItem>
-          </NavMenu>
-    </Sidebar>
+        </NavMenu>
+      </Sidebar>
     </ThemeProvider>
   );
 };

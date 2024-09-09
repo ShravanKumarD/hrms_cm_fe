@@ -113,7 +113,7 @@ const SalaryViewEmployee = () => {
                 <h2>{fullName}</h2>
                 <DataItemContainer>
                   <DataItemLabel>Employee ID</DataItemLabel>
-                  <DataItemValue>{user.id}</DataItemValue>
+                  <DataItemValue>{user.username || "NA"}</DataItemValue>
                 </DataItemContainer>
 
                 <DataItemContainer>

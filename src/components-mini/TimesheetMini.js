@@ -17,13 +17,32 @@ import TimesheetTooltip from "./TimesheetInfoTooltip";
 const Timesheet = () => {
   const [applications, setApplications] = useState([]);
   const [attendances, setAttendances] = useState([]);
-  const history = useHistory();
-  const userId = JSON.parse(localStorage.getItem("user")).id;
   const [clickedDate, setClickedDate] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [doj, setDoj] = useState(null);
+  const history = useHistory();
 
+  // Safely access user ID from local storage
+  const userId = (() => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      return user?.id || null;
+    } catch (error) {
+      console.error("Failed to fetch user data from localStorage", error);
+      return null;
+    }
+  })();
+
+  // Redirect to login if userId is not found
+  useEffect(() => {
+    if (!userId) {
+      console.error("User ID not found. Redirecting to login.");
+      history.push("/login");
+    }
+  }, [userId, history]);
+
+  // Fetch attendances
   useEffect(() => {
     const fetchAttendances = async () => {
       try {
@@ -33,16 +52,20 @@ const Timesheet = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        setAttendances(response.data);
-        console.log("Attendances: ", response.data);
+        if (response.data) {
+          setAttendances(response.data);
+        } else {
+          console.warn("No attendances data received.");
+        }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching attendances: ", error);
       }
     };
 
-    fetchAttendances();
+    if (userId) fetchAttendances();
   }, [userId]);
 
+  // Fetch applications
   useEffect(() => {
     const fetchApplications = async () => {
       try {
@@ -52,79 +75,60 @@ const Timesheet = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        setApplications(response.data);
-        console.log("Applications: ", response.data);
+        if (response.data) {
+          setApplications(response.data);
+        } else {
+          console.warn("No applications data received.");
+        }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching applications: ", error);
       }
     };
 
-    fetchApplications();
+    if (userId) fetchApplications();
   }, [userId]);
 
+  // Handle the rendering of each day cell
   const handleDayRender = (info) => {
     const { date, el } = info;
     const cellDateString = date.toDateString();
-    const today = new Date();
-
-    //sleep for 10 secs
-    setTimeout(() => {
-      console.log("10 secs passed");
-    }, 1000);
-
-    el.style.fontSize = "0"; // This will hide the default date number
 
     // Reset styles
-    el.style.backgroundColor = "";
-    el.style.color = "black";
-    el.style.borderRadius = "0"; // No border radius for the full cell
-    el.style.overflow = "hidden";
-    el.style.padding = "4px";
-    el.style.textAlign = "left";
-    el.style.verticalAlign = "bottom";
-    el.style.lineHeight = "normal";
-    el.style.fontSize = "1em"; // Slightly smaller font size
-    el.style.paddingBottom = "0.6rem";
-    el.style.paddingLeft = "0.6rem";
-    el.style.position = "relative"; // Make the container relative for absolute positioning
+    el.style.cssText = `
+      background-color: '';
+      font-size: 1em;
+      position: relative;
+      padding: 4px;
+    `;
 
-    // Create date number element
+    // Create elements for date and content
     const dateNumber = document.createElement("div");
-    dateNumber.innerText = date.getDate();
-    dateNumber.style.fontSize = "0.9em";
-    dateNumber.style.width = "24px";
-    dateNumber.style.height = "24px";
-    dateNumber.style.borderRadius = "50%";
-    dateNumber.style.display = "flex";
-    dateNumber.style.alignItems = "center";
-    dateNumber.style.justifyContent = "center";
-    dateNumber.style.margin = "0";
-    dateNumber.style.position = "absolute"; // Position absolute for placement
-    dateNumber.style.top = "4px"; // Distance from the top
-    dateNumber.style.right = "4px"; // Distance from the right
-    dateNumber.style.backgroundColor = "transparent"; // Background color, if needed
-
-    // Create content element
     const content = document.createElement("div");
-    content.style.fontSize = "0.7em"; // Slightly smaller font size
-    content.style.marginTop = "30px"; // Push down the content to avoid overlap with dateNumber
 
-    // Check for application
+    dateNumber.innerText = date.getDate();
+    dateNumber.style.cssText = `
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background-color: transparent;
+    `;
+
+    content.style.fontSize = "0.7em";
+
+    // Check for applications on this date
     const application = applications.find(
       (app) => new Date(app.startDate).toDateString() === cellDateString
     );
 
     if (application) {
-      if (application.status === "Pending") {
-        el.style.backgroundColor = "rgba(255, 165, 0, 0.2)";
-        content.innerText = `Pending\n${application.type}`;
-      } else if (application.status === "Approved") {
-        el.style.backgroundColor = "rgba(0, 255, 0, 0.2)";
-        content.innerText = `Approved\n${application.type}`;
-      }
+      el.style.backgroundColor =
+        application.status === "Pending"
+          ? "rgba(255, 165, 0, 0.2)"
+          : "rgba(0, 255, 0, 0.2)";
+      content.innerText = `${application.status}\n${application.type}`;
     }
 
-    // Check for attendance
+    // Check for attendance on this date
     const attendance = attendances.find(
       (att) => new Date(att.date).toDateString() === cellDateString
     );
@@ -137,20 +141,19 @@ const Timesheet = () => {
       const clockOutTime = attendance.clockoutTime
         ? moment(attendance.clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"])
         : moment();
-      const duration = moment.duration(clockOutTime.diff(clockInTime));
-      const hoursWorked = duration.asHours();
+      const hoursWorked = moment
+        .duration(clockOutTime.diff(clockInTime))
+        .asHours();
 
-      let status = "Less than Half Day";
-      el.style.backgroundColor = "rgba(255, 255, 0, 0.2)";
-
+      let status = "Partial Day";
       if (hoursWorked > 9) {
         status = "Overtime";
         el.style.backgroundColor = "rgba(0, 128, 0, 0.4)";
       } else if (hoursWorked >= 9) {
         status = "Full Day";
         el.style.backgroundColor = "rgba(0, 255, 0, 0.2)";
-      } else if (hoursWorked >= 4) {
-        status = "Half Day";
+      } else if (hoursWorked < 4) {
+        status = "Partial Day";
         el.style.backgroundColor = "rgba(144, 238, 144, 0.2)";
       }
 
@@ -167,37 +170,24 @@ const Timesheet = () => {
       }
     }
 
-    // Set date number background color
+    // Apply the background color to the date number
     dateNumber.style.backgroundColor = el.style.backgroundColor;
 
-    // Append elements
+    // Append the elements to the cell
     el.innerHTML = "";
     el.appendChild(dateNumber);
     el.appendChild(content);
 
-    // Handle weekends (only Sunday)
+    // Mark weekends (only Sunday)
     if (date.getDay() === 0) {
       el.style.backgroundColor = "rgba(240, 240, 240, 0.5)";
       content.innerText = "Week Off";
     }
-
-    // Highlight today's date
-    // if (date.toDateString() === today.toDateString()) {
-    //   el.style.backgroundColor = "green";
-    //   content.style.color = "white"; // Ensure text is visible on red background
-    // }
-
-    // Remove any spans generated by FullCalendar
-    const spans = el.querySelectorAll("span");
-    spans.forEach((span) => {
-      span.style.display = "none";
-    });
   };
 
+  // Handle clicks on dates in the calendar
   const handleDateClick = (arg) => {
     const clickedDate = new Date(arg.date);
-    console.log("Clicked date:", clickedDate);
-
     const today = new Date();
     if (clickedDate.toDateString() === today.toDateString()) {
       setShowModal(true);

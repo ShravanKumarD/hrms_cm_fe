@@ -172,17 +172,17 @@ const Header = () => {
 
           <NavItem>
             <li className="nav-item">
-              <NavLink href="#" onClick={toggleDropdown}>
+              <NavLink  onClick={toggleDropdown}>
                 <i className="fas fa-user" />
                 <span className="pl-1">
                   {JSON.parse(localStorage.getItem("user")).fullname}
                 </span>
               </NavLink>
               <DropdownMenu show={dropdownOpen}>
-                <DropdownItem onClick={newPassword} href="#">
+                <DropdownItem onClick={newPassword} >
                   <i className="fas fa-key" /> Change Password
                 </DropdownItem>
-                <DropdownItem onClick={onLogout} href="#">
+                <DropdownItem onClick={onLogout} >
                   <i className="fas fa-sign-out-alt" /> Log out
                 </DropdownItem>
               </DropdownMenu>

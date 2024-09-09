@@ -14,6 +14,7 @@ const EmployeeList = () => {
   const [viewRedirect, setViewRedirect] = useState(false);
   const [editRedirect, setEditRedirect] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [empCount, setEmpCount] = useState(0);
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -22,6 +23,7 @@ const EmployeeList = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setUsers(res.data);
+      setEmpCount(res.data.length);
     } catch (err) {
       console.error(err);
     }
@@ -29,7 +31,7 @@ const EmployeeList = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   const handleView = (user) => {
     setSelectedUser(user);
@@ -83,8 +85,8 @@ const EmployeeList = () => {
           data={selectedUser}
         />
       )}
-      <h4 style={{color:"040404"}}>
-        <a className="fa fa-plus mb-2 ml-2" href="/employee-add" >
+      <h4 style={{ color: "#040404" }}>
+        <a className="fa fa-plus mb-2 ml-2" href="/employee-add">
           Add Employee
         </a>
       </h4>
@@ -93,6 +95,14 @@ const EmployeeList = () => {
           <div>
             <ThemeProvider theme={theme}>
               <MaterialTable
+                title={
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span>Employees</span>
+                    <span style={{ marginLeft: '10px', fontSize: '12px', }}>
+                      Count: {empCount}
+                    </span>
+                  </div>
+                }
                 columns={[
                   { title: "EMP ID", field: "username" },
                   { title: "Full Name", field: "fullName" },
@@ -102,11 +112,6 @@ const EmployeeList = () => {
                     field: "jobs",
                     render: (rowData) =>
                       rowData.jobs
-                        // .filter(
-                        //   (job) =>
-                        //     // new Date(job.startDate).setHours(0) <= Date.now() &&
-                        //     // new Date(job.endDate).setHours(24) >= Date.now()
-                        // )
                         .map((job) => job.jobTitle)
                         .join(", "),
                   },
@@ -151,6 +156,7 @@ const EmployeeList = () => {
                         >
                           <i className="far fa-edit"></i>Edit
                         </Button>
+                        <p>&nbsp;</p>
                         {rowData.id !==
                         JSON.parse(localStorage.getItem("user")).id ? (
                           <Button
@@ -174,7 +180,6 @@ const EmployeeList = () => {
                   pageSize: 10,
                   pageSizeOptions: [10, 20, 30, 50, 75, 100],
                 }}
-                title="Employees"
               />
             </ThemeProvider>
           </div>

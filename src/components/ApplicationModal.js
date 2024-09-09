@@ -52,6 +52,7 @@ const ApplicationModal = ({ show, onHide, date }) => {
       startDate,
       endDate,
       status: "Pending",
+      appliedOn:new Date(),
       reason,
       userId,
     };

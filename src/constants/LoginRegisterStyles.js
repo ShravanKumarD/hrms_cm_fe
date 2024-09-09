@@ -15,7 +15,8 @@ export const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #ffa500, #ff6347);
+    background: background: rgb(2,0,36);
+background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(1,138,72,0.636467086834734) 34%, rgba(0,255,102,1) 100%);;
     min-height: 100vh;
     display: flex;
     align-items: center;

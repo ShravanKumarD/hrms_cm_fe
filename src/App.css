@@ -72,36 +72,106 @@ div.myDiv input {
 .main-card {
   padding: 0px;
 }
+.card-header{
+  background-color: #2c7a02c4 !important;
+  color: white
+}
 
 .main-card .card-header {
-  background-color: #2c7a02c4;
+  background-color: #2c7a02c4 !important;
   color: white
 }
 .card-body{
-  background: #7dc35842;
+  background: #7dc35842 !important;
+}
+.MTableToolbar {
+  background-color: #2c7a02c4 !important;
+  color: white
+}
+
+.MTableToolbar-root[class^="MTableToolbar-root"] {
+  background-color: #2c7a02c4 !important;
+  color: white !important;
 }
 .MTableToolbar-root-33 {
-  background-color: #2c7a02c4;
+  background-color: #2c7a02c4 !important;
   color: white
 }
 .MTableToolbar-root-19 {
-  background-color: #2c7a02c4;
+  background-color: #2c7a02c4 !important;
   color: white
 }
 .MTableToolbar-root-47 {
-  background-color: #2c7a02c4;
+  background-color: #2c7a02c4 !important;
   color: white 
 }
 .MTableToolbar-root-117{
-  background-color: #2c7a02c4;
+  background-color: #2c7a02c4 !important;
   color: white 
 }
 .MTableToolbar-root-61{
-  background-color: #2c7a02c4;
+  background-color: #2c7a02c4 !important;
   color: white  
 }
 .MuiTable-root {
   background: #7dc35842;
+}
+.MTableToolbar-root-131 {
+  background-color: #2c7a02c4 !important;
+  color: white  
+}
+.MTableToolbar-root-75 {
+  background-color: #2c7a02c4 !important;
+  color: white  
+}
+.MTableToolbar-root-159 {
+  background-color: #2c7a02c4 !important;
+  color: white  
+}
+.MTableToolbar-root-215 {
+  background-color: #2c7a02c4 !important;
+  color: white
+}
+.btn-primary{
+  background-color: #2c7a02c4!important;
+  border-color: #2c7a02c4;
+  color: white
+}
+.MTableToolbar-root-103 {
+  background-color: #2c7a02c4 !important;
+  color: white
+}
+.MTableToolbar-root-299 {
+  background-color: #2c7a02c4 !important;
+  color: white
+}
+.MTableToolbar-root-243 {
+  background-color: #2c7a02c4 !important;
+  color: white
+}
+.MTableToolbar-root-327{
+  background-color: #2c7a02c4 !important;
+  color: white
+}
+.MTableToolbar-root-551 {
+  background-color: #2c7a02c4 !important;
+  color: white
+}
+.MTableToolbar-root-607 {
+  background-color: #2c7a02c4 !important;
+  color: white
+}
+.MTableToolbar-root-649 {
+  background-color: #2c7a02c4 !important;
+  color: white
+}
+.MTableToolbar-root-173 {
+  background-color: #2c7a02c4 !important;
+  color: white
+}
+.MTableToolbar-root-271 {
+  background-color: #2c7a02c4 !important;
+  color: white
 }
 .secondary-card {
   padding: 0px;
@@ -540,5 +610,4 @@ a{
 }
 .card {
   background-color: #7dc35842;
-  color: white
 }

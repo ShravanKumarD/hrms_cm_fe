@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import axios from "axios";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -12,65 +11,80 @@ import LightweightStartWork from "../components-mini/LightweightStartWork";
 import ApplicationModal from "./ApplicationModal";
 import API_BASE_URL from "../env";
 import { Modal } from "react-bootstrap";
-import TimesheetTooltip from "../components-mini/TimesheetInfoTooltip";
 
 const Timesheet = () => {
   const [applications, setApplications] = useState([]);
   const [attendances, setAttendances] = useState([]);
-  const history = useHistory();
-  const userId = JSON.parse(localStorage.getItem("user")).id;
   const [clickedDate, setClickedDate] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [error, setError] = useState(null);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
+
+  // Error handling for missing user or token in localStorage
+  if (!user || !token) {
+    setError("User authentication failed. Please log in again.");
+  }
+
+  const userId = user?.id;
 
   useEffect(() => {
     const fetchAttendances = async () => {
       try {
+        if (!userId || !token) {
+          throw new Error("User not authenticated.");
+        }
         axios.defaults.baseURL = API_BASE_URL;
         const response = await axios.get(`api/attendance/user/${userId}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
+        if (!response.data) {
+          throw new Error("No attendance data found.");
+        }
         setAttendances(response.data);
-        console.log("Attendances: ", response.data);
       } catch (error) {
         console.error(error);
+        setError(error.message || "An error occurred while fetching attendance data.");
       }
     };
 
     fetchAttendances();
-  }, [userId]);
+  }, [userId, token]);
 
   useEffect(() => {
     const fetchApplications = async () => {
       try {
+        if (!userId || !token) {
+          throw new Error("User not authenticated.");
+        }
         axios.defaults.baseURL = API_BASE_URL;
         const response = await axios.get(`/api/applications/user/${userId}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
+        if (!response.data) {
+          throw new Error("No application data found.");
+        }
         setApplications(response.data);
-        console.log("Applications: ", response.data);
       } catch (error) {
         console.error(error);
+        setError(error.message || "An error occurred while fetching application data.");
       }
     };
 
     fetchApplications();
-  }, [userId]);
+  }, [userId, token]);
 
   const handleDayRender = (dayRenderInfo) => {
     const { date, el } = dayRenderInfo;
-    // console.log("Day render info:", dayRenderInfo);
     const today = new Date();
-    const end = new Date();
-    end.setDate(today.getDate() + 7);
-
     const cellDateString = date.toDateString();
 
-    // Default styling
     el.style.backgroundColor = "";
     el.style.textAlign = "left";
     el.style.verticalAlign = "bottom";
@@ -83,16 +97,9 @@ const Timesheet = () => {
       el.style.backgroundColor = "red";
     }
 
-    // if (date > today && date <= end) {
-    //   el.style.backgroundColor = "yellow";
-    //   el.textContent = "Yellow";
-    // }
-
     if (date.getDay() === 0) {
       el.style.backgroundColor = "rgba(240, 240, 240, 0.5)";
     }
-
-    // Check if application exists for the date
 
     const application = applications.find(
       (application) =>
@@ -100,69 +107,34 @@ const Timesheet = () => {
     );
 
     if (application) {
-      console.log("Application found:", application);
-      el.style.color = "black";
-      // if application approved, dont show this: "Requested <br>" instead show "Approved <br>" with color green
       if (application.status === "Pending") {
         el.style.backgroundColor = "rgba(255, 165, 0, 0.4)";
-        el.innerHTML = "Requested <br>" + application.type;
+        el.innerHTML = `Requested <br>${application.type}`;
       } else if (application.status === "Approved") {
         el.style.backgroundColor = "rgba(0, 128, 0, 0.4)";
-        el.innerHTML = "Approved <br>" + application.type;
+        el.innerHTML = `Approved <br>${application.type}`;
       }
     }
 
     if (clickedDate && date.toDateString() === clickedDate.toDateString()) {
-      // increase opacity  el.style.backgroundColor is in format "rgba(255, 165, 0, 0.4)" -> "rgba(255, 165, 0, 1)"
       const color = el.style.backgroundColor.split(", ");
       color[3] = "0.8)";
       el.style.backgroundColor = color.join(", ");
     }
-
-    // Check if attendance record exists for the date
 
     const attendance = attendances.find(
       (attendance) =>
         new Date(attendance.date).toDateString() === cellDateString
     );
 
-    function getWorkStatusAndColor(hoursWorked) {
-      let workStatus = "Less than Half Day";
-      let backgroundColor = "rgba(255, 255, 0, 0.4)"; // Yellow for "Less than Half Day"
-
-      if (hoursWorked > 9) {
-        workStatus = "Overtime";
-        backgroundColor = "rgba(0, 100, 0, 0.6)"; // Darker green for overtime
-      } else if (hoursWorked >= 9) {
-        workStatus = "Full Day";
-        backgroundColor = "rgba(0, 128, 0, 0.4)"; // Green for "Full Day"
-      } else if (hoursWorked >= 4) {
-        workStatus = "Half Day";
-        backgroundColor = "rgba(144, 238, 144, 0.4)"; // Leafy green for "Half Day"
-      }
-
-      return { workStatus, backgroundColor };
-    }
-
     if (attendance) {
-      // console.log("Attendance found:", attendance);
-      // Parse clockinTime and clockoutTime using moment to handle both formats
       const clockinTime = moment(attendance.clockinTime, [
         "YYYY-MM-DD HH:mm:ss",
         "HH:mm:ss",
       ]);
-      let clockoutTime;
-      if (
-        date.toDateString() === today.toDateString() &&
-        !attendance.clockoutTime
-      ) {
-        clockoutTime = moment(); // Set to current time if clockoutTime is null and date is today
-      } else {
-        clockoutTime = moment(attendance.clockoutTime, [
-          "YYYY-MM-DD HH:mm:ss",
-          "HH:mm:ss",
-        ]);
-      }
+      const clockoutTime = attendance.clockoutTime
+        ? moment(attendance.clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"])
+        : moment();
       const duration = moment.duration(clockoutTime.diff(clockinTime));
       const hoursWorked = duration.asHours();
 
@@ -173,23 +145,15 @@ const Timesheet = () => {
         case "Present":
           el.style.backgroundColor = backgroundColor;
           el.style.color = "black";
-          el.innerHTML =
-            workStatus +
-            "<br>" +
-            clockinTime.format("h:mm a") +
-            " - " +
-            clockoutTime.format("h:mm a");
+          el.innerHTML = `${workStatus}<br>${clockinTime.format(
+            "h:mm a"
+          )} - ${clockoutTime.format("h:mm a")}`;
           break;
         case "Absent":
           el.style.backgroundColor = "rgba(255, 99, 71, 0.4)";
           el.style.color = "black";
           el.textContent = "Absent";
           break;
-        // case "Half Day":
-        //   el.style.backgroundColor = "rgba(255, 255, 0, 0.4)";
-        //   el.style.color = "black";
-        //   el.textContent = "Half Day";
-        //   break;
         case "Leave":
           el.style.backgroundColor = "rgba(173, 216, 230, 0.4)";
           el.style.color = "black";
@@ -201,11 +165,28 @@ const Timesheet = () => {
     }
   };
 
+  function getWorkStatusAndColor(hoursWorked) {
+    let workStatus = "Less than Half Day";
+    let backgroundColor = "rgba(255, 255, 0, 0.4)";
+
+    if (hoursWorked > 9) {
+      workStatus = "Overtime";
+      backgroundColor = "rgba(0, 100, 0, 0.6)";
+    } else if (hoursWorked >= 9) {
+      workStatus = "Full Day";
+      backgroundColor = "rgba(0, 128, 0, 0.4)";
+    } else if (hoursWorked >= 4) {
+      workStatus = "Partial Day";
+      backgroundColor = "rgba(144, 238, 144, 0.4)";
+    }
+
+    return { workStatus, backgroundColor };
+  }
+
   const handleDateClick = (arg) => {
     const clickedDate = new Date(arg.date);
-    console.log("Clicked date:", clickedDate);
-
     const today = new Date();
+
     if (clickedDate.toDateString() === today.toDateString()) {
       setShowModal(true);
     } else {
@@ -216,16 +197,7 @@ const Timesheet = () => {
 
   return (
     <div className="attendance-container">
-      {/* <header className="attendance-header">
-        <h1>Attendance Calendar</h1>
-        <TimesheetTooltip />
-        <button
-          onClick={() => history.push("/application")}
-          className="new-application-btn"
-        >
-          Apply New
-        </button>
-      </header> */}
+      {error && <div className="error-message">{error}</div>}
       <div className="calendar-wrapper">
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}

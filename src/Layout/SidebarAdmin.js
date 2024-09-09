@@ -196,10 +196,10 @@ const SidebarAdmin = ({ onToggle }) => {
           </NavItem>
           {expandedMenus.applications && !isCollapsed && (
             <>
-              <SubNavItem onClick={() => { history.push("/application")}}>
+              {/* <SubNavItem onClick={() => { history.push("/application")}}>
                 <FaPlus />
                 Add Application
-              </SubNavItem>
+              </SubNavItem> */}
               <SubNavItem onClick={() => { history.push("/application-list")}}>
                 <FaList />
                 Application List

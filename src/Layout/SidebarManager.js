@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { loadTree } from "../menuTreeHelper";
 import { NavLink } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
@@ -20,8 +20,8 @@ import "../App.css";
 const Sidebar = styled.aside`
   position: fixed;
   left: 20px;
-  top: 42.7%;
-  transform: translateY(-42.7%);
+  top: 50%;
+  transform: translateY(-50%);
   height: 70vh;
   width: ${(props) => (props.isCollapsed ? "70px" : "250px")};
   background: linear-gradient(135deg, #2f631e, rgba(39, 174, 96, 0.8));
@@ -142,10 +142,7 @@ const SidebarManager = ({ onToggle }) => {
   const userId = JSON.parse(localStorage.getItem("user"))?.id || "";
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    if (userData) {
-      loadTree();
-    }
+    loadTree(); // Assumes this function is necessary, you might want to check if it needs user data
   }, []);
 
   useEffect(() => {
@@ -155,16 +152,19 @@ const SidebarManager = ({ onToggle }) => {
     }
   }, []);
 
-  const toggleSidebar = () => {
-    const newState = !isCollapsed;
-    setIsCollapsed(newState);
-    localStorage.setItem("sidebar-collapsed", JSON.stringify(newState));
-    if (onToggle) onToggle(newState);
-  };
+  const toggleSidebar = useCallback(() => {
+    setIsCollapsed((prev) => {
+      const newState = !prev;
+      localStorage.setItem("sidebar-collapsed", JSON.stringify(newState));
+      if (onToggle) onToggle(newState);
+      return newState;
+    });
+  }, [onToggle]);
 
-  const toggleSubMenu = (menu) => {
+  const toggleSubMenu = useCallback((menu, e) => {
+    e.preventDefault(); // Prevent the default link behavior
     setExpandedMenus((prev) => ({ ...prev, [menu]: !prev[menu] }));
-  };
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -186,7 +186,7 @@ const SidebarManager = ({ onToggle }) => {
             <FaCalendarCheck />
             {!isCollapsed && "Attendance List"}
           </NavItem>
-          <NavItem to="#" onClick={() => toggleSubMenu("employee")}>
+          <NavItem to="#" onClick={(e) => toggleSubMenu("employee", e)}>
             <FaUser />
             {!isCollapsed && "Employee"}
           </NavItem>
@@ -200,7 +200,7 @@ const SidebarManager = ({ onToggle }) => {
             <FaRocket />
             {!isCollapsed && "Applications"}
           </NavItem>
-          <NavItem to="#" onClick={() => toggleSubMenu("payroll")}>
+          <NavItem to="#" onClick={(e) => toggleSubMenu("payroll", e)}>
             <FaRupeeSign />
             {!isCollapsed && "Payroll"}
           </NavItem>
@@ -226,4 +226,4 @@ const SidebarManager = ({ onToggle }) => {
   );
 };
 
-export default SidebarManager;
+export default React.memo(SidebarManager);

@@ -17,31 +17,24 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const AttendanceList = () => {
   const [attendances, setAttendances] = useState([]);
+  const [monthlyAttendance, setMonthlyAttendance] = useState([]);
   const [selectedAttendance, setSelectedAttendance] = useState(null);
   const [showModal, setShowModal] = useState({
     edit: false,
     preview: false,
     delete: false,
-    add: false, // New state for add modal
+    add: false,
   });
 
   const fetchData = useCallback(async () => {
     try {
-      console.log("Fetching attendance records...");
       const response = await axios.get("/api/attendance", {
         baseURL: API_BASE_URL,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      console.log("Records:" + response.data);
 
       const formattedAttendances = response.data.map((attendance) => {
-        console.log("Attendance:" + attendance.date);
-        console.log("Clock IN:" + attendance.clockinTime);
-        console.log("Clock OUT:" + attendance.clockoutTime);
-        console.log("Hours:" + attendance.totalHours);
-        // Formatting date to '10th Aug 2024'
         const date = moment(attendance.date).format("Do MMM YYYY");
-
         const clockinTime = attendance.clockinTime
           ? moment(attendance.clockinTime, [
               "YYYY-MM-DD HH:mm:ss",
@@ -64,7 +57,30 @@ const AttendanceList = () => {
       });
 
       setAttendances(formattedAttendances);
-      console.log("Attendance records fetched successfully");
+
+      // Aggregate monthly attendance data
+      const monthlyData = {};
+      formattedAttendances.forEach((att) => {
+        const monthYear = moment(att.date, "Do MMM YYYY").format("YYYY-MM");
+        const day = moment(att.date, "Do MMM YYYY").format("DD");
+
+        if (!monthlyData[monthYear]) {
+          monthlyData[monthYear] = {};
+        }
+
+        if (!monthlyData[monthYear][day]) {
+          monthlyData[monthYear][day] = 0;
+        }
+
+        monthlyData[monthYear][day]++;
+      });
+
+      const monthlyAttendance = Object.entries(monthlyData).map(([monthYear, days]) => ({
+        monthYear,
+        days: Object.entries(days).map(([day, count]) => ({ day, count })),
+      }));
+
+      setMonthlyAttendance(monthlyAttendance);
     } catch (error) {
       console.error("Failed to fetch attendance records:", error);
     }
@@ -185,25 +201,20 @@ const AttendanceList = () => {
     pdfMake.createPdf(docDefinition).download("Attendance_Records.pdf");
   };
 
-  // Function to handle download of today's attendance
   const downloadTodaysAttendance = () => {
     const today = moment().startOf("day");
-
-    // Filter today's attendance based on the date
     const todaysAttendance = attendances.filter((attendance) =>
       moment(attendance.date, "Do MMM YYYY").isSame(today, "day")
     );
 
-    // If no attendance records for today, return early
     if (todaysAttendance.length === 0) {
       alert("No attendance records found for today.");
       return;
     }
 
-    // Prepare CSV content with Name, Date, Clock In Time, Clock Out Time, and Status
     const csvContent =
       "data:text/csv;charset=utf-8," +
-      "Date,Name,Hours Worked,Clock In Time,Clock Out Time,Status\n" + // CSV header
+      "Date,Name,Hours Worked,Clock In Time,Clock Out Time,Status\n" +
       todaysAttendance
         .map(
           (e) =>
@@ -211,10 +222,7 @@ const AttendanceList = () => {
         )
         .join("\n");
 
-    // Encode the CSV content
     const encodedUri = encodeURI(csvContent);
-
-    // Create a download link and trigger it
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
     link.setAttribute(
@@ -228,8 +236,6 @@ const AttendanceList = () => {
   const downloadThisMonthsAttendance = () => {
     const startOfMonth = moment().startOf("month");
     const endOfMonth = moment().endOf("month");
-
-    // Filter attendance records for the current month
     const thisMonthsAttendance = attendances.filter((attendance) =>
       moment(attendance.date, "Do MMM YYYY").isBetween(
         startOfMonth,
@@ -239,16 +245,14 @@ const AttendanceList = () => {
       )
     );
 
-    // If no attendance records for the current month, return early
     if (thisMonthsAttendance.length === 0) {
       alert("No attendance records found for this month.");
       return;
     }
 
-    // Prepare CSV content with Name, Date, Clock In Time, Clock Out Time, and Status
     const csvContent =
       "data:text/csv;charset=utf-8," +
-      "Name,Date,Clock In Time,Clock Out Time,Status\n" + // CSV header
+      "Name,Date,Clock In Time,Clock Out Time,Status\n" +
       thisMonthsAttendance
         .map(
           (e) =>
@@ -256,10 +260,7 @@ const AttendanceList = () => {
         )
         .join("\n");
 
-    // Encode the CSV content
     const encodedUri = encodeURI(csvContent);
-
-    // Create a download link and trigger it
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
     link.setAttribute(
@@ -273,8 +274,6 @@ const AttendanceList = () => {
   const downloadThisYearsAttendance = () => {
     const startOfYear = moment().startOf("year");
     const endOfYear = moment().endOf("year");
-
-    // Filter and sort attendance records for the current year by date
     const thisYearsAttendance = attendances
       .filter((attendance) =>
         moment(attendance.date, "Do MMM YYYY").isBetween(
@@ -288,16 +287,14 @@ const AttendanceList = () => {
         moment(a.date, "Do MMM YYYY").diff(moment(b.date, "Do MMM YYYY"))
       );
 
-    // If no attendance records for the current year, return early
     if (thisYearsAttendance.length === 0) {
       alert("No attendance records found for this year.");
       return;
     }
 
-    // Prepare CSV content with Date as the first column
     const csvContent =
       "data:text/csv;charset=utf-8," +
-      "Date,Name,Clock In Time,Clock Out Time,Status\n" + // CSV header with Date first
+      "Date,Name,Clock In Time,Clock Out Time,Status\n" +
       thisYearsAttendance
         .map(
           (e) =>
@@ -305,10 +302,7 @@ const AttendanceList = () => {
         )
         .join("\n");
 
-    // Encode the CSV content
     const encodedUri = encodeURI(csvContent);
-
-    // Create a download link and trigger it
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
     link.setAttribute(
@@ -328,7 +322,7 @@ const AttendanceList = () => {
               variant="link"
               onClick={() => handleModalShow("add")}
               className="p-0"
-              style={{ color: "blue", cursor: "pointer" ,color:"#040404"}}
+              style={{ color: "blue", cursor: "pointer", color: "#040404" }}
             >
               <i className="fa fa-plus" /> Add Attendance Record
             </Button>
@@ -338,22 +332,12 @@ const AttendanceList = () => {
             <ThemeProvider theme={theme}>
               <MaterialTable
                 columns={[
-                  // { title: "ID", field: "id" },
-                  // { title: "User ID", field: "userId" },
-                  {title:"EMP ID",field:"user.username"},
+                  { title: "EMP ID", field: "user.username" },
                   { title: "Name", field: "user.fullName" },
                   { title: "Date", field: "date" },
-
                   { title: "Clock In Time", field: "clockinTime" },
-                  // { title: "Clock In Latitude", field: "latitudeClockin" },
-                  // { title: "Clock In Longitude", field: "longitudeClockin" },
                   { title: "Clock Out Time", field: "clockoutTime" },
                   { title: "Hours", field: "totalHours" },
-                  // { title: "Clock Out Latitude", field: "latitudeClockout" },
-                  // {
-                  //   title: "Clock Out Longitude",
-                  //   field: "longitudeClockout",
-                  // },
                   {
                     title: "Status",
                     field: "status",
@@ -402,7 +386,6 @@ const AttendanceList = () => {
                   pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
                   exportButton: true,
                   exportPdf: () => exportPDF(),
-                  // filtering: true,
                   sorting: true,
                   columnsButton: true,
                 }}
@@ -429,6 +412,34 @@ const AttendanceList = () => {
                 ]}
               />
             </ThemeProvider>
+          </div>
+
+          {/* Display Monthly Attendance Data */}
+          <div className="mt-4">
+            <h5>Monthly Attendance Overview</h5>
+            <MaterialTable
+              columns={[
+                { title: "Month-Year", field: "monthYear" },
+                { title: "Day", field: "day" },
+                { title: "Total Records", field: "count" },
+              ]}
+              data={monthlyAttendance.flatMap(month => 
+                month.days.map(day => ({
+                  monthYear: month.monthYear,
+                  day: day.day,
+                  count: day.count,
+                }))
+              )}
+              options={{
+                rowStyle: (rowData, index) =>
+                  index % 2 ? { backgroundColor: "#f2f2f2" } : {},
+                pageSize: 10,
+                pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
+                sorting: true,
+                columnsButton: true,
+              }}
+              title="Monthly Attendance Overview"
+            />
           </div>
 
           {showModal.edit && (
