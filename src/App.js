@@ -69,6 +69,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import Holidays from "./components/Holidays";
 import PersonalLeaves from "./components/PersonalLeaves";
+import AttendanceListDetailed from "./components/AttendanceListDetailed";
 
 export default class App extends Component {
   render() {
@@ -290,6 +291,7 @@ const AdminContainer = () => {
               />
               <Route exact path="/holidays" component={withAuth(Holidays)}/>
               <Route exact path="/personal-leaves" component={withAuth(PersonalLeaves)}/>
+              <Route exact path="/attendance-list-detailed" component={withAuth(AttendanceListDetailed)}/>
               <Route exact path="/register" component={Register} />
               <Route exact path="/login" component={Login} />
             </Switch>

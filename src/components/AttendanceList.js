@@ -19,12 +19,13 @@ const AttendanceList = () => {
   const [attendances, setAttendances] = useState([]);
   const [monthlyAttendance, setMonthlyAttendance] = useState([]);
   const [selectedAttendance, setSelectedAttendance] = useState(null);
+  const [todaysCount, setTodaysCount] = useState(0);
   const [showModal, setShowModal] = useState({
     edit: false,
     preview: false,
     delete: false,
     add: false,
-    selectEmployee: false,  // For selecting employee
+    selectEmployee: false,
   });
   const [sortConfig, setSortConfig] = useState({
     key: 'status',
@@ -33,8 +34,9 @@ const AttendanceList = () => {
   const [filterText, setFilterText] = useState('');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [employeeList, setEmployeeList] = useState([]); // List of employees for selection
-  const [selectedEmployee, setSelectedEmployee] = useState(''); // Selected employee
+  const [statusFilter, setStatusFilter] = useState(''); // New status filter state
+  const [employeeList, setEmployeeList] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState('');
 
   const fetchData = useCallback(async () => {
     try {
@@ -44,18 +46,12 @@ const AttendanceList = () => {
       });
 
       const formattedAttendances = response.data.map((attendance) => {
-        const date = moment(attendance.date).format("Do MMM YYYY");
+        const date = moment(attendance.date).format("YYYY-MM-DD"); // Use ISO format for better sorting
         const clockinTime = attendance.clockinTime
-          ? moment(attendance.clockinTime, [
-              "YYYY-MM-DD HH:mm:ss",
-              "HH:mm:ss",
-            ]).format("hh:mm A")
+          ? moment(attendance.clockinTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]).format("hh:mm A")
           : "";
         const clockoutTime = attendance.clockoutTime
-          ? moment(attendance.clockoutTime, [
-              "YYYY-MM-DD HH:mm:ss",
-              "HH:mm:ss",
-            ]).format("hh:mm A")
+          ? moment(attendance.clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"]).format("hh:mm A")
           : "";
 
         return {
@@ -68,10 +64,17 @@ const AttendanceList = () => {
 
       setAttendances(formattedAttendances.reverse());
 
+      // Calculate today's attendance count
+      const today = moment().startOf("day");
+      const todaysAttendance = formattedAttendances.filter((attendance) =>
+        moment(attendance.date).isSame(today, "day")
+      );
+      setTodaysCount(todaysAttendance.length);
+
       const monthlyData = {};
       formattedAttendances.forEach((att) => {
-        const monthYear = moment(att.date, "Do MMM YYYY").format("YYYY-MM");
-        const day = moment(att.date, "Do MMM YYYY").format("DD");
+        const monthYear = moment(att.date).format("YYYY-MM");
+        const day = moment(att.date).format("DD");
 
         if (!monthlyData[monthYear]) {
           monthlyData[monthYear] = {};
@@ -118,7 +121,7 @@ const AttendanceList = () => {
       preview: false,
       delete: false,
       add: false,
-      selectEmployee: false, // Close employee selection modal
+      selectEmployee: false,
     });
   };
 
@@ -200,7 +203,7 @@ const AttendanceList = () => {
   const downloadTodaysAttendance = () => {
     const today = moment().startOf("day");
     const todaysAttendance = attendances.filter((attendance) =>
-      moment(attendance.date, "Do MMM YYYY").isSame(today, "day")
+      moment(attendance.date).isSame(today, "day")
     );
 
     if (todaysAttendance.length === 0) {
@@ -215,7 +218,7 @@ const AttendanceList = () => {
     const startOfMonth = moment().startOf("month");
     const endOfMonth = moment().endOf("month");
     const thisMonthsAttendance = attendances.filter((attendance) =>
-      moment(attendance.date, "Do MMM YYYY").isBetween(
+      moment(attendance.date).isBetween(
         startOfMonth,
         endOfMonth,
         null,
@@ -236,7 +239,7 @@ const AttendanceList = () => {
     const endOfYear = moment().endOf("year");
     const thisYearsAttendance = attendances
       .filter((attendance) =>
-        moment(attendance.date, "Do MMM YYYY").isBetween(
+        moment(attendance.date).isBetween(
           startOfYear,
           endOfYear,
           null,
@@ -244,7 +247,7 @@ const AttendanceList = () => {
         )
       )
       .sort((a, b) =>
-        moment(a.date, "Do MMM YYYY").diff(moment(b.date, "Do MMM YYYY"))
+        moment(a.date).diff(moment(b.date))
       );
 
     if (thisYearsAttendance.length === 0) {
@@ -264,8 +267,8 @@ const AttendanceList = () => {
 
   const handleEmployeeSelect = (employeeName) => {
     setSelectedEmployee(employeeName);
-    setShowModal(prev => ({ ...prev, selectEmployee: false })); // Close modal after selection
-    downloadByEmployeeName(employeeName); // Trigger download
+    setShowModal(prev => ({ ...prev, selectEmployee: false }));
+    downloadByEmployeeName(employeeName);
   };
 
   const exportReport = (reportType) => {
@@ -280,7 +283,7 @@ const AttendanceList = () => {
         downloadThisYearsAttendance();
         break;
       case 'employee':
-        setShowModal(prev => ({ ...prev, selectEmployee: true })); // Show employee selection modal
+        setShowModal(prev => ({ ...prev, selectEmployee: true }));
         break;
       default:
         alert('Invalid export option selected.');
@@ -295,6 +298,11 @@ const AttendanceList = () => {
     setSortConfig({ key, direction });
 
     const sortedAttendances = [...attendances].sort((a, b) => {
+      if (key === 'date') {
+        const dateA = moment(a[key]);
+        const dateB = moment(b[key]);
+        return direction === 'asc' ? dateA - dateB : dateB - dateA;
+      }
       if (a[key] < b[key]) return direction === 'asc' ? -1 : 1;
       if (a[key] > b[key]) return direction === 'asc' ? 1 : -1;
       return 0;
@@ -312,10 +320,11 @@ const AttendanceList = () => {
 
   const filteredAttendances = attendances.filter((att) => {
     const isNameMatch = att.user.fullName.toLowerCase().includes(filterText.toLowerCase());
-    const date = moment(att.date, "Do MMM YYYY");
+    const date = moment(att.date);
     const isDateInRange = (!startDate || date.isSameOrAfter(moment(startDate).startOf('day'))) &&
                           (!endDate || date.isSameOrBefore(moment(endDate).endOf('day')));
-    return isNameMatch && isDateInRange;
+    const isStatusMatch = statusFilter ? att.status.toLowerCase() === statusFilter.toLowerCase() : true;
+    return isNameMatch && isDateInRange && isStatusMatch;
   });
 
   return (
@@ -331,7 +340,7 @@ const AttendanceList = () => {
               <i className="fa fa-plus" /> Add Attendance Record
             </div>
           </h4>
-       
+
           <div className="mb-3">
             <Form.Label>Filter by Date</Form.Label>
             <div className="d-flex align-items-center">
@@ -339,7 +348,7 @@ const AttendanceList = () => {
                 <DatePicker
                   selected={startDate}
                   onChange={(date) => setStartDate(date)}
-                  placeholderText="Select Date"
+                  placeholderText="Select Start Date"
                   className="form-control"
                 />
               </div>
@@ -351,6 +360,18 @@ const AttendanceList = () => {
                   className="form-control"
                 />
               </div> */}
+              <div className="mr-2">
+                <Form.Control
+                  as="select"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="">Status</option>
+                  <option value="Present">Present</option>
+                  <option value="Absent">Absent</option>
+                  {/* Add more status options if needed */}
+                </Form.Control>
+              </div>
               <div className="flex-grow-1">
                 <Form.Control
                   type="text"
@@ -361,21 +382,24 @@ const AttendanceList = () => {
               </div>
               <div style={{padding:"10px"}}></div>
               <div className="mb-3">
-            <Dropdown>
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
-                Export Options
-              </Dropdown.Toggle>
+                <Dropdown>
+                  <Dropdown.Toggle variant="success" id="dropdown-basic">
+                    Export Options
+                  </Dropdown.Toggle>
 
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={() => exportReport('daily')}>Daily Report</Dropdown.Item>
-                <Dropdown.Item onClick={() => exportReport('monthly')}>Monthly Report</Dropdown.Item>
-                <Dropdown.Item onClick={() => exportReport('yearly')}>Yearly Report</Dropdown.Item>
-                <Dropdown.Item onClick={() => exportReport('employee')}>By Employee Name</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={() => exportReport('daily')}>Daily Report</Dropdown.Item>
+                    <Dropdown.Item onClick={() => exportReport('monthly')}>Monthly Report</Dropdown.Item>
+                    <Dropdown.Item onClick={() => exportReport('yearly')}>Yearly Report</Dropdown.Item>
+                    <Dropdown.Item onClick={() => exportReport('employee')}>By Employee Name</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+            </div>
           </div>
 
-            </div>
+          <div className="mb-3">
+            <p>Today's Attendance Count: {todaysCount}</p>
           </div>
 
           <div>

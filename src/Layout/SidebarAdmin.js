@@ -188,10 +188,24 @@ const SidebarAdmin = ({ onToggle }) => {
             <FaTachometerAlt />
             {!isCollapsed && "Dashboard"}
           </NavItem>
-          <NavItem onClick={() => { history.push("/attendance-list")}}>
+          <NavItem onClick={() => toggleSubMenu("attendance")}>
             <FaCalendarCheck />
-            {!isCollapsed && "Attendance List"}
+            {!isCollapsed && "Attendance"}
           </NavItem>
+          {
+            expandedMenus.attendance && !isCollapsed && (
+              <>
+              <SubNavItem  onClick={() => { history.push("/attendance-list")}}>
+                <FaCalendarCheck />
+                Attendance Status
+              </SubNavItem>
+              <SubNavItem  onClick={() => { history.push("/attendance-list-detailed")}}>
+                <FaList/>
+                Attendance Overview
+                </SubNavItem>
+                              </>
+            )
+          }
           <NavItem onClick={() => toggleSubMenu("applications")}>
             <FaRocket />
             {!isCollapsed && "Applications"}
