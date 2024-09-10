@@ -301,7 +301,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
             ["Medical", data.medical_allowance || "-", "", ""],
             ["Meal Allowance", data.mealAllowance || "-", "", ""],
             ["Flexi Allowance", data.flexiAllowance || "-", "", ""],
-            ["Monthly Joining Bonus", data.joiningBonus || "-", "", ""],
+            ["Performance Bonus", data.joiningBonus || "-", "", ""],
             [
               "Transportation Allowance",
               data.conveyance_allowance || "-",

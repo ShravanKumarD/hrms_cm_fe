@@ -22,6 +22,8 @@ import {
   FaMoneyCheck,
   FaShoppingCart,
   FaFileInvoice,
+  FaHollyBerry,
+  FaCalendarAlt,
 } from "react-icons/fa";
 import LogoWhite from "../assets/samcintlogowhite.png";
 import LogoMini from "../assets/10.png";
@@ -196,16 +198,29 @@ const SidebarAdmin = ({ onToggle }) => {
           </NavItem>
           {expandedMenus.applications && !isCollapsed && (
             <>
-              {/* <SubNavItem onClick={() => { history.push("/application")}}>
-                <FaPlus />
-                Add Application
-              </SubNavItem> */}
               <SubNavItem onClick={() => { history.push("/application-list")}}>
                 <FaList />
                 Application List
               </SubNavItem>
             </>
           )}
+           
+         <NavItem onClick={() => toggleSubMenu("holidays")}>
+         <FaCalendarAlt />
+         {!isCollapsed && "Holidays"}
+       </NavItem>
+       {expandedMenus.holidays && !isCollapsed &&(
+        <>
+            <SubNavItem onClick={() => { history.push("/holidays")}}>
+            <FaBuilding />
+          General Holidays
+          </SubNavItem>
+           <SubNavItem onClick={() => { history.push("/personal-leaves")}}>
+           <FaBuilding />
+         Employees' Leaves
+         </SubNavItem>
+         </>
+      )}
           <NavItem onClick={() => toggleSubMenu("departments")}>
             <FaSitemap />
             {!isCollapsed && "Departments"}

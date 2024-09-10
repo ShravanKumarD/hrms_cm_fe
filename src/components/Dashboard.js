@@ -6,11 +6,12 @@ import ExpenseChartsPage from "./ExpenseChartsPage";
 import PaymentChartsPage from "./PaymentChartsPage";
 import RecentApplications from "./RecentApplications";
 import RecentAnnouncements from "./RecentAnnouncements";
-import TimesheetMini from "./../components-mini/TimesheetMini"
+import TimesheetMini from "./../components-mini/TimesheetMini";
 // import StartWork from "./StartWork";
 // import LightweightStartWork from "../components-mini/LightweightStartWork";
 import axios from "axios";
 // import HoursWorkedLastWeek from "../components-mini/HoursWorkedLastWeek";
+import Holidays from "./Holidays";
 
 const Dashboard = () => {
   const [totalEmployees, setTotalEmployees] = useState(0);
@@ -109,7 +110,8 @@ const Dashboard = () => {
       </div>
         </div>
         <div className="col-md-6">
-          <ExpenseChartsPage />
+          {/* <ExpenseChartsPage /> */}
+          <Holidays/>
           {/* <PaymentChartsPage /> */}
           <RecentAnnouncements />
         </div>

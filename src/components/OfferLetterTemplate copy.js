@@ -7,7 +7,6 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 import API_BASE_URL from "../env";
 import waterMark from "./../assets/10.png";
 import html2canvas from "html2canvas";
-import "./OfferletterTable.css";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const OfferLetterTemplate = forwardRef(({
@@ -19,7 +18,7 @@ const OfferLetterTemplate = forwardRef(({
   stipend,
   startDate,
   hrName,
-  sender_title,props
+  sender_title,
 }, ref) => {
   const [showSlip, setShowSlip] = useState(false);
   const [user, setUser] = useState({});
@@ -27,8 +26,7 @@ const OfferLetterTemplate = forwardRef(({
   const toggleSlip = () => {
     setShowSlip((prevShowSlip) => !prevShowSlip);
   };
-let compensationDetails=JSON.parse(localStorage.getItem('compensationDetails'));
-console.log(compensationDetails,'compensationDetails')
+
   // const downloadPDF = async () => {
   //   if (pageRefs.current && pageRefs.current.length > 0) {
   //     try {
@@ -76,7 +74,6 @@ console.log(compensationDetails,'compensationDetails')
   // };
 
   const downloadPDF = async () => {
-    localStorage.removeItem('compensationDetails');
     if (pageRefs.current && pageRefs.current.length > 0) {
       try {
         await new Promise(resolve => requestAnimationFrame(resolve));
@@ -525,11 +522,167 @@ console.log(compensationDetails,'compensationDetails')
                         when deemed necessary.
                       </li>
                     </ul>
-    <p>&nbsp;</p>
-    <p>&nbsp;</p>
-    <p>&nbsp;</p>
-    <p>&nbsp;</p>
-    <p> Yours faithfully</p>
+
+                    <h2>COMPENSATION STRUCTURE</h2>
+                    <table>
+                      <tr>
+                        <th class="header">Employee Name</th>
+                        <th class="header">Date of Joining</th>
+                        <th class="header">Designation</th>
+                        <th class="header" colspan="2">
+                          Salary & Benefits Structure
+                        </th>
+                      </tr>
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>Salary PM</td>
+                        <td>Salary PA</td>
+                      </tr>
+                      <tr>
+                        <td class="section-title" colspan="5">
+                          A) Fixed Pay
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="header">Basic</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>
+                      <tr>
+                        <td class="header">House Rent Allowance</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>
+                      <tr>
+                        <td class="header">Medical Allowance</td>
+                        <td>1,250</td>
+                        <td>15,000</td>
+                        <td>1,250</td>
+                        <td>15,000</td>
+                      </tr>
+                      <tr>
+                        <td class="header">Conveyance Allowance</td>
+                        <td>1,600</td>
+                        <td>19,200</td>
+                        <td>1,600</td>
+                        <td>19,200</td>
+                      </tr>
+                      <tr>
+                        <td class="header">Special Allowance</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>
+                      <tr>
+                        <td class="header">Performance Bonus</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>
+                      <tr>
+                        <td class="header">Gross Salary</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>
+                      <tr>
+                        <td class="section-title" colspan="5">
+                          B) Deductions
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="header">Employee PF</td>
+                        <td>1,800</td>
+                        <td>21,600</td>
+                        <td>1,800</td>
+                        <td>21,600</td>
+                      </tr>
+                      <tr>
+                        <td class="header">Professional Tax</td>
+                        <td>200</td>
+                        <td>2,400</td>
+                        <td>200</td>
+                        <td>2,400</td>
+                      </tr>
+                      <tr>
+                        <td class="header">TDS</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td class="header">Total Deductions</td>
+                        <td>2,000</td>
+                        <td>24,000</td>
+                        <td>2,000</td>
+                        <td>24,000</td>
+                      </tr>
+                      <tr>
+                        <td class="section-title" colspan="5">
+                          Net Salary
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="header">Net Salary</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>
+                      <tr>
+                        <td class="section-title" colspan="5">
+                          C) Other Benefits (Not Paid in Cash)
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="header">
+                          Provident Fund (Employer's Contribution)
+                        </td>
+                        <td>1,800</td>
+                        <td>21,600</td>
+                        <td>1,800</td>
+                        <td>21,600</td>
+                      </tr>
+                      <tr>
+                        <td class="header">Total</td>
+                        <td>1,800</td>
+                        <td>21,600</td>
+                        <td>1,800</td>
+                        <td>21,600</td>
+                      </tr>
+                      <tr>
+                        <td class="section-title" colspan="5">
+                          Cost to Company (CTC = A + C)
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="header">Cost to Company (CTC)</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>
+                    </table>
+                  </div>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                <p>&nbsp;</p>
+                <p>&nbsp;</p>
+                <div ref={el => (pageRefs.current[4] = el)} style={pageStyle}>
+                    <div style={waterMarkStyle}></div>
+                    <p> Yours faithfully</p>
                     <p>
                       <strong>Human Resource Department</strong>
                     </p>
@@ -546,177 +699,20 @@ console.log(compensationDetails,'compensationDetails')
                     <p style={{ textAlign: "right" }}>
                       Signature of the Employee
                     </p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
                   
 
-
-                  {/* yours */}
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                <div ref={el => (pageRefs.current[4] = el)} style={pageStyle}>
-                    <div style={waterMarkStyle}></div>
-                    <h2>COMPENSATION STRUCTURE</h2>
-                    <table class="styled-table">
-  <tr>
-    <th class="header"></th>
-    <th class="header">Date of Joining</th>
-    <th class="header">Designation</th>
-    <th class="header" colspan="2">
-      Salary & Benefits Structure
-    </th>
-  </tr>
-  <tr>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td>Salary PM</td>
-    <td>Salary PA</td>
-  </tr>
-  <tr>
-    <td class="section-title" colspan="5">
-      A) Fixed Pay
-    </td>
-  </tr>
-  <tr>
-    <td class="header">Basic</td>
-    <td>-</td>
-    <td>-</td>
-    <td>{compensationDetails.basic}</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td class="header">House Rent Allowance</td>
-    <td>-</td>
-    <td>-</td>
-    <td>{compensationDetails.houseRentAllowance}</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td class="header">Medical Allowance</td>
-    <td>{compensationDetails.medicalAllowance}</td>
-    <td>{compensationDetails.medicalAllowance * 12}</td>
-    <td>{compensationDetails.medicalAllowance}</td>
-    <td>{compensationDetails.medicalAllowance * 12}</td>
-  </tr>
-  <tr>
-    <td class="header">Conveyance Allowance</td>
-    <td>{compensationDetails.conveyanceAllowance}</td>
-    <td>{compensationDetails.conveyanceAllowance * 12}</td>
-    <td>{compensationDetails.conveyanceAllowance}</td>
-    <td>{compensationDetails.conveyanceAllowance * 12}</td>
-  </tr>
-  <tr>
-    <td class="header">Special Allowance</td>
-    <td>-</td>
-    <td>-</td>
-    <td>{compensationDetails.specialAllowance}</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td class="header">Performance Bonus</td>
-    <td>-</td>
-    <td>-</td>
-    <td>{compensationDetails.performanceBonus}</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td class="header">Gross Salary</td>
-    <td>-</td>
-    <td>-</td>
-    <td>{compensationDetails.grossSalary}</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td class="section-title" colspan="5">
-      B) Deductions
-    </td>
-  </tr>
-  <tr>
-    <td class="header">Employee PF</td>
-    <td>{compensationDetails.employeePF}</td>
-    <td>{compensationDetails.employeePF * 12}</td>
-    <td>{compensationDetails.employeePF}</td>
-    <td>{compensationDetails.employeePF * 12}</td>
-  </tr>
-  <tr>
-    <td class="header">Professional Tax</td>
-    <td>{compensationDetails.professionalTax}</td>
-    <td>{compensationDetails.professionalTax * 12}</td>
-    <td>{compensationDetails.professionalTax}</td>
-    <td>{compensationDetails.professionalTax * 12}</td>
-  </tr>
-  <tr>
-    <td class="header">TDS</td>
-    <td>{compensationDetails.tds}</td>
-    <td>{compensationDetails.tds * 12}</td>
-    <td>{compensationDetails.tds}</td>
-    <td>{compensationDetails.tds * 12}</td>
-  </tr>
-  <tr>
-    <td class="header">Total Deductions</td>
-    <td>{compensationDetails.totalDeductions}</td>
-    <td>{compensationDetails.totalDeductions * 12}</td>
-    <td>{compensationDetails.totalDeductions}</td>
-    <td>{compensationDetails.totalDeductions * 12}</td>
-  </tr>
-  <tr>
-    <td class="section-title" colspan="5">
-      Net Salary
-    </td>
-  </tr>
-  <tr>
-    <td class="header">Net Salary</td>
-    <td>{compensationDetails.netSalary}</td>
-    <td>{compensationDetails.netSalary * 12}</td>
-    <td>{compensationDetails.netSalary}</td>
-    <td>{compensationDetails.netSalary * 12}</td>
-  </tr>
-  <tr>
-    <td class="section-title" colspan="5">
-      C) Other Benefits (Not Paid in Cash)
-    </td>
-  </tr>
-  <tr>
-    <td class="header">
-      Provident Fund (Employer's Contribution)
-    </td>
-    <td>{compensationDetails.providentFund}</td>
-    <td>{compensationDetails.providentFund * 12}</td>
-    <td>{compensationDetails.providentFund}</td>
-    <td>{compensationDetails.providentFund * 12}</td>
-  </tr>
-  <tr>
-    <td class="header">Total</td>
-    <td>{compensationDetails.providentFund}</td>
-    <td>{compensationDetails.providentFund * 12}</td>
-    <td>{compensationDetails.providentFund}</td>
-    <td>{compensationDetails.providentFund * 12}</td>
-  </tr>
-  <tr>
-    <td class="section-title" colspan="5">
-      Cost to Company (CTC = A + C)
-    </td>
-  </tr>
-  <tr>
-    <td class="header">Cost to Company (CTC)</td>
-    <td>-</td>
-    <td>-</td>
-    <td>{Number(compensationDetails.basic) +
-     Number(compensationDetails.houseRentAllowance) + 
-     Number(compensationDetails.medicalAllowance )+ 
-     Number(compensationDetails.conveyanceAllowance) + 
-     Number (    compensationDetails.specialAllowance )+
-     Number( compensationDetails.performanceBonus) +Number( compensationDetails.providentFund)}</td>
-    <td>-</td>
-  </tr>
-</table>
-
-
-               
-<p>&nbsp;</p>
-                    <p>&nbsp;</p>
                     <hr />
                     <p style={{ textAlign: "center" }}>
                       4th Floor, B-Wing , Purva Summit, White field Road, Hitec

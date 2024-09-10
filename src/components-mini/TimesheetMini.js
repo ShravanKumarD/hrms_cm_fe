@@ -12,7 +12,6 @@ import LightweightStartWork from "./LightweightStartWork";
 import ApplicationModal from "../components/ApplicationModal";
 import API_BASE_URL from "../env";
 import { Modal } from "react-bootstrap";
-import TimesheetTooltip from "./TimesheetInfoTooltip";
 
 const Timesheet = () => {
   const [applications, setApplications] = useState([]);
@@ -20,10 +19,8 @@ const Timesheet = () => {
   const [clickedDate, setClickedDate] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
-  const [doj, setDoj] = useState(null);
   const history = useHistory();
 
-  // Safely access user ID from local storage
   const userId = (() => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
@@ -34,7 +31,6 @@ const Timesheet = () => {
     }
   })();
 
-  // Redirect to login if userId is not found
   useEffect(() => {
     if (!userId) {
       console.error("User ID not found. Redirecting to login.");
@@ -42,7 +38,6 @@ const Timesheet = () => {
     }
   }, [userId, history]);
 
-  // Fetch attendances
   useEffect(() => {
     const fetchAttendances = async () => {
       try {
@@ -65,7 +60,6 @@ const Timesheet = () => {
     if (userId) fetchAttendances();
   }, [userId]);
 
-  // Fetch applications
   useEffect(() => {
     const fetchApplications = async () => {
       try {
@@ -88,12 +82,10 @@ const Timesheet = () => {
     if (userId) fetchApplications();
   }, [userId]);
 
-  // Handle the rendering of each day cell
   const handleDayRender = (info) => {
     const { date, el } = info;
     const cellDateString = date.toDateString();
 
-    // Reset styles
     el.style.cssText = `
       background-color: '';
       font-size: 1em;
@@ -101,7 +93,6 @@ const Timesheet = () => {
       padding: 4px;
     `;
 
-    // Create elements for date and content
     const dateNumber = document.createElement("div");
     const content = document.createElement("div");
 
@@ -115,7 +106,6 @@ const Timesheet = () => {
 
     content.style.fontSize = "0.7em";
 
-    // Check for applications on this date
     const application = applications.find(
       (app) => new Date(app.startDate).toDateString() === cellDateString
     );
@@ -128,7 +118,6 @@ const Timesheet = () => {
       content.innerText = `${application.status}\n${application.type}`;
     }
 
-    // Check for attendance on this date
     const attendance = attendances.find(
       (att) => new Date(att.date).toDateString() === cellDateString
     );
@@ -170,22 +159,13 @@ const Timesheet = () => {
       }
     }
 
-    // Apply the background color to the date number
     dateNumber.style.backgroundColor = el.style.backgroundColor;
 
-    // Append the elements to the cell
     el.innerHTML = "";
     el.appendChild(dateNumber);
     el.appendChild(content);
-
-    // Mark weekends (only Sunday)
-    if (date.getDay() === 0) {
-      el.style.backgroundColor = "rgba(240, 240, 240, 0.5)";
-      content.innerText = "Week Off";
-    }
   };
 
-  // Handle clicks on dates in the calendar
   const handleDateClick = (arg) => {
     const clickedDate = new Date(arg.date);
     const today = new Date();
@@ -203,10 +183,11 @@ const Timesheet = () => {
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
-          header={{
+          headerToolbar={{
             left: "title",
             right: "prev,next",
           }}
+          dayHeaderContent={(arg) => arg.date.toLocaleDateString('en-US', { weekday: 'short' })}
           dayRender={handleDayRender}
           dayCellDidMount={handleDayRender}
           dateClick={handleDateClick}

@@ -44,7 +44,7 @@ const Dashboard = () => {
           <LeaveBalance theme={selectedTheme} />
         </div>
       </div>
-
+ 
       {/* Fourth Row with Recent Applications and Announcements */}
       <div className="row pt-4">
         <div className="col-md-6">

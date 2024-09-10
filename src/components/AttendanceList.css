@@ -1,0 +1,30 @@
+/* AttendanceList.css */
+.container-fluid {
+    padding-top: 1rem;
+  }
+  
+  .table th {
+    cursor: pointer;
+  }
+  
+  .table th:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .form-control {
+    margin-bottom: 1rem;
+  }
+  
+  .d-flex {
+    display: flex;
+    align-items: center;
+  }
+  
+  .mr-2 {
+    margin-right: 0.5rem;
+  }
+  
+  .flex-grow-1 {
+    flex-grow: 1;
+  }
+  

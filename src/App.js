@@ -67,6 +67,8 @@ import "./App.css";
 import SidebarHr from "./Layout/SidebarHr";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
+import Holidays from "./components/Holidays";
+import PersonalLeaves from "./components/PersonalLeaves";
 
 export default class App extends Component {
   render() {
@@ -286,6 +288,8 @@ const AdminContainer = () => {
                 path="/announcement"
                 component={withAuth(Announcement)}
               />
+              <Route exact path="/holidays" component={withAuth(Holidays)}/>
+              <Route exact path="/personal-leaves" component={withAuth(PersonalLeaves)}/>
               <Route exact path="/register" component={Register} />
               <Route exact path="/login" component={Login} />
             </Switch>
