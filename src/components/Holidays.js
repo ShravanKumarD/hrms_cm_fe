@@ -15,13 +15,11 @@ export default function Holidays() {
   useEffect(() => {
     const fetchHolidays = async () => {
       try {
-      
-        const API_BASE_URL = 'http://localhost:3000/api';
         axios.defaults.baseURL = API_BASE_URL;
         const token = localStorage.getItem("token");
 
         // Fetch data from API
-        const response = await axios.get('/holiday', {
+        const response = await axios.get('/api/holiday', {
             headers: {
                Authorization: `Bearer ${localStorage.getItem("token")}`,
             },

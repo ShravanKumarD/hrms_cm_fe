@@ -1,117 +1,144 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { useHistory } from "react-router-dom";
-import axios from "axios";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from "@fullcalendar/interaction";
 import moment from "moment";
-import "@fullcalendar/core/main.css";
-import "@fullcalendar/daygrid/main.css";
-import "../Timesheet.css";
 import LightweightStartWork from "./LightweightStartWork";
-import ApplicationModal from "../components/ApplicationModal";
-import API_BASE_URL from "../env";
 import { Modal } from "react-bootstrap";
+import axios from "axios";
+import API_BASE_URL from "./../env";
+import './../components/TimeSheet.css';
+import ApplicationModal from "../components/ApplicationModal";
 
-const Timesheet = () => {
+export default function Calendar() {
   const [applications, setApplications] = useState([]);
   const [attendances, setAttendances] = useState([]);
-  const [holidays, setHolidays] = useState([]);
   const [clickedDate, setClickedDate] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
-  const [popupContent, setPopupContent] = useState(null);
+  const [holidays, setHolidays] = useState([]);
+  const [optionalHolidays, setOptionalHolidays] = useState([]);
+  const [birthdays, setBirthdays] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [empCount, setEmpCount] = useState(0);
   const history = useHistory();
 
-  const userId = (() => {
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      return user?.id || null;
-    } catch (error) {
-      console.error("Failed to fetch user data from localStorage", error);
-      return null;
-    }
-  })();
-
   useEffect(() => {
-    if (!userId) {
-      history.push("/login");
+    const fetchData = async () => {
+      try {
+        axios.defaults.baseURL = API_BASE_URL;
+        const token = localStorage.getItem("token");
+
+        // Fetch holidays
+        const holidayResponse = await axios.get('/api/holiday', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const allHolidays = holidayResponse.data;
+        setHolidays(allHolidays);
+        setOptionalHolidays(allHolidays.filter(x => x.description === "Optional"));
+
+        // Fetch users
+        const userResponse = await axios.get("/api/users", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const birthdayEvents = userResponse.data.map(user => {
+          const birthDate = moment(user.user_personal_info.dateOfBirth, 'YYYY-MM-DD');
+                    if (birthDate.isValid()) {
+            return {
+              title: `${user.fullName.split(' ')[0]}'s Birthday`,
+              date: birthDate.format('YYYY-MM-DD'),
+              backgroundColor: "rgba(255, 223, 186, 0.5)",
+              borderColor: "rgba(255, 223, 186, 0.8)"
+            };
+          }
+          return null;
+        }).filter(event => event !== null);
+        setBirthdays(birthdayEvents);
+        console.log(birthdays,birthdayEvents,"birthdays")
+        setEmpCount(userResponse.data.length);
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleDayCellDidMount = (info) => {
+    const { date, el } = info;
+    const cellDateString = date.toDateString();
+
+    const application = applications.find(
+      (app) => new Date(app.startDate).toDateString() === cellDateString
+    );
+
+    const attendance = attendances.find(
+      (att) => new Date(att.date).toDateString() === cellDateString
+    );
+
+    el.classList.add('calendar-cell');
+
+    if (application || attendance) {
+      if (application) {
+        el.classList.add(application.status === "Pending" ? 'application-pending' : 'application-approved');
+        el.querySelector('.calendar-content').innerText = `${application.status}\n${application.type}`;
+      }
+
+      if (attendance) {
+        const clockInTime = moment(attendance.clockinTime, [
+          "YYYY-MM-DD HH:mm:ss",
+          "HH:mm:ss",
+        ]);
+        const clockOutTime = attendance.clockoutTime
+          ? moment(attendance.clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"])
+          : moment();
+        const hoursWorked = moment
+          .duration(clockOutTime.diff(clockInTime))
+          .asHours();
+
+        let status = "Partial Day";
+        if (hoursWorked > 9) {
+          status = "Overtime";
+          el.classList.add('attendance-overtime');
+        } else if (hoursWorked >= 9) {
+          status = "Full Day";
+          el.classList.add('attendance-full-day');
+        } else if (hoursWorked < 4) {
+          status = "Partial Day";
+          el.classList.add('attendance-partial-day');
+        }
+
+        el.querySelector('.calendar-content').innerText = `${status}\n${clockInTime.format(
+          "HH:mm"
+        )} - ${clockOutTime.format("HH:mm")}`;
+
+        if (attendance.status === "Absent") {
+          el.classList.add('attendance-absent');
+          el.querySelector('.calendar-content').innerText = "Absent";
+        } else if (attendance.status === "Leave") {
+          el.classList.add('attendance-leave');
+          el.querySelector('.calendar-content').innerText = "Leave";
+        }
+      }
     } else {
-      const fetchAttendances = async () => {
-        try {
-          axios.defaults.baseURL = API_BASE_URL;
-          const response = await axios.get(`api/attendance/user/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          });
-          console.log("Fetched Attendances: ", response.data); // Debugging line
-          setAttendances(response.data || []);
-        } catch (error) {
-          console.error("Error fetching attendances: ", error);
-        }
-      };
-
-      const fetchApplications = async () => {
-        try {
-          axios.defaults.baseURL = API_BASE_URL;
-          const response = await axios.get(`/api/applications/user/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          });
-          console.log("Fetched Applications: ", response.data); // Debugging line
-          setApplications(response.data || []);
-        } catch (error) {
-          console.error("Error fetching applications: ", error);
-        }
-      };
-
-      const fetchHolidays = async () => {
-        const fetchedHolidays = [
-          { date: "2024-09-07", label: "Ganesh Chaturthi", details: "Birth of Lord Ganesha." },
-          { date: "2024-10-02", label: "Mahatma Gandhi Jayanti", details: "Birthday of Mahatma Gandhi." },
-        ];
-        console.log("Fetched Holidays: ", fetchedHolidays); // Debugging line
-        setHolidays(fetchedHolidays);
-      };
-
-      fetchAttendances();
-      fetchApplications();
-      fetchHolidays();
+      el.classList.add('no-event');
     }
-  }, [userId, history]);
 
-  const renderEventContent = (dayInfo) => {
-    const cellDateString = moment(dayInfo.date).format("YYYY-MM-DD");
-    const holiday = holidays.find((h) => h.date === cellDateString);
-    const application = applications.find((app) =>
-      moment(app.startDate).isSame(cellDateString, "day")
-    );
-    const attendance = attendances.find((att) =>
-      moment(att.date).isSame(cellDateString, "day")
-    );
+    const dateNumber = document.createElement("div");
+    dateNumber.className = 'calendar-date';
+    dateNumber.innerText = date.getDate();
 
-    // Return custom content based on conditions
-    return (
-      <div style={{ fontSize: "0.7em" }}>
-        {holiday && (
-          <div style={{ backgroundColor: "rgba(173, 216, 230, 0.2)" }}>
-            {holiday.label}
-          </div>
-        )}
-        {application && (
-          <div style={{ backgroundColor: application.status === "Pending" ? "rgba(255, 165, 0, 0.2)" : "rgba(0, 255, 0, 0.2)" }}>
-            {application.status}: {application.type}
-          </div>
-        )}
-        {attendance && (
-          <div style={{ backgroundColor: attendance.hoursWorked >= 9 ? "rgba(0, 255, 0, 0.2)" : "rgba(255, 0, 0, 0.2)" }}>
-            {attendance.hoursWorked >= 9 ? "Full Day" : "Partial Day"}
-          </div>
-        )}
-      </div>
-    );
+    const content = document.createElement("div");
+    content.className = 'calendar-content';
+
+    el.innerHTML = "";
+    el.appendChild(dateNumber);
+    el.appendChild(content);
   };
 
   const handleDateClick = (arg) => {
@@ -125,41 +152,40 @@ const Timesheet = () => {
     }
   };
 
+  const events = [...holidays, ...optionalHolidays, ...birthdays].map(event => ({
+    title: event.title || event.name,
+    date: event.date,
+    backgroundColor: event.backgroundColor || (event.description === "Optional" ? "#8adcd2" : "#a7a4a4"),
+    borderColor: event.borderColor || (event.description === "Optional" ? "#8adcd2" : "#a7a4a4")
+  }));
+
   return (
-    <div className="attendance-container">
-      <div className="calendar-wrapper">
-        <FullCalendar
-          plugins={[dayGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          headerToolbar={{ left: "title", right: "prev,next" }}
-          dateClick={handleDateClick}
-          dayCellContent={renderEventContent}  // Render custom content for each day
-        />
-      </div>
-
-      {popupContent && (
-        <div className="popup-content">
-          <strong>{popupContent.label}</strong>
-          <p>{popupContent.details}</p>
-        </div>
-      )}
-
-      <Modal show={showModal} onHide={() => setShowModal(false)} closeButton>
-        <Modal.Header closeButton>
-          <Modal.Title>Start Work</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+    <>
+      <FullCalendar
+        plugins={[dayGridPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        headerToolbar={{
+          left: "title",
+          right: "prev,next",
+        }}
+        dayHeaderContent={(arg) => arg.date.toLocaleDateString('en-US', { weekday: 'short' })}
+        dayCellDidMount={handleDayCellDidMount}
+        dateClick={handleDateClick}
+        titleFormat={{ month: "long" }}
+        height="auto"
+        events={events}
+        className="calendar-container"
+      />
+    <Modal show={showModal} onHide={() => setShowModal(false)} closeButton>
+        <div closeButton></div>
           <LightweightStartWork />
-        </Modal.Body>
+          <div><p></p></div>
       </Modal>
-
       <ApplicationModal
         show={showApplicationModal}
         onHide={() => setShowApplicationModal(false)}
         date={clickedDate}
       />
-    </div>
+    </>
   );
-};
-
-export default Timesheet;
+}

@@ -1,58 +1,152 @@
-/* TimeSheet.css */
 
-.timesheet-container {
-    width: 80%;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 50px rgb(29 23 23 / 25%)
-    /* position: relative; */
-  }
-  
-  .timesheet-title {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #333;
-  }
-  .react-calendar__tile--active {
-    background: #8adcd2;
-    color: white;
+body .fc {
+  font-size: 1em;
+  border: 2px solid rgb(202, 202, 202);
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px #a7a4a4;
 }
-.react-calendar button {
-  margin: 6px;
-  border: 0;
-  outline: none;
+/* General styles for the calendar */
+.calendar-container {
+  border: 1px solid #ddd; /* Outer border for the calendar */
 }
-  .custom-calendar {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #a7a4a4;
-    width: 100%;
-  }
-  
-  .holiday-label {
-    background-color: #8adcd2;
-    color: #333;
-    padding: 2px 5px;
-    border-radius: 5px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    display: inline-block;
-    position: relative;
-  }
-  
-  .popup-content {
-    position:fixed;
-    background-color: #8adcd2;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-    white-space: nowrap;
-  }
-  .abbr{
-    text-decoration: none;
-  }
+.fc-title{
+  color:#212529 ;
+}
+.fc-toolbar.fc-header-toolbar {
+  /* margin-bottom: 1.5em; */
+}
+/* Styles for each day cell */
+.calendar-cell {
+  font-size: 1em;
+  position: relative;
+  padding: 4px;
+}
+
+/* TimeSheet.css */
+.calendar-cell {
+  position: relative;
+}
+
+.calendar-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  padding: 5px;
+  color: #000; /* Ensure text is readable */
+}
+
+.application-pending {
+  background-color: rgba(255, 165, 0, 0.5); /* Orange */
+}
+
+.application-approved {
+  background-color: rgba(0, 255, 0, 0.5); /* Green */
+}
+
+.attendance-overtime {
+  background-color: rgba(255, 0, 0, 0.5); /* Red */
+}
+
+.attendance-full-day {
+  background-color: rgba(0, 0, 255, 0.5); /* Blue */
+}
+
+.attendance-partial-day {
+  background-color: rgba(255, 255, 0, 0.5); /* Yellow */
+}
+
+.attendance-absent {
+  background-color: rgba(128, 128, 128, 0.5); /* Gray */
+}
+
+.attendance-leave {
+  background-color: rgba(0, 255, 255, 0.5); /* Cyan */
+}
+
+.no-event {
+  background-color: rgba(255, 255, 255, 0.5); /* White */
+}
+h2{
+  font-style: normal;
+}
+.fc-unthemed td.fc-today {
+  background:#8adcd2;
+}
+.fc-title {
+  color: #212529;
+  font-size: 10px;
+  display: flex;
+  align-items: baseline;
+}
+.fc-button-group > .fc-button:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  background: #8adcd2;
+  border: #8adcd2;
+}
+.fc-button-group > .fc-button:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  background: #8adcd2;
+  border: #8adcd2;
+}
+.fc-button-primary:disabled {
+  color: #fff;
+  background: #8adcd2;
+  border: #8adcd2;
+}
+.fc-button-primary {
+  color: #fff;
+  background: #8adcd2;
+  border: #8adcd2;
+}
+
+
+
+/* TimeSheet.css */
+.calendar-cell {
+  position: relative;
+}
+
+.calendar-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  padding: 5px;
+}
+
+.application-pending {
+  background-color: rgba(255, 165, 0, 0.5); /* Orange */
+}
+
+.application-approved {
+  background-color: rgba(0, 255, 0, 0.5); /* Green */
+}
+
+.attendance-overtime {
+  background-color: rgba(255, 0, 0, 0.5); /* Red */
+}
+
+.attendance-full-day {
+  background-color: rgba(0, 0, 255, 0.5); /* Blue */
+}
+
+.attendance-partial-day {
+  background-color: rgba(255, 255, 0, 0.5); /* Yellow */
+}
+
+.attendance-absent {
+  background-color: rgba(128, 128, 128, 0.5); /* Gray */
+}
+
+.attendance-leave {
+  background-color: rgba(0, 255, 255, 0.5); /* Cyan */
+}
+
+.no-event {
+  background-color: rgba(255, 255, 255, 0.5); /* White */
+}

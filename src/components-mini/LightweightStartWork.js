@@ -389,7 +389,7 @@ const LightweightStartWork = ({ theme }) => {
       fluid
       className="d-flex justify-content-center align-items-center"
     >
-      <Card
+      <div
         className="shadow-sm"
         style={{ maxWidth: "400px", width: "100%", borderRadius: "10px" }}
       >
@@ -406,7 +406,7 @@ const LightweightStartWork = ({ theme }) => {
             {isWorking ? "End Work" : "Start Work"}
           </WorkButton>
         </WorkContainer>
-      </Card>
+      </div>
 
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
