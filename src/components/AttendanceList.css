@@ -27,4 +27,7 @@
   .flex-grow-1 {
     flex-grow: 1;
   }
-  
+  .filters-container{
+margin: 0;
+padding: 0;
+  }
