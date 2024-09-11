@@ -1,0 +1,42 @@
+.announcements-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .announcements-table th,
+  .announcements-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .announcements-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .announcements-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .delete-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .delete-button:hover {
+    background-color: #c82333;
+  }
+  
+  .main-card {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  

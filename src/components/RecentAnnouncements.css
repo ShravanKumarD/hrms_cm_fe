@@ -1,43 +1,61 @@
 .recent-announcements {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 16px;
-    background-color: #7dc35842;
-  }
-  
-  .announcement-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .announcement-item {
-    margin-bottom: 16px;
-  }
-  
-  .date-icon {
-    display: inline-block;
-    margin-right: 16px;
-    text-align: center;
-  }
-  
-  .icon em {
-    display: block;
-  }
-  
-  .announcement-content {
-    display: inline-block;
-    vertical-align: top;
-  }
-  
-  .separator {
-    border: none;
-    border-top: 1px solid #eee;
-    margin: 16px 0;
-  }
-  
-  .error-message {
-    color: red;
-    margin-bottom: 16px;
-  }
-  
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 20px;
+}
+
+.announcement-list {
+  list-style: none;
+  padding: 0;
+}
+
+.announcement-item {
+  display: flex;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.date-icon {
+  flex-shrink: 0;
+  margin-right: 15px;
+}
+
+.icon {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  color: #0da472;
+}
+
+.icon em {
+  font-size: 0.9em;
+}
+
+.icon strong {
+  font-size: 1.1em;
+}
+
+.icon span {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.announcement-content {
+  flex-grow: 1;
+}
+
+.department-name {
+  color: #555;
+}
+
+.separator {
+  border: none;
+  height: 1px;
+  background-color: #ddd;
+  margin: 10px 0;
+}

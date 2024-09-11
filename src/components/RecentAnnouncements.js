@@ -12,20 +12,19 @@ const RecentAnnouncements = () => {
   useEffect(() => {
     let isMounted = true;
     axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "get",
-      url: "/api/departmentAnnouncements/recent",
+
+    axios.get("/api/departmentAnnouncements/recent", {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
-      .then((res) => {
-        if (isMounted) {
-          setRecentAnnouncements(res.data);
-        }
-      })
-      .catch((err) => {
-        setError("Failed to fetch announcements.");
-        console.error("Error fetching announcements:", err);
-      });
+    .then((res) => {
+      if (isMounted) {
+        setRecentAnnouncements(res.data);
+      }
+    })
+    .catch((err) => {
+      setError("Failed to fetch announcements.");
+      console.error("Error fetching announcements:", err);
+    });
 
     return () => {
       isMounted = false;
@@ -70,7 +69,7 @@ const RecentAnnouncements = () => {
               <div className="announcement-content">
                 <strong>{announcement.announcementTitle}</strong>
                 {announcement.department && (
-                  <span> ({announcement.department.departmentName})</span>
+                  <span className="department-name"> ({announcement.department.departmentName})</span>
                 )}
                 <p>{announcement.announcementDescription}</p>
               </div>

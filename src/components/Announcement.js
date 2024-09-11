@@ -1,249 +1,205 @@
-import React, { Component } from "react";
-import { Card, Button, Form, Alert } from "react-bootstrap";
-import { Redirect, NavLink } from "react-router-dom";
-import axios from "axios";
-import MaterialTable from "material-table";
-import { ThemeProvider } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
-import AlertModal from "./AlertModal";
-import API_BASE_URL from "../env";
+import React, { useState, useEffect } from 'react';
+import { Card, Button, Form, Alert } from 'react-bootstrap';
+import { Redirect } from 'react-router-dom'; // For react-router-dom v5
+import axios from 'axios';
+import API_BASE_URL from '../env';
+import './Announcement.css'; // Import the CSS file for styling
+import DatePicker from "react-datepicker";
 
-export default class Announcement extends Component {
-  constructor(props) {
-    super(props);
+const Announcement = () => {
+  const [announcements, setAnnouncements] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [createdAt, setCreatedAt] = useState('');
+  const [hasError, setHasError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [completed, setCompleted] = useState(false);
 
-    this.state = {
-      announcements: [],
-      departments: [],
-      title: "",
-      description: "",
-      userId: null,
-      departmentId: null,
-      hasError: false,
-      errorMsg: "",
-      completed: false,
-      showEditModel: false,
-      showAlertModel: false,
-    };
-  }
-
-  componentDidMount() {
-    axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "get",
-      url: "/api/departments",
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    }).then((res) => {
-      this.setState({ departments: res.data });
-    });
-
-    axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "get",
-      url: "/api/departmentAnnouncements",
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    }).then((res) => {
-      this.setState({ announcements: res.data });
-    });
-  }
-
-  onDelete(announcement) {
-    return (event) => {
-      event.preventDefault();
-
-      axios.defaults.baseURL = API_BASE_URL;
-      axios({
-        method: "delete",
-        url: "/api/departmentAnnouncements/" + announcement.id,
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      })
-        .then((res) => {
-          this.setState({ completed: true });
-        })
-        .catch((err) => {
-          this.setState({
-            hasError: true,
-            errorMsg: err.response.data.message,
-          });
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await axios.get('/api/departments', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
+        setDepartments(res.data);
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
     };
-  }
 
-  handleChange = (event) => {
-    const { name, value } = event.target;
-    this.setState({
-      [name]: value,
-    });
-  };
+    const fetchAnnouncements = async () => {
+      try {
+        const res = await axios.get('/api/departmentAnnouncements', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        setAnnouncements(res.data);
+      } catch (error) {
+        console.error("Error fetching announcements:", error);
+      }
+    };
 
-  pushDepartments = () => {
-    let items = [];
-    // items.push(<option key={584390} value="all">All departments</option>)
-    this.state.departments.map((dept, index) => {
-      items.push(
-        <option key={index} value={dept.id}>
-          {dept.departmentName}
-        </option>
-      );
-    });
-    return items;
-  };
+    fetchDepartments();
+    fetchAnnouncements();
+  }, []);
 
-  onSubmit = (event) => {
+  const handleDelete = (id) => async (event) => {
     event.preventDefault();
-
-    let departmentId = null;
-    if (this.state.selectedDepartment !== "all") {
-      departmentId = this.state.selectedDepartment;
-    }
-
-    let data = {
-      announcementTitle: this.state.title,
-      announcementDescription: this.state.description,
-      createdByUserId: JSON.parse(localStorage.getItem("user")).id,
-      departmentId: departmentId,
-    };
-
-    axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "post",
-      url: "api/departmentAnnouncements",
-      data: data,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then((res) => {
-        this.setState({ completed: true });
-      })
-      .then((err) => {
-        console.log(err);
+    try {
+      await axios.delete(`/api/departmentAnnouncements/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
+      setAnnouncements(announcements.filter(announcement => announcement.id !== id));
+    } catch (error) {
+      setHasError(true);
+      setErrorMsg("Failed to delete the announcement.");
+    }
   };
 
-  render() {
-    let closeAlertModel = () => this.setState({ showAlertModel: false });
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const departmentId = selectedDepartment !== "all" ? selectedDepartment : null;
 
-    const theme = createTheme({
-      overrides: {
-        MuiTableCell: {
-          root: {
-            padding: "6px 6px 6px 6px",
-          },
-        },
-      },
-    });
+    const data = {
+      announcementTitle: title,
+      announcementDescription: description,
+      createdAt,
+      createdByUserId: JSON.parse(localStorage.getItem('user')).id,
+      departmentId,
+    };
 
-    return (
-      <div className="container-fluid pt-2">
-        {this.state.completed ? <Redirect to="/announcement" /> : null}
-        <div className="row">
-          <div className="col-sm-12">
-            <Card className="main-card">
-              <Card.Header>
-                <strong>Add Announcement</strong>
-              </Card.Header>
-              <Card.Body>
-                <div>
-                  <Form onSubmit={this.onSubmit}>
-                    <Form.Group>
-                      <Form.Label>Title</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={this.state.title}
-                        onChange={this.handleChange}
-                        name="title"
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Description</Form.Label>
-                      <Form.Control
-                        type="textarea"
-                        value={this.state.description}
-                        onChange={this.handleChange}
-                        name="description"
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Department</Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={this.state.selectedDepartment}
-                        onChange={this.handleChange}
-                        name="selectedDepartment"
-                      >
-                        <option value="">Choose one...</option>
-                        <option value="all">All Departments</option>
-                        {this.pushDepartments()}
-                      </Form.Control>
-                    </Form.Group>
-                    <Button type="submit" size="sm" className="mt-1">
-                      Publish
-                    </Button>
-                  </Form>
-                </div>
-              </Card.Body>
-            </Card>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12">
-            <div className="main-card">
-              <div>
-                <ThemeProvider theme={theme}>
-                  <MaterialTable
-                    columns={[
-                      { title: "ID", field: "id" },
-                      { title: "Title", field: "announcementTitle" },
-                      {
-                        title: "Description",
-                        field: "announcementDescription",
-                      },
-                      { title: "Created By", field: "user.fullName" },
-                      {
-                        title: "Department",
-                        field: "department.departmentName",
-                      },
-                      {
-                        title: "Action",
-                        render: (rowData) => (
-                          <Form className="row">
-                            <Button
-                              onClick={this.onDelete(rowData)}
-                              size="sm"
-                              variant="danger"
-                            >
-                              <i className="fas fa-trash"></i>Delete
-                            </Button>
-                          </Form>
-                        ),
-                      },
-                    ]}
-                    data={this.state.announcements}
-                    options={{
-                      rowStyle: (rowData, index) => {
-                        if (index % 2) {
-                          return { backgroundColor: "#f2f2f2" };
-                        }
-                      },
-                      pageSize: 8,
-                      pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
-                    }}
-                    title="Announcements"
-                  />
-                </ThemeProvider>
-              </div>
-            </div>
-          </div>
-        </div>
-        {this.state.hasError ? (
-          <Alert variant="danger" className="m-3" block>
-            {this.state.errMsg}
-          </Alert>
-        ) : (
-          <></>
-        )}
-      </div>
-    );
+    try {
+      await axios.post('/api/departmentAnnouncements', data, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      setCompleted(true);
+    } catch (error) {
+      setHasError(true);
+      setErrorMsg("Failed to create the announcement.");
+    }
+  };
+
+  const renderDepartments = () => (
+    departments.map(dept => (
+      <option key={dept.id} value={dept.id}>
+        {dept.departmentName}
+      </option>
+    ))
+  );
+
+  if (completed) {
+    return <Redirect to="/announcement" />; // For react-router-dom v5
   }
-}
+
+  return (
+    <div className="form-container">
+      <Form onSubmit={handleSubmit}>
+        <div className="d-flex justify-content-center ">
+          <div className="">
+            <Form.Group>
+              <Form.Label>Title</Form.Label>
+              <Form.Control
+                type="text"
+                value={title}
+                placeholder="Enter Title"
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </Form.Group>
+          </div>
+          <div className="col-sm-3">
+            <Form.Group>
+              <Form.Label>Set For Date</Form.Label>
+              <DatePicker
+                selected={createdAt}
+                onChange={(date) => setCreatedAt(date)}
+                placeholderText="Select Date"
+                dateFormat="yyyy-MM-dd"
+                className="form-control"
+              />
+            </Form.Group>
+          </div>
+          <div className="col-sm-3">
+            <Form.Group>
+              <Form.Label>Department</Form.Label>
+              <Form.Control
+                as="select"
+                value={selectedDepartment}
+                onChange={(e) => setSelectedDepartment(e.target.value)}
+              >
+                <option value="">Choose one...</option>
+                <option value="all">All Departments</option>
+                {renderDepartments()}
+              </Form.Control>
+            </Form.Group>
+          </div>
+          <div className="col-sm-3">
+            <Form.Group>
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                placeholder='Add Description'
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+            </Form.Group>
+          </div>
+        </div>
+        <div className='row'>
+        <div className='col-sm-1'></div>
+      <div>
+   <Button type="submit" className='dashboard-icons btn-sm '>
+          Submit
+        </Button>
+      </div>
+      </div>
+      </Form>
+      <div className="table-container">
+        <Card.Body>
+          <table className="announcements-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Event Scheduled On</th>
+                <th>Created By</th>
+                <th>Department</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {announcements.map((announcement, index) => (
+                <tr key={announcement.id} className={index % 2 ? 'even-row' : 'odd-row'}>
+                  <td>{announcement.id}</td>
+                  <td>{announcement.announcementTitle}</td>
+                  <td>{announcement.announcementDescription}</td>
+                  <td>{announcement.createdAt}</td>
+                  <td>{announcement.user.fullName}</td>
+                  <td>{announcement.department.departmentName}</td>
+                  <td>
+                    <Button
+                      onClick={handleDelete(announcement.id)}
+                      variant="danger"
+                    >
+                      <i className="fas fa-trash"></i> Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card.Body>
+      </div>
+      {hasError && (
+        <Alert variant="danger" className="m-3">
+          {errorMsg}
+        </Alert>
+      )}
+    </div>
+  );
+};
+
+export default Announcement;
