@@ -48,8 +48,8 @@ export default function Holidays() {
   return (
     <div>
       <div className="header">
-        <h3 className="title">Holidays</h3>
-        <button className="toggle-button" onClick={() => setShowHolidays(!showHolidays)}>
+        <h3>General Holidays</h3>
+        <button className="btn btn-info btn-sm" onClick={() => setShowHolidays(!showHolidays)}>
           {showHolidays ? 'Hide Holidays' : 'Show Holidays'}
         </button>
       </div>
@@ -84,7 +84,7 @@ export default function Holidays() {
       )}
       <div className="additional-holidays">
         <h3>Additional Holidays Information</h3>
-        <button className="toggle-button" onClick={() => setShowOtherTable(!showOtherTable)}>
+        <button className="btn btn-info btn-sm" onClick={() => setShowOtherTable(!showOtherTable)}>
           {showOtherTable ? 'Hide Optional Holidays' : 'Show Optional Holidays'}
         </button>
       </div>

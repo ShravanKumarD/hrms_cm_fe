@@ -2,16 +2,14 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Card, Badge, Button, Table, Modal } from "react-bootstrap";
 import axios from "axios";
 import API_BASE_URL from "../env";
-import { useHistory, Redirect } from "react-router-dom";
-import "./EmployeeList.css"; // Import custom CSS for styling
+import { useHistory } from "react-router-dom"; // For redirection
 
 const EmployeeList = () => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [deleteModal, setDeleteModal] = useState(false);
   const [empCount, setEmpCount] = useState(0);
-  const [editRedirect, setEditRedirect] = useState(false);
-  const history = useHistory();
+  const history = useHistory(); // For redirection
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -19,9 +17,8 @@ const EmployeeList = () => {
       const res = await axios.get("/api/users", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      setEmpCount(res.data.length);
-      res.data.shift(1);
       setUsers(res.data);
+      setEmpCount(res.data.length);
     } catch (err) {
       console.error(err);
     }
@@ -32,16 +29,13 @@ const EmployeeList = () => {
   }, [fetchUsers]);
 
   const handleView = (user) => {
-    history.push({
-      pathname: `/employee-view`,
-      state: { selectedUser: user },
-    });
+    setSelectedUser(user);
+    history.push(`/view/${user.id}`); // Redirect to the view page
   };
+
   const handleEdit = (user) => {
-    history.push({
-      pathname: "/employee-edit",
-      state: { selectedUser: user },
-    });
+    setSelectedUser(user);
+    history.push(`/edit/${user.id}`); // Redirect to the edit page
   };
 
   const handleDelete = (user) => {
@@ -56,33 +50,29 @@ const EmployeeList = () => {
       await axios.delete(`/api/users/${selectedUser.id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      setUsers(users.filter((user) => user.id !== selectedUser.id));
+      // Remove the deleted user from the list
+      setUsers(users.filter(user => user.id !== selectedUser.id));
       setEmpCount(empCount - 1);
       closeDeleteModal();
     } catch (err) {
       console.error(err);
     }
   };
-  console.log(users ? users : "na", "users");
+
   return (
     <div className="container mt-4">
-      <div>
-        <div>
+      <Card>
+        <Card.Header>
           <h3>Employee List</h3>
-          <Badge bg="secondary">
-            <strong>Total Employees: {empCount} members</strong>
-          </Badge>
-        </div>
-        <div>
+          <Badge bg="secondary">Total Employees: {empCount}</Badge>
+        </Card.Header>
+        <Card.Body>
           <Table striped bordered hover>
             <thead>
               <tr>
                 <th>Emp ID</th>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Address</th>
-                <th>Marital Status</th>
-                <th>Date of Birth</th>
                 <th>Department</th>
                 <th>Job Title</th>
                 <th>Mobile</th>
@@ -95,28 +85,16 @@ const EmployeeList = () => {
                 <tr key={user.id}>
                   <td>{user.id}</td>
                   <td>{user.fullName}</td>
-                  <td>{user.user_personal_info?.emailAddress}</td>
-                  <td>{user.user_personal_info?.address}</td>
-                  <td>{user.user_personal_info?.maritalStatus}</td>
-                  <td>{user.user_personal_info?.dateOfBirth.split(' ')[0]}</td>
-                  <td>{user.department?.departmentName || "N/A"}</td>
-                  <td>{user.jobs[0]?.jobTitle || "N/A"}</td>
-                  <td>{user.user_personal_info?.mobile || "N/A"}</td>
-                  <td>
-                    <span
-                      className={`badge ${
-                        user.active ? "bg-success" : "bg-danger"
-                      }`}
-                    >
-                      {user.active ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-
+                  <td>{user.email}</td>
+                  <td>{user.department?.departmentName || 'N/A'}</td>
+                  <td>{user.jobs[0]?.jobTitle || 'N/A'}</td>
+                  <td>{user.user_personal_info?.mobile || 'N/A'}</td>
+                  <td>{user.active ? 'Active' : 'Inactive'}</td>
                   <td>
                     <Button
                       size="sm"
                       variant="info"
-                      className="action-btn"
+                      className="btn-sm"
                       onClick={() => handleView(user)}
                     >
                       <i className="far fa-eye"></i> View
@@ -124,17 +102,15 @@ const EmployeeList = () => {
                     <Button
                       size="sm"
                       variant="warning"
-                      className="action-btn"
+                      className="btn-sm"
                       onClick={() => handleEdit(user)}
                     >
                       <i className="far fa-edit"></i> Edit
                     </Button>
-                    {user.id !==
-                      JSON.parse(localStorage.getItem("user")).id && (
+                    {user.id !== JSON.parse(localStorage.getItem("user")).id && (
                       <Button
                         size="sm"
                         variant="danger"
-                        className="action-btn"
                         onClick={() => handleDelete(user)}
                       >
                         <i className="far fa-trash-alt"></i> Delete
@@ -145,8 +121,8 @@ const EmployeeList = () => {
               ))}
             </tbody>
           </Table>
-        </div>
-      </div>
+        </Card.Body>
+      </Card>
 
       {/* Delete Confirmation Modal */}
       <Modal show={deleteModal} onHide={closeDeleteModal}>
@@ -160,7 +136,10 @@ const EmployeeList = () => {
           <Button variant="secondary" onClick={closeDeleteModal}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={deleteUser}>
+          <Button
+            variant="danger"
+            onClick={deleteUser} // Perform the delete action
+          >
             Delete
           </Button>
         </Modal.Footer>

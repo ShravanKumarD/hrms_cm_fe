@@ -15,7 +15,7 @@
   }
   
   .title {
-    font-size: 24px;
+    
     font-weight: 500;
     margin: 0;
   }
@@ -47,9 +47,9 @@
   }
   
   .holiday-table th, .holiday-table td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: left;
+    /* padding: px; */
+    text-align: center;
+    border: 1px solid #ddd; 
   }
   
   .holiday-table th {

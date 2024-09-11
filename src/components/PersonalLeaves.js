@@ -23,6 +23,7 @@ export default function PersonalLeaves() {
         const response = await axios.get("/api/applications", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
+        console.log(response.data,"data")
 
         const formattedApplications = response.data.map((app) => ({
           ...app,
@@ -35,8 +36,18 @@ export default function PersonalLeaves() {
             "HH:mm:ss",
           ]).format("Do MMM YYYY"),
         }));
+  // <option value="Leave">Leave</option>
+  // <option value="Regularisation">Regularisation</option>
+  // <option value="Work From Home">Work From Home</option>
+  // <option value="On Duty">On Duty</option>
+  // <option value="Comp Off">Comp Off</option>
+  // <option value="Expense">Expense</option>
+  // <option value="Restricted Holiday">Restricted Holiday</option>
+  // <option value="Short Leave">Short Leave</option>
 
-        setApplications(formattedApplications.reverse());
+  let sortedApplications = formattedApplications.filter(x=>x.type ==="Leave" || x.type==="Restricted Holiday" || x.type==="Short Leave");
+  console.log(sortedApplications,"sortedApplications")     
+  setApplications(sortedApplications.reverse());
 
         // Fetch names for all users
         const userIds = [
@@ -74,7 +85,6 @@ export default function PersonalLeaves() {
   }, []);
 
   useEffect(() => {
-    // Filter and sort applications based on status, name filter, and sorting option
     let filtered =
       statusFilter === "All"
         ? applications
@@ -122,7 +132,7 @@ export default function PersonalLeaves() {
 
   return (
     <div>
-      <h3 className="title">Applications</h3>
+      <h3 className="title">Employees' Leaves</h3>
       {hasError && <p className="error">{errorMsg}</p>}
       <div className="filter-section">
         <label htmlFor="status-filter">Filter by Status:</label>
@@ -171,7 +181,7 @@ export default function PersonalLeaves() {
               <th>Start Date</th>
               <th>End Date</th>
               <th>Status</th>
-              <th>Type</th>
+              {/* <th>Type</th> */}
               <th>Description</th>
             </tr>
           </thead>
@@ -182,7 +192,7 @@ export default function PersonalLeaves() {
                 <td>{app.startDate}</td>
                 <td>{app.endDate}</td>
                 <td>{app.status}</td>
-                <td>{app.type}</td>
+                {/* <td>{app.type}</td> */}
                 <td>{app.reason}</td>
               </tr>
             ))}

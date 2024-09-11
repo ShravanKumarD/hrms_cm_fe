@@ -611,3 +611,14 @@ a{
 .card {
   background-color: #7dc35842;
 }
+
+.table td, .table th {
+  padding: 2px;
+  text-align: center;
+}
+.form-control {
+  height: 5vh;
+  margin: 0;
+  font-size: small;
+  width:12vw;
+}

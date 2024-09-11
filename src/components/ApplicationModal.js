@@ -105,7 +105,7 @@ const ApplicationModal = ({ show, onHide, date }) => {
               <option value="Comp Off">Comp Off</option>
               <option value="Expense">Expense</option>
               <option value="Restricted Holiday">Restricted Holiday</option>
-              {/* <option value="Short Leave">Short Leave</option> */}
+              <option value="Short Leave">Short Leave</option>
             </Form.Control>
           </Form.Group>
           <Form.Group controlId="formStartDate">

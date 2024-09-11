@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Button, Table, Alert, Form, Row, Col } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 import DatePicker from "react-datepicker";
@@ -17,7 +16,7 @@ const ApplicationList = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [completed, setCompleted] = useState(false);
   const [userNames, setUserNames] = useState({});
-  const history = useHistory();
+  const [disabledButtons, setDisabledButtons] = useState({});
 
   useEffect(() => {
     axios.defaults.baseURL = API_BASE_URL;
@@ -37,6 +36,12 @@ const ApplicationList = () => {
         // Extract user IDs and fetch names
         const userIds = [...new Set(formattedApplications.map((app) => app.userId))];
         fetchUserNames(userIds);
+
+        // Set initial disabled state for buttons
+        setDisabledButtons(formattedApplications.reduce((acc, app) => {
+          acc[app.id] = app.status !== "Pending";
+          return acc;
+        }, {}));
       })
       .catch((err) => {
         setHasError(true);
@@ -55,11 +60,17 @@ const ApplicationList = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       .then(() => {
-        // Update the state without re-fetching data
         setApplications(prev => prev.map(item => item.id === app.id ? { ...item, status } : item));
         setFilteredApplications(prev => prev.map(item => item.id === app.id ? { ...item, status } : item));
+
+        // Update disabled buttons state
+        setDisabledButtons(prev => ({
+          ...prev,
+          [app.id]: status !== "Pending" // Disable button if status is not "Pending"
+        }));
+
         setCompleted(true);
-        setTimeout(() => setCompleted(false), 2000); // Reset success message after 2 seconds
+        setTimeout(() => setCompleted(false), 3000); 
       })
       .catch((err) => {
         setHasError(true);
@@ -182,17 +193,25 @@ const ApplicationList = () => {
               <td>{app.startDate}</td>
               <td>{app.endDate}</td>
               <td>{app.reason}</td>
-              <td>{app.status}</td>
+              {/* <td>{app.status}</td> */}
+              <td>  <span className={`badge ${app.status === 'Approved' ? 'bg-success' :
+                 app.status === 'Rejected' ? 'bg-danger' : 'bg-warning'}`}>
+                                            {app.status}
+                                        </span></td>
               <td>
                 <Button
                   variant="success"
+                  className="btn btn-success btn-sm"
                   onClick={() => handleStatusChange(app, 'Approved')}
+                  disabled={disabledButtons[app.id]}
                 >
                   Approve
                 </Button>{" "}
                 <Button
                   variant="danger"
+                  className="btn btn-danger btn-sm"
                   onClick={() => handleStatusChange(app, 'Rejected')}
+                  disabled={disabledButtons[app.id]}
                 >
                   Reject
                 </Button>

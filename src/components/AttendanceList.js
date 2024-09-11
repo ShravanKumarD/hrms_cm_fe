@@ -41,6 +41,7 @@ const AttendanceList = () => {
   const [maxHours, setMaxHours] = useState(null);
   const [employeeList, setEmployeeList] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [exactHours, setExactHours] = useState(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -294,17 +295,17 @@ const AttendanceList = () => {
     }
   };
   const downloadFilteredData = () => {
-    if (filteredAttendances.length === 0) {
-      alert("No attendance records found with the current filters.");
-      return;
-    }
-  
-    downloadCSV(
-      filteredAttendances,
-      `attendance_filtered_${moment().format("YYYY-MM-DD")}.csv`
-    );
-  };
-  
+  if (filteredAttendances.length === 0) {
+    alert("No attendance records found with the current filters.");
+    return;
+  }
+
+  downloadCSV(
+    filteredAttendances,
+    `attendance_filtered_${moment().format("YYYY-MM-DD")}.csv`
+  );
+};
+
 
   const exportReport = (reportType) => {
     switch (reportType) {
@@ -359,12 +360,17 @@ const AttendanceList = () => {
       (!minHours || att.totalHours >= minHours) &&
       (!maxHours || att.totalHours <= maxHours);
 
+     const isExactHoursMatch = 
+    (exactHours === null || 
+    (att.totalHours >= exactHours && att.totalHours < exactHours + 1));
+
     return (
       isNameMatch &&
       isDateInRange &&
       isStatusMatch &&
       isClockoutInRange &&
-      isHoursInRange
+      isHoursInRange &&
+      isExactHoursMatch
     );
   });
 
@@ -382,7 +388,7 @@ const AttendanceList = () => {
         </h4>
         <div className="mb-3">
           <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic">
+            <Dropdown.Toggle variant="success" id="dropdown-basic" className="btn btn-success btn-sm">
               Export Options
             </Dropdown.Toggle>
 
@@ -406,76 +412,7 @@ const AttendanceList = () => {
           </Dropdown>
         </div>
       </div>
-      {/* <div className="mb-3">
-        <Form.Control
-          type="text"
-          placeholder="Search by name"
-          value={filterText}
-          onChange={e => setFilterText(e.target.value)}
-        />
-      </div>
-      <div className="mb-3">
-        <DatePicker
-          selected={startDate}
-          onChange={date => setStartDate(date)}
-          placeholderText="Start Date"
-          dateFormat="yyyy-MM-dd"
-        />
-        <DatePicker
-          selected={endDate}
-          onChange={date => setEndDate(date)}
-          placeholderText="End Date"
-          dateFormat="yyyy-MM-dd"
-        />
-      </div>
-      <div className="d-flex align-items-center mb-3">
-      <div className="mr-2">
-                <Form.Control
-                  as="select"
-                  value={statusFilter}
-                  onChange={e => setStatusFilter(e.target.value)}
-                >
-                  <option value="">Status</option>
-                  <option value="Present">Present</option>
-                  <option value="Absent">Absent</option>
-                </Form.Control>
-              </div>
-        <div className="d-flex align-items-center mb-3">
-          <div className="mr-2">
-            <Form.Control
-              type="number"
-              placeholder="Min Hours"
-              value={minHours || ''}
-              onChange={e => setMinHours(e.target.value)}
-            />
-          </div>
-          <div className="mr-2">
-            <Form.Control
-              type="number"
-              placeholder="Max Hours"
-              value={maxHours || ''}
-              onChange={e => setMaxHours(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="mr-2">
-          <Form.Control
-            type="time"
-            placeholder="Clock Out Start"
-            value={clockoutStart || ''}
-            onChange={e => setClockoutStart(e.target.value)}
-          />
-        </div>
-        <div className="mr-2">
-          <Form.Control
-            type="time"
-            placeholder="Clock Out End"
-            value={clockoutEnd || ''}
-            onChange={e => setClockoutEnd(e.target.value)}
-          />
-        </div>
-      </div> */}
+      <div className="d-flex flex-wrap align-items-center"><p><strong>Apply Filters</strong></p></div>
       <div className="filters-container">
         <div className="d-flex flex-wrap align-items-center">
           <Form.Group className="mr-2 mb-2">
@@ -538,7 +475,7 @@ const AttendanceList = () => {
               onChange={(e) => setMaxHours(e.target.value)}
             />
           </Form.Group>
-          <Form.Label className="d-flex flex-wrap align-items-center mb-3">Sort By Hours(24Hrs.): </Form.Label>
+          <div className="d-flex flex-wrap align-items-center mb-3">Sort By Hours(24Hrs.): </div>
           <Form.Group className="mr-2 mb-2">
             <Form.Control
               type="time"
@@ -556,6 +493,14 @@ const AttendanceList = () => {
               onChange={(e) => setClockoutEnd(e.target.value)}
             />
           </Form.Group>
+          <Form.Group className="mr-2 mb-2">
+      <Form.Control
+        type="number"
+        placeholder="By Exact Hours"
+        value={exactHours || ""}
+        onChange={(e) => setExactHours(e.target.value)}
+      />
+    </Form.Group>
         </div>
       </div>
 
@@ -568,7 +513,7 @@ const AttendanceList = () => {
             <th onClick={() => handleSort("status")}>Status</th>
             <th onClick={() => handleSort("clockinTime")}>Clock In</th>
             <th onClick={() => handleSort("clockoutTime")}>Clock Out</th>
-            <th onClick={() => handleSort("totalHours")}>Hours</th>
+            <th onClick={() => handleSort("totalHours")}>Total Hours</th>
             <th className="text-center">Actions</th>
           </tr>
         </thead>
