@@ -293,6 +293,17 @@ const AttendanceList = () => {
       alert("No attendance records found for the selected employee.");
     }
   };
+  const downloadFilteredData = () => {
+    if (filteredAttendances.length === 0) {
+      alert("No attendance records found with the current filters.");
+      return;
+    }
+  
+    downloadCSV(
+      filteredAttendances,
+      `attendance_filtered_${moment().format("YYYY-MM-DD")}.csv`
+    );
+  };
   
 
   const exportReport = (reportType) => {
@@ -309,6 +320,9 @@ const AttendanceList = () => {
       case "employee":
         setShowModal((prev) => ({ ...prev, selectEmployee: true }));
         break;
+        case "filtered":
+          downloadFilteredData();
+          break;
       default:
         alert("Invalid export option selected.");
     }
@@ -385,6 +399,9 @@ const AttendanceList = () => {
               <Dropdown.Item onClick={() => exportReport("employee")}>
                 By Employee Name
               </Dropdown.Item>
+              <Dropdown.Item onClick={() => exportReport("filtered")}>
+    Download Filtered Data
+  </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </div>
