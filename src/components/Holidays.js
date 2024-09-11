@@ -83,7 +83,7 @@ export default function Holidays() {
         </div>
       )}
       <div className="additional-holidays">
-        <h3 className="additional-title">Additional Holidays Information</h3>
+        <h3>Additional Holidays Information</h3>
         <button className="toggle-button" onClick={() => setShowOtherTable(!showOtherTable)}>
           {showOtherTable ? 'Hide Optional Holidays' : 'Show Optional Holidays'}
         </button>

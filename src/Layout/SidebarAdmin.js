@@ -35,7 +35,8 @@ const theme = {
   secondary: "#27ae60",
   active: "#1e8449",
   hover: "rgba(255, 255, 255, 0.2)",
-  text: "#FFFFFF",
+  // text: "#FFFFFF",
+  text:"#00000",
   scrollbarThumb: "rgba(255, 255, 255, 0.3)",
   scrollbarTrack: "rgba(255, 255, 255, 0.1)",
 };
@@ -48,7 +49,8 @@ const Sidebar = styled.aside`
   transform: translateY(-50%);
   height: 70vh;
   width: ${(props) => (props.isCollapsed ? "70px" : "250px")};
-  background: linear-gradient(135deg, #2f631e, rgba(39, 174, 96, 0.8));
+
+background:#8adcd2;
   backdrop-filter: blur(10px);
   border-radius: 20px;
   transition: all 0.3s ease;

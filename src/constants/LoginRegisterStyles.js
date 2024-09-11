@@ -16,7 +16,7 @@ export const GlobalStyle = createGlobalStyle`
   body {
     font-family: 'Poppins', sans-serif;
     background: background: rgb(2,0,36);
-background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(1,138,72,0.636467086834734) 34%, rgba(0,255,102,1) 100%);;
+background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(1,138,72,0.636467086834734) 34%, rgba(0,255,102,1) 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -204,7 +204,7 @@ export const EmpowermentContainer = styled.div`
     135deg,
     #ffd700,
     #ffeb3b
-  ); /* Updated to more yellowish colors */
+  ); 
   background-clip: text;
   color: transparent;
   text-align: center;

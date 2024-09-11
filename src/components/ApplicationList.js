@@ -16,6 +16,7 @@ const ApplicationList = () => {
   const [hasError, setHasError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [completed, setCompleted] = useState(false);
+  const [userNames, setUserNames] = useState({});
   const history = useHistory();
 
   useEffect(() => {
@@ -32,6 +33,10 @@ const ApplicationList = () => {
         }));
         setApplications(formattedApplications.reverse());
         setFilteredApplications(formattedApplications.reverse()); // Initially show all applications
+        
+        // Extract user IDs and fetch names
+        const userIds = [...new Set(formattedApplications.map((app) => app.userId))];
+        fetchUserNames(userIds);
       })
       .catch((err) => {
         setHasError(true);
@@ -61,6 +66,27 @@ const ApplicationList = () => {
         setErrorMsg(err.response?.data?.message || "An error occurred");
       });
   }, []);
+
+  const fetchUserNames = async (userIds) => {
+    try {
+      const userNameRequests = userIds.map((userId) =>
+        axios.get(`/api/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+      );
+      const responses = await Promise.all(userNameRequests);
+      const nameMap = responses.reduce((acc, res) => {
+        acc[res.data.id] = res.data.fullName;
+        return acc;
+      }, {});
+
+      setUserNames(nameMap);
+    } catch (error) {
+      console.error("Error fetching user names:", error);
+    }
+  };
 
   const handleFilterChange = (event) => {
     const selectedStatus = event.target.value;
@@ -139,7 +165,7 @@ const ApplicationList = () => {
       <Table striped bordered hover>
         <thead>
           <tr>
-            <th>Emp Id</th>
+            <th>Employee Name</th>
             <th>Type</th>
             <th>Start Date</th>
             <th>End Date</th>
@@ -151,7 +177,7 @@ const ApplicationList = () => {
         <tbody>
           {filteredApplications.map((app) => (
             <tr key={app.id}>
-              <td>{app.userId}</td>
+              <td>{userNames[app.userId] || "Loading..."}</td>
               <td>{app.type}</td>
               <td>{app.startDate}</td>
               <td>{app.endDate}</td>

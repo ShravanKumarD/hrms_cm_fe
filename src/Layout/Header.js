@@ -9,7 +9,8 @@ const theme = {
   primary: "#2c5e1a",
   secondary: "#4a8c34",
   tertiary: "#76b852",
-  text: "#e0e0e0",
+  // text: "#e0e0e0",
+  text: "#000000",
   hover: "#8ed160",
   fontSize: "14px",
   padding: "12px 16px",
@@ -22,12 +23,13 @@ const glowAnimation = keyframes`
 `;
 
 const HeaderWrapper = styled.nav`
-  background: linear-gradient(
-    135deg,
-    ${theme.primary} 0%,
-    ${theme.secondary} 50%,
-    ${theme.tertiary} 100%
-  );
+  // background: linear-gradient(
+  //   135deg,
+  //   ${theme.primary} 0%,
+  //   ${theme.secondary} 50%,
+  //   ${theme.tertiary} 100%
+  // );
+  background: #8adcd2;
   color: ${theme.text};
   display: flex;
   justify-content: space-between;
@@ -40,7 +42,7 @@ const HeaderWrapper = styled.nav`
   margin-left: 20px;
   margin-right: 20px;
 
-  animation: ${glowAnimation} 3s infinite;
+  // animation: ${glowAnimation} 3s infinite;
 
   &::before {
     content: "";
@@ -49,12 +51,12 @@ const HeaderWrapper = styled.nav`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(
-      135deg,
-      ${theme.primary}80 0%,
-      ${theme.secondary}80 50%,
-      ${theme.tertiary}80 100%
-    );
+    // background: linear-gradient(
+    //   135deg,
+    //   ${theme.primary}80 0%,
+    //   ${theme.secondary}80 50%,
+    //   ${theme.tertiary}80 100%
+    // );
     filter: blur(10px);
     opacity: 0.7;
     z-index: -1;

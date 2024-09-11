@@ -7,6 +7,7 @@ import PaymentChartsPage from "./PaymentChartsPage";
 import RecentApplications from "./RecentApplications";
 import RecentAnnouncements from "./RecentAnnouncements";
 import TimesheetMini from "./../components-mini/TimesheetMini";
+import Timesheet from "./../components/Timesheet";
 // import StartWork from "./StartWork";
 // import LightweightStartWork from "../components-mini/LightweightStartWork";
 import axios from "axios";
@@ -71,7 +72,7 @@ const Dashboard = () => {
 
   return (
     <div>
-      <div className="row pt-4">
+      {/* <div className="row pt-4">
         <div className="col-md-4 col-sm-6 col-xs-12">
           <Infobox
             title="Total Employees"
@@ -96,24 +97,34 @@ const Dashboard = () => {
             icon="fa fa-money-check"
           />
         </div>
-      </div>
+      </div> */}
 
       <div className="row pt-4">
-        <div className="col-sm-6">
+      <div className="col-sm-10">
           {/* <Calendar /> */}
-          <div className="panel-body">
+          {/* <div className="panel-body"> */}
               <TimesheetMini />
-            </div>
+              {/* <Timesheet/> */}
+            {/* </div> */}
             <p>&nbsp;</p>
       <div>
-      <RecentApplications />
+      
       </div>
         </div>
-        <div className="col-md-6">
+        <div className="col-md-12">
           {/* <ExpenseChartsPage /> */}
-          <Holidays/>
+          <div className="row">
+            <div className="col-sm-6">
+            <RecentApplications />
+            </div>
+            <div className="col-sm-6">
+            <RecentAnnouncements />
+            </div>
+            <Holidays/>
+          </div>
+         
           {/* <PaymentChartsPage /> */}
-          <RecentAnnouncements />
+      
         </div>
       </div>
     </div>

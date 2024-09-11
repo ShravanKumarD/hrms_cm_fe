@@ -1,0 +1,58 @@
+/* TimeSheet.css */
+
+.timesheet-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 50px rgb(29 23 23 / 25%)
+    /* position: relative; */
+  }
+  
+  .timesheet-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+  }
+  .react-calendar__tile--active {
+    background: #8adcd2;
+    color: white;
+}
+.react-calendar button {
+  margin: 6px;
+  border: 0;
+  outline: none;
+}
+  .custom-calendar {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #a7a4a4;
+    width: 100%;
+  }
+  
+  .holiday-label {
+    background-color: #8adcd2;
+    color: #333;
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: inline-block;
+    position: relative;
+  }
+  
+  .popup-content {
+    position:fixed;
+    background-color: #8adcd2;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    white-space: nowrap;
+  }
+  .abbr{
+    text-decoration: none;
+  }

@@ -122,7 +122,7 @@ export default function PersonalLeaves() {
 
   return (
     <div>
-      <h3 className="title">Personal Leaves</h3>
+      <h3 className="title">Applications</h3>
       {hasError && <p className="error">{errorMsg}</p>}
       <div className="filter-section">
         <label htmlFor="status-filter">Filter by Status:</label>

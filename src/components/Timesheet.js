@@ -1,202 +1,131 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import moment from "moment";
-import "@fullcalendar/core/main.css";
-import "@fullcalendar/daygrid/main.css";
-import "../Timesheet.css";
-import LightweightStartWork from "../components-mini/LightweightStartWork";
-import ApplicationModal from "./ApplicationModal";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import API_BASE_URL from "../env";
-import { Modal } from "react-bootstrap";
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import './TimeSheet.css'; // Custom styles for calendar and holidays
 
-const Timesheet = () => {
-  const [applications, setApplications] = useState([]);
-  const [attendances, setAttendances] = useState([]);
-  const [clickedDate, setClickedDate] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [showApplicationModal, setShowApplicationModal] = useState(false);
+const TimeSheet = () => {
+  const [popupContent, setPopupContent] = useState(null);
+  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+  // const [holidays, setHolidays] = useState([]);
   const [error, setError] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  const token = localStorage.getItem("token");
 
-  if (!user || !token) {
-    setError("User authentication failed. Please log in again.");
-  }
+  // useEffect(() => {
+  //   const fetchHolidays = async () => {
+  //     try {
+      
+  //       const API_BASE_URL = 'http://localhost:3000/api';
+  //       axios.defaults.baseURL = API_BASE_URL;
+  //       const token = localStorage.getItem("token");
+  //       // Fetch data from API
+  //       const response = await axios.get('/holiday', {
+  //           headers: {
+  //              Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //           },
+  //         });
 
-  const userId = user?.id;
+  //       if (!response.data) {
+  //         throw new Error('No holiday data found.');
+  //       }
+  //      console.log(response.data)
+  //       setHolidays(response.data);
+  //     } catch (error) {
+  //       setError(error.message || 'An error occurred while fetching holiday data.');
+  //     }
+  //   };
 
-  useEffect(() => {
-    const fetchAttendances = async () => {
-      try {
-        if (!userId || !token) {
-          throw new Error("User not authenticated.");
-        }
+  //   fetchHolidays();
+  // }, []);
 
-        axios.defaults.baseURL = API_BASE_URL;
-        const response = await axios.get(`api/attendance/user/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
 
-        if (!response.data) {
-          throw new Error("No attendance data found.");
-        }
+  // const holidays = [
+  //   { date: '2024-09-07', label: 'Hartalika Teej', details: 'Festival celebrated by women for marital bliss.' },
+  //   { date: '2024-09-07', label: 'Ganesh Chaturthi', details: 'Festival celebrating the birth of Lord Ganesha.' },
+  //   { date: '2024-09-17', label: 'Anant Chaturdashi', details: 'Last day of the Ganesh Chaturthi festival.' },
+  //   { date: '2024-09-17', label: 'Vishwakarma Puja', details: 'Festival honoring the divine architect Vishwakarma.' },
+  //   { date: '2024-09-29', label: 'Pitru Paksha Ends', details: 'Fortnight dedicated to paying homage to ancestors.' },
+  //   { date: '2024-09-23', label: 'September Equinox', details: 'Astronomical event marking the start of autumn in the Northern Hemisphere.' },
+  //   { date: '2024-09-16', label: 'Prophet Muhammad\'s Birthday', details: 'Islamic observance of the birthday of the Prophet Muhammad.' },
+  //   { date: '2024-09-30', label: 'Mahalaya', details: 'Marks the beginning of Durga Puja festivities.' },
+  //   { date: '2024-10-02', label: 'Mahatma Gandhi Jayanti', details: 'National holiday marking the birthday of Mahatma Gandhi.' },
+  //   { date: '2024-10-03', label: 'First Day of Sharad Navaratri', details: 'Festival dedicated to the worship of the Hindu deity Durga.' },
+  //   { date: '2024-10-09', label: 'First Day of Durga Puja', details: 'Celebration in honor of the goddess Durga.' },
+  //   { date: '2024-10-10', label: 'Maha Saptami', details: 'Seventh day of Durga Puja festivities.' },
+  //   { date: '2024-10-11', label: 'Maha Ashtami', details: 'Eighth day of Durga Puja.' },
+  //   { date: '2024-10-12', label: 'Maha Navami', details: 'Ninth day of Durga Puja.' },
+  //   { date: '2024-10-13', label: 'Dussehra', details: 'Victory of good over evil, marked by burning effigies.' },
+  //   { date: '2024-10-17', label: 'Maharishi Valmiki Jayanti', details: 'Celebration of the birth of the sage Valmiki, author of the Ramayana.' },
+  //   { date: '2024-10-20', label: 'Karaka Chaturthi (Karva Chauth)', details: 'Festival observed by married Hindu women for the well-being of their husbands.' },
+  //   { date: '2024-10-31', label: 'Naraka Chaturdasi', details: 'Day preceding Diwali, celebrating the defeat of demon Narakasura by Krishna.' },
+  //   { date: '2024-11-01', label: 'Diwali/Deepavali', details: 'Festival of lights, celebrating the victory of light over darkness.' },
+  // ];
+  const holidays = [
+    { date: '2024-01-26', label: 'Republic Day', details: 'National holiday celebrating the adoption of the Constitution of India.' },
+    { date: '2024-03-08', label: 'Mahashivratri', details: 'Hindu festival honoring Lord Shiva. Optional holiday in some regions.' },
+    { date: '2024-03-25', label: 'Holi', details: 'Hindu spring festival known for its colorful celebrations.' },
+    { date: '2024-04-11', label: 'Id-Ul-Fitr (Ramzan Id)', details: 'Islamic holiday marking the end of Ramadan, the month of fasting.' },
+    { date: '2024-06-17', label: 'Bakri Id', details: 'Islamic festival of sacrifice. Optional holiday in some regions.' },
+    { date: '2024-08-15', label: 'Independence Day', details: 'National holiday commemorating India\'s independence from British rule.' },
+    { date: '2024-09-07', label: 'Vinayak Chaturthi', details: 'Hindu festival celebrating the birth of Lord Ganesha.' },
+    { date: '2024-10-02', label: 'Mahatma Gandhi Jayanti', details: 'National holiday honoring the birthday of Mahatma Gandhi.' },
+    { date: '2024-10-09', label: 'Bathukamma', details: 'Floral festival celebrated in Telangana. Holiday in some regions, optional in others.' },
+    { date: '2024-10-12', label: 'Vijayadashami', details: 'Hindu festival marking the victory of good over evil.' },
+    { date: '2024-11-01', label: 'Diwali * Laxmi Pujan', details: 'Festival of lights, one of the major Hindu celebrations.' },
+    { date: '2024-12-25', label: 'Christmas', details: 'Christian holiday celebrating the birth of Jesus Christ.' },
+  ];
+  
+  const formatDate = (date) => date.toISOString().split('T')[0];
 
-        setAttendances(response.data);
-      } catch (error) {
-        setError(error.message || "An error occurred while fetching attendance data.");
-      }
-    };
-
-    fetchAttendances();
-  }, [userId, token]);
-
-  useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        if (!userId || !token) {
-          throw new Error("User not authenticated.");
-        }
-
-        axios.defaults.baseURL = API_BASE_URL;
-        const response = await axios.get(`/api/applications/user/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.data) {
-          throw new Error("No application data found.");
-        }
-
-        setApplications(response.data);
-      } catch (error) {
-        setError(error.message || "An error occurred while fetching application data.");
-      }
-    };
-
-    fetchApplications();
-  }, [userId, token]);
-
-  const handleDayRender = (dayRenderInfo) => {
-    const { date, el } = dayRenderInfo;
-    const cellDateString = date.toDateString();
-
-    el.style.cssText = `
-      background-color: '';
-      font-size: 0.9em;
-      padding-bottom: 0.8rem;
-      padding-left: 0.8rem;
-      text-align: left;
-      vertical-align: bottom;
-      line-height: normal;
-    `;
-
-    const today = new Date();
-    if (date.toDateString() === today.toDateString()) {
-      el.style.backgroundColor = "red";
-    }
-
-    const application = applications.find(
-      (application) =>
-        new Date(application.startDate).toDateString() === cellDateString
-    );
-
-    if (application) {
-      const color =
-        application.status === "Pending" ? "rgba(255, 165, 0, 0.4)" : "rgba(0, 128, 0, 0.4)";
-      el.style.backgroundColor = color;
-      el.innerHTML = `${application.status} <br> ${application.type}`;
-    }
-
-    const attendance = attendances.find(
-      (attendance) =>
-        new Date(attendance.date).toDateString() === cellDateString
-    );
-
-    if (attendance) {
-      const clockinTime = moment(attendance.clockinTime);
-      const clockoutTime = attendance.clockoutTime
-        ? moment(attendance.clockoutTime)
-        : moment();
-      const hoursWorked = moment.duration(clockoutTime.diff(clockinTime)).asHours();
-      const { workStatus, backgroundColor } = getWorkStatusAndColor(hoursWorked);
-
-      el.style.backgroundColor = backgroundColor;
-      el.innerHTML = `${workStatus} <br> ${clockinTime.format("h:mm a")} - ${clockoutTime.format(
-        "h:mm a"
-      )}`;
-
-      if (attendance.status === "Absent") {
-        el.style.backgroundColor = "rgba(255, 99, 71, 0.4)";
-        el.textContent = "Absent";
-      } else if (attendance.status === "Leave") {
-        el.style.backgroundColor = "rgba(173, 216, 230, 0.4)";
-        el.textContent = "Leave";
-      }
+  const tileContent = ({ date, view }) => {
+    if (view === 'month') {
+      const formattedDate = formatDate(date);
+      const holiday = holidays.find(holiday =>
+        holiday.date === formattedDate
+      );
+      return holiday ? (
+        <div
+          className="holiday-label"
+          onMouseEnter={(e) => {
+            const rect = e.target.getBoundingClientRect();
+            setPopupContent(holiday);
+            setPopupPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
+          }}
+          onMouseLeave={() => {
+            setPopupContent(null);
+          }}
+        >
+          {holiday.label}
+        </div>
+      ) : null;
     }
   };
 
-  const getWorkStatusAndColor = (hoursWorked) => {
-    if (hoursWorked > 9) {
-      return { workStatus: "Overtime", backgroundColor: "rgba(0, 100, 0, 0.6)" };
-    } else if (hoursWorked >= 9) {
-      return { workStatus: "Full Day", backgroundColor: "rgba(0, 128, 0, 0.4)" };
-    } else if (hoursWorked >= 4) {
-      return { workStatus: "Partial Day", backgroundColor: "rgba(144, 238, 144, 0.4)" };
-    } else {
-      return { workStatus: "Less than Half Day", backgroundColor: "rgba(255, 255, 0, 0.4)" };
-    }
-  };
-
-  const handleDateClick = (arg) => {
-    const clickedDate = new Date(arg.date);
-    const today = new Date();
-
-    if (clickedDate.toDateString() === today.toDateString()) {
-      setShowModal(true);
-    } else {
-      setClickedDate(clickedDate);
-      setShowApplicationModal(true);
-    }
-  };
+  // Get current month and year for the heading
+  const currentMonthYear = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   return (
-    <div className="attendance-container">
-      {error && <div className="error-message">{error}</div>}
-      <div className="calendar-wrapper">
-        <FullCalendar
-          plugins={[dayGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          header={{
-            left: "prev,next",
-            center: "title",
-          }}
-          dayCellDidMount={handleDayRender}
-          dateClick={handleDateClick}
-          height="auto"
+    <div className="timesheet-container">
+      <h3 className="timesheet-title">{currentMonthYear}</h3>
+      <div className="calendar-container">
+        <Calendar
+          value={new Date(2024, 8,10 )} 
+          tileContent={tileContent}
+          className="custom-calendar"
         />
+        {popupContent && (
+          <div
+            className="popup-content"
+            style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left}px` }}
+          >
+            <strong>{popupContent.label}</strong>
+            <p>{popupContent.details}</p>
+          </div>
+        )}
       </div>
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Start Work</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <LightweightStartWork />
-        </Modal.Body>
-      </Modal>
-      <ApplicationModal
-        show={showApplicationModal}
-        onHide={() => setShowApplicationModal(false)}
-        date={clickedDate}
-      />
     </div>
   );
 };
 
-export default Timesheet;
+export default TimeSheet;
