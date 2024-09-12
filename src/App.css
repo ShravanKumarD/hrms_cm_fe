@@ -494,8 +494,9 @@ a{
 }
 
 .table td, .table th {
-  padding: 2px;
+  padding: 0px;
   text-align: center;
+  padding-top: 10px;
 }
 .form-control {
   height: 5vh;

@@ -31,3 +31,13 @@
 margin: 0;
 padding: 0;
   }
+
+  .check-icon {
+    color: rgb(98, 100, 98); 
+
+  }
+  
+  .cross-icon {
+    color: rgb(194, 188, 188); 
+  }
+  

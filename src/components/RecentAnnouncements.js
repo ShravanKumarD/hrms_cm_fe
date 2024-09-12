@@ -32,13 +32,13 @@ const RecentAnnouncements = () => {
   }, []);
 
   // Define theme for CalendarIcon
-  const theme = {
-    calendarIcon: {
-      textColor: "white",
-      primaryColor: "#0da472",
-      backgroundColor: "#fafafa",
-    },
-  };
+  // const theme = {
+  //   calendarIcon: {
+  //     textColor: "white",
+  //     primaryColor: "#0da472",
+  //     backgroundColor: "#fafafa",
+  //   },
+  // };
 
   // Helper function to format dates
   const formatDate = (dateString) => {
@@ -73,7 +73,7 @@ const RecentAnnouncements = () => {
                 )}
                 <p>{announcement.announcementDescription}</p>
               </div>
-              <hr className="separator" />
+              <hr className="separator"/>
             </li>
           );
         })}

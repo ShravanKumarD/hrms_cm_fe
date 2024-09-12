@@ -12,10 +12,15 @@ const Dashboard = () => {
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [disabledButtons, setDisabledButtons] = useState({});
   const [userNames, setUserNames] = useState({});
+  const [users, setUsers] = useState([]);
   const [showModal1, setShowModal1] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
   const [showModal3, setShowModal3] = useState(false);
-
+  const [attendances, setAttendances] = useState([]);
+  const [todaysCount, setTodaysCount] = useState(0);
+  const [monthlyAttendance, setMonthlyAttendance] = useState([]);
+  const [employeeList, setEmployeeList] = useState([]);
+  const [empCount, setEmpCount] = useState(0);
   const modal1Ref = useRef(null);
   const button1Ref = useRef(null);
   const modal2Ref = useRef(null);
@@ -49,7 +54,98 @@ const Dashboard = () => {
       .catch((err) => {
         console.error(err.response?.data?.message || "An error occurred");
       });
+      fetchUsers()
+    fetchData();
+
   }, []);
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      axios.defaults.baseURL = API_BASE_URL;
+      const res = await axios.get("/api/users", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setEmpCount(res.data.length);
+      res.data.shift(1);
+      setUsers(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await axios.get("/api/attendance", {
+        baseURL: API_BASE_URL,
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+
+      const formattedAttendances = response.data.map((attendance) => {
+        const date = moment(attendance.date).format("YYYY-MM-DD");
+        const clockinTime = attendance.clockinTime
+          ? moment(attendance.clockinTime, [
+              "YYYY-MM-DD HH:mm:ss",
+              "HH:mm:ss",
+            ]).format("hh:mm A")
+          : "";
+        const clockoutTime = attendance.clockoutTime
+          ? moment(attendance.clockoutTime, [
+              "YYYY-MM-DD HH:mm:ss",
+              "HH:mm:ss",
+            ]).format("hh:mm A")
+          : "";
+
+        return {
+          ...attendance,
+          date,
+          clockinTime,
+          clockoutTime,
+        };
+      });
+
+      setAttendances(formattedAttendances.reverse());
+
+      const today = moment().startOf("day");
+      const todaysAttendance = formattedAttendances.filter((attendance) =>
+        moment(attendance.date).isSame(today, "day")
+      );
+      setTodaysCount(todaysAttendance.length);
+
+      const monthlyData = {};
+      formattedAttendances.forEach((att) => {
+        const monthYear = moment(att.date).format("YYYY-MM");
+        const day = moment(att.date).format("DD");
+
+        if (!monthlyData[monthYear]) {
+          monthlyData[monthYear] = {};
+        }
+
+        if (!monthlyData[monthYear][day]) {
+          monthlyData[monthYear][day] = 0;
+        }
+
+        monthlyData[monthYear][day]++;
+      });
+
+      const monthlyAttendance = Object.entries(monthlyData).map(
+        ([monthYear, days]) => ({
+          monthYear,
+          days: Object.entries(days).map(([day, count]) => ({ day, count })),
+        })
+      );
+
+      setMonthlyAttendance(monthlyAttendance);
+
+      const employeeNames = [
+        ...new Set(formattedAttendances.map((att) => att.user.fullName)),
+      ];
+      setEmployeeList(employeeNames);
+    } catch (error) {
+      console.error("Failed to fetch attendance records:", error);
+    }
+  }, []);
+
+
   const handleStatusChange = useCallback((app, status) => {
     axios.defaults.baseURL = API_BASE_URL;
     axios
@@ -119,17 +215,19 @@ const Dashboard = () => {
           <p>&nbsp;</p>
           <button ref={button2Ref} className="dashboard-icons" onClick={() => handleShowModal(setShowModal2, button2Ref, modal2Ref)}>Announcements</button>
           <p>&nbsp;</p>
-          <button ref={button3Ref} className="dashboard-icons" onClick={() => handleShowModal(setShowModal3, button3Ref, modal3Ref)}>Event in This Month</button>
+          <button ref={button3Ref} className="dashboard-icons" onClick={() => handleShowModal(setShowModal3, button3Ref, modal3Ref)}>Daily Workforce Summary</button>
         </div>
       </div>
       <Modal
         show={showModal1}
         onHide={() => handleCloseModal(setShowModal1)}
-        backdrop={true}
+           backdrop="static"
         className="modalApplications"
       >
         <div className="d-flex justify-content-center">
+        <Modal.Header closeButton>
           <h3>Employees' Applications</h3>
+          </Modal.Header>
         </div>
         <div className="d-flex justify-content-center">
           <table>
@@ -185,10 +283,13 @@ const Dashboard = () => {
       <Modal
         show={showModal2}
         onHide={() => handleCloseModal(setShowModal2)}
-        backdrop={true}
+        backdrop="static"
+        // centered
       >
-           <div className="d-flex justify-content-center">
+           <div className="d-flex justify-content-center" >
+            <Modal.Header closeButton>
           <h3>Announcements</h3>
+          </Modal.Header>
           </div>
           <div className="d-flex justify-content-center">
         <RecentAnnouncements/>
@@ -210,22 +311,31 @@ const Dashboard = () => {
 
 
       <Modal
-        show={showModal3}
-        onHide={() => handleCloseModal(setShowModal3)}
-        backdrop={true}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Modal 3 Title</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Hello world</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => handleCloseModal(setShowModal3)}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      show={showModal3}
+      onHide={() => handleCloseModal(setShowModal3)}
+      backdrop="static"
+      centered
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>Workforce Analytics</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div className=" card mb-3">
+          <h4><strong>Total Employees: {empCount}</strong></h4>
+        </div>
+        <div className=" card mb-3">
+          <h4><strong>Total Employees Present Today: {todaysCount}</strong></h4>
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          variant="secondary"
+          onClick={() => handleCloseModal(setShowModal3)}
+        >
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
     </>
   );
 };

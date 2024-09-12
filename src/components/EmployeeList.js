@@ -70,7 +70,7 @@ const EmployeeList = () => {
         <div>
           <h3>Employee List</h3>
           <Badge bg="secondary">
-            <strong>Total Employees: {empCount} members</strong>
+           <h4><strong>Total Employees: {empCount} members</strong></h4> 
           </Badge>
         </div>
         <div>
@@ -80,9 +80,9 @@ const EmployeeList = () => {
                 <th>Emp ID</th>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Address</th>
+                {/* <th>Address</th>
                 <th>Marital Status</th>
-                <th>Date of Birth</th>
+                <th>Date of Birth</th> */}
                 <th>Department</th>
                 <th>Job Title</th>
                 <th>Mobile</th>
@@ -96,21 +96,22 @@ const EmployeeList = () => {
                   <td>{user.id}</td>
                   <td>{user.fullName}</td>
                   <td>{user.user_personal_info?.emailAddress}</td>
-                  <td>{user.user_personal_info?.address}</td>
+                  {/* <td>{user.user_personal_info?.address}</td>
                   <td>{user.user_personal_info?.maritalStatus}</td>
-                  <td>{user.user_personal_info?.dateOfBirth.split(' ')[0]}</td>
+                  <td>{user.user_personal_info?.dateOfBirth.split(' ')[0]}</td> */}
                   <td>{user.department?.departmentName || "N/A"}</td>
                   <td>{user.jobs[0]?.jobTitle || "N/A"}</td>
                   <td>{user.user_personal_info?.mobile || "N/A"}</td>
                   <td>
-                    <span
-                      className={`badge ${
-                        user.active ? "bg-success" : "bg-danger"
-                      }`}
-                    >
-                      {user.active ? "Active" : "Inactive"}
-                    </span>
-                  </td>
+  <span
+    className={`badge ${
+      user.active ? "bg-success" : "bg-danger"
+    }`}
+  >
+    {user.active ? "Active" : "Inactive"}
+  </span>
+</td>
+
 
                   <td>
                     <Button
@@ -129,7 +130,7 @@ const EmployeeList = () => {
                     >
                       <i className="far fa-edit"></i> Edit
                     </Button>
-                    {user.id !==
+                    {/* {user.id !==
                       JSON.parse(localStorage.getItem("user")).id && (
                       <Button
                         size="sm"
@@ -139,7 +140,7 @@ const EmployeeList = () => {
                       >
                         <i className="far fa-trash-alt"></i> Delete
                       </Button>
-                    )}
+                    )} */}
                   </td>
                 </tr>
               ))}

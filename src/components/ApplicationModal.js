@@ -73,7 +73,7 @@ const ApplicationModal = ({ show, onHide, date }) => {
   };
 
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal show={show} centered onHide={onHide}>
       <Modal.Header style={{ alignItems: "center" }} closeButton>
         <Modal.Title>Make Application</Modal.Title>
         <span style={{ marginLeft: "10px" }}>

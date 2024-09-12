@@ -3,6 +3,7 @@ import { Table, Card, Form } from 'react-bootstrap';
 import axios from 'axios';
 import moment from 'moment';
 import API_BASE_URL from '../env'; // Update the path as needed
+import './AttendanceList.css'; // Import your CSS file
 
 const months = moment.months(); // Array of month names
 const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1); // Array for days 1 to 31
@@ -23,21 +24,23 @@ const AttendanceListDetailed = () => {
 
         // Process and format the attendance data
         const formattedData = response.data.map((attendance) => {
-          const date = moment(attendance.date).format('YYYY-MM-DD');
+          const date = moment(attendance.date);
           return {
             ...attendance,
-            formattedDate: date,
-            day: moment(date).date(),
-            month: moment(date).format('MMMM'),
+            formattedDate: date.format('YYYY-MM-DD'),
+            day: date.date(),
+            month: date.format('MMMM'),
             employeeName: attendance.user.fullName,
-            status: attendance.status.toLowerCase() === 'present' ? '✔️' : '❌',
+            status: attendance.status.toLowerCase() === 'present'
+              ? <span className="check-icon">✅</span>
+              : <span className="absent-icon">-</span>,
           };
         });
 
         setAttendanceData(formattedData);
 
         // Get unique employee names
-        const employees = [...new Set(formattedData.map((att) => att.employeeName))];
+        const employees = [...new Set(formattedData.map(att => att.employeeName))];
         setEmployeeList(employees);
 
       } catch (error) {
@@ -57,7 +60,7 @@ const AttendanceListDetailed = () => {
   // Create a map of employee names to their attendance data
   const employeeAttendanceMap = employeeList.reduce((map, employee) => {
     map[employee] = daysInMonth.reduce((acc, day) => {
-      acc[day] = '❌'; // Default to Absent
+      acc[day] = <span className="absent-icon">-</span>; // Use a clearer symbol for absence
       return acc;
     }, {});
 
@@ -73,45 +76,43 @@ const AttendanceListDetailed = () => {
   return (
     <div className="container mt-4">
       <div>
-        <div>
-          <Card.Title>Detailed Attendance List</Card.Title>
-          <p>&nbsp;</p>
-          <Form.Group controlId="monthFilter">
-            <Form.Label>Select Month</Form.Label>
-            <Form.Control
-              as="select"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-            >
-              {months.map(month => (
-                <option key={month} value={month}>{month}</option>
+        <Card.Title>Detailed Attendance List</Card.Title>
+        <p>&nbsp;</p>
+        <Form.Group controlId="monthFilter">
+          <Form.Label>Select Month</Form.Label>
+          <Form.Control
+            as="select"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+          >
+            {months.map(month => (
+              <option key={month} value={month}>{month}</option>
+            ))}
+          </Form.Control>
+        </Form.Group>
+        
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr>
+              <th>Employee Name</th>
+              {daysInMonth.map(day => (
+                <th key={day}>Day {day}</th>
               ))}
-            </Form.Control>
-          </Form.Group>
-          
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr>
-                <th>Employee</th>
+            </tr>
+          </thead>
+          <tbody>
+            {employeeList.map(employee => (
+              <tr key={employee}>
+                <td>{employee}</td>
                 {daysInMonth.map(day => (
-                  <th key={day}>Day {day}</th>
+                  <td key={day}>
+                    {employeeAttendanceMap[employee][day]}
+                  </td>
                 ))}
               </tr>
-            </thead>
-            <tbody>
-              {employeeList.map(employee => (
-                <tr key={employee}>
-                  <td>{employee}</td>
-                  {daysInMonth.map(day => (
-                    <td key={day}>
-                      {employeeAttendanceMap[employee][day]}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
+            ))}
+          </tbody>
+        </Table>
       </div>
     </div>
   );

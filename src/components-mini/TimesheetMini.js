@@ -176,7 +176,12 @@ export default function Calendar() {
         events={events}
         className="calendar-container"
       />
-    <Modal show={showModal} onHide={() => setShowModal(false)} closeButton>
+    <Modal show={showModal} onHide={() => setShowModal(false)}
+    centered
+    closeButton>
+    <Modal.Header closeButton>
+    <h3>Start Your Work Here</h3>
+          </Modal.Header>
         <div closeButton></div>
           <LightweightStartWork />
           <div><p></p></div>

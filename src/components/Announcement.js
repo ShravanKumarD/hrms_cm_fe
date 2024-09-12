@@ -3,8 +3,8 @@ import { Card, Button, Form, Alert } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom'; // For react-router-dom v5
 import axios from 'axios';
 import API_BASE_URL from '../env';
-import './Announcement.css'; // Import the CSS file for styling
 import DatePicker from "react-datepicker";
+import 'react-datepicker/dist/react-datepicker.css'; // Make sure to import DatePicker styles
 
 const Announcement = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -12,7 +12,7 @@ const Announcement = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [createdAt, setCreatedAt] = useState('');
+  const [createdAt, setCreatedAt] = useState(null); // Use null for DatePicker
   const [hasError, setHasError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [completed, setCompleted] = useState(false);
@@ -60,15 +60,13 @@ const Announcement = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const departmentId = selectedDepartment !== "all" ? selectedDepartment : null;
-
     const data = {
       announcementTitle: title,
       announcementDescription: description,
-      createdAt,
+      createdAt:createdAt,
       createdByUserId: JSON.parse(localStorage.getItem('user')).id,
       departmentId,
     };
-
     try {
       await axios.post('/api/departmentAnnouncements', data, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -93,10 +91,13 @@ const Announcement = () => {
   }
 
   return (
-    <div className="form-container">
-      <Form onSubmit={handleSubmit}>
-        <div className="d-flex justify-content-center ">
-          <div className="">
+    < >
+    <h3>Announcements</h3>
+<div className='card-body'>
+<Form onSubmit={handleSubmit}>
+      <div className="container mt-4">
+        <div className="row">
+          <div className="col-md-3 mb-3">
             <Form.Group>
               <Form.Label>Title</Form.Label>
               <Form.Control
@@ -108,7 +109,7 @@ const Announcement = () => {
               />
             </Form.Group>
           </div>
-          <div className="col-sm-3">
+          <div className="col-md-3 mb-3">
             <Form.Group>
               <Form.Label>Set For Date</Form.Label>
               <DatePicker
@@ -120,7 +121,7 @@ const Announcement = () => {
               />
             </Form.Group>
           </div>
-          <div className="col-sm-3">
+          <div className="col-md-3 mb-3">
             <Form.Group>
               <Form.Label>Department</Form.Label>
               <Form.Control
@@ -134,7 +135,7 @@ const Announcement = () => {
               </Form.Control>
             </Form.Group>
           </div>
-          <div className="col-sm-3">
+          <div className="col-md-3 mb-3">
             <Form.Group>
               <Form.Label>Description</Form.Label>
               <Form.Control
@@ -147,18 +148,18 @@ const Announcement = () => {
             </Form.Group>
           </div>
         </div>
-        <div className='row'>
-        <div className='col-sm-1'></div>
-      <div>
-   <Button type="submit" className='dashboard-icons btn-sm '>
-          Submit
-        </Button>
+        <div className='text-center mb-4'>
+          <Button type="submit" variant="primary" className='btn-sm'>
+            Submit
+          </Button>
+        </div>
       </div>
-      </div>
-      </Form>
-      <div className="table-container">
+    </Form>
+</div>
+  
+      <div className="table-responsive ">
         <Card.Body>
-          <table className="announcements-table">
+          <table className="table table-bordered">
             <thead>
               <tr>
                 <th>ID</th>
@@ -172,17 +173,18 @@ const Announcement = () => {
             </thead>
             <tbody>
               {announcements.map((announcement, index) => (
-                <tr key={announcement.id} className={index % 2 ? 'even-row' : 'odd-row'}>
+                <tr key={announcement.id} className={index % 2 ? 'table-secondary' : ''}>
                   <td>{announcement.id}</td>
                   <td>{announcement.announcementTitle}</td>
                   <td>{announcement.announcementDescription}</td>
-                  <td>{announcement.createdAt}</td>
+                  <td>{announcement.createdAt.split(' ')[0]}</td>
                   <td>{announcement.user.fullName}</td>
                   <td>{announcement.department.departmentName}</td>
                   <td>
                     <Button
                       onClick={handleDelete(announcement.id)}
                       variant="danger"
+                      size="sm"
                     >
                       <i className="fas fa-trash"></i> Delete
                     </Button>
@@ -194,11 +196,11 @@ const Announcement = () => {
         </Card.Body>
       </div>
       {hasError && (
-        <Alert variant="danger" className="m-3">
+        <Alert variant="danger" className="mt-4">
           {errorMsg}
         </Alert>
       )}
-    </div>
+    </>
   );
 };
 
