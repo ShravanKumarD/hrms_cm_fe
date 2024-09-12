@@ -3,15 +3,21 @@ import React, { Component } from "react";
 export default class Footer extends Component {
   render() {
     return (
-      <footer className="main-footer">
-        <strong className="mr-1">
-          Copyright © 2023-2024{" "}
-          <a href="https://samcintsolutions.in/">Samcint Solutions</a>.
-        </strong>
-        All rights reserved.
-        <div className="float-right d-none d-sm-inline-block">
-          <b>Version</b> 1.0.0
+      <footer style={{ display: "flex", justifyContent: "center", alignItems: "center",}}>
+        <div>
+          <strong>
+            Copyright © 2023-2024{" "}
+            <a href="https://samcintsolutions.in/" target="_blank" rel="noopener noreferrer">
+              Samcint Solutions
+            </a>
+            .
+          </strong>
+          All rights reserved.
         </div>
+        <p>&nbsp;</p>
+        {/* <div style={{ textAlign: "right" }}>
+          <b>Version</b> 1.0.0
+        </div> */}
       </footer>
     );
   }

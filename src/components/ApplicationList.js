@@ -17,6 +17,7 @@ const ApplicationList = () => {
   const [completed, setCompleted] = useState(false);
   const [userNames, setUserNames] = useState({});
   const [disabledButtons, setDisabledButtons] = useState({});
+  const [applicationsCount,setApplicationsCount]=useState(0);
 
   useEffect(() => {
     axios.defaults.baseURL = API_BASE_URL;
@@ -32,6 +33,7 @@ const ApplicationList = () => {
         }));
         setApplications(formattedApplications.reverse());
         setFilteredApplications(formattedApplications.reverse()); // Initially show all applications
+        setApplicationsCount(res.data.length);
         
         // Extract user IDs and fetch names
         const userIds = [...new Set(formattedApplications.map((app) => app.userId))];
@@ -172,7 +174,7 @@ const ApplicationList = () => {
           </Form.Group>
         </Col>
       </Row>
-
+      <p><strong>Total Applications: {applicationsCount}</strong></p>
       <Table striped bordered hover>
         <thead>
           <tr>

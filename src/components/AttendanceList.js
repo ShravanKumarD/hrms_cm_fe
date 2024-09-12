@@ -12,6 +12,7 @@ import AttendanceAddModal from "./AttendanceAddModal";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./AttendanceList.css";
+import TimePicker from "react-time-picker";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -35,13 +36,14 @@ const AttendanceList = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [statusFilter, setStatusFilter] = useState("");
-  const [clockoutStart, setClockoutStart] = useState(null);
+  const [clockinStart, setClockinStart] = useState(null);
   const [clockoutEnd, setClockoutEnd] = useState(null);
   const [minHours, setMinHours] = useState(null);
   const [maxHours, setMaxHours] = useState(null);
   const [employeeList, setEmployeeList] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [exactHours, setExactHours] = useState(null);
+  const [applications, setApplications] = useState([]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -70,6 +72,15 @@ const AttendanceList = () => {
           date,
           clockinTime,
           clockoutTime,
+          applicationType:
+            applications.find((app) =>
+              moment(attendance.date).isBetween(
+                moment(app.startDate),
+                moment(app.endDate),
+                null,
+                "[]"
+              )
+            )?.type || "Not Applied",
         };
       });
 
@@ -116,6 +127,24 @@ const AttendanceList = () => {
   }, []);
 
   useEffect(() => {
+    axios.defaults.baseURL = API_BASE_URL;
+    axios
+      .get("/api/applications", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then((res) => {
+        const formattedApplications = res.data.map((app) => ({
+          ...app,
+          startDate: moment(app.startDate).format("Do MMM YYYY"),
+          endDate: moment(app.endDate).format("Do MMM YYYY"),
+        }));
+        console.log(formattedApplications, "fornm");
+        setApplications(formattedApplications);
+      })
+      .catch((err) => {
+        console.log(err, "ERRR");
+      });
+
     fetchData();
   }, [fetchData]);
 
@@ -283,8 +312,8 @@ const AttendanceList = () => {
         att.user.fullName.trim().toLowerCase() ===
         employeeName.trim().toLowerCase()
     );
-    console.log('Filtered Attendances:', employeeAttendance);
-  
+    console.log("Filtered Attendances:", employeeAttendance);
+
     if (employeeAttendance.length > 0) {
       downloadCSV(
         employeeAttendance,
@@ -295,17 +324,16 @@ const AttendanceList = () => {
     }
   };
   const downloadFilteredData = () => {
-  if (filteredAttendances.length === 0) {
-    alert("No attendance records found with the current filters.");
-    return;
-  }
+    if (filteredAttendances.length === 0) {
+      alert("No attendance records found with the current filters.");
+      return;
+    }
 
-  downloadCSV(
-    filteredAttendances,
-    `attendance_filtered_${moment().format("YYYY-MM-DD")}.csv`
-  );
-};
-
+    downloadCSV(
+      filteredAttendances,
+      `attendance_filtered_${moment().format("YYYY-MM-DD")}.csv`
+    );
+  };
 
   const exportReport = (reportType) => {
     switch (reportType) {
@@ -321,9 +349,9 @@ const AttendanceList = () => {
       case "employee":
         setShowModal((prev) => ({ ...prev, selectEmployee: true }));
         break;
-        case "filtered":
-          downloadFilteredData();
-          break;
+      case "filtered":
+        downloadFilteredData();
+        break;
       default:
         alert("Invalid export option selected.");
     }
@@ -347,32 +375,43 @@ const AttendanceList = () => {
     const isStatusMatch = statusFilter
       ? att.status.toLowerCase() === statusFilter.toLowerCase()
       : true;
-    const isClockoutInRange =
-      (!clockoutStart ||
-        moment(att.clockoutTime, "hh:mm A").isSameOrAfter(
-          moment(clockoutStart, "HH:mm")
-        )) &&
-      (!clockoutEnd ||
-        moment(att.clockoutTime, "hh:mm A").isSameOrBefore(
-          moment(clockoutEnd, "HH:mm")
-        ));
-    const isHoursInRange =
-      (!minHours || att.totalHours >= minHours) &&
-      (!maxHours || att.totalHours <= maxHours);
 
-     const isExactHoursMatch = 
-    (exactHours === null || 
-    (att.totalHours >= exactHours && att.totalHours < exactHours + 1));
+    // Convert clockinTime and clockoutTime to moment objects for comparison
+    const clockinTime = moment(att.clockinTime, "hh:mm A");
+    const clockoutTime = moment(att.clockoutTime, "hh:mm A");
+
+    // Create moment objects for filter start and end times
+    const clockinStartMoment = clockinStart
+      ? moment(clockinStart, "hh:mm A")
+      : null;
+    const clockoutEndMoment = clockoutEnd
+      ? moment(clockoutEnd, "hh:mm A")
+      : null;
+
+    const isClockinInRange =
+      !clockinStartMoment || clockinTime.isSameOrAfter(clockinStartMoment);
+    const isClockoutInRange =
+      !clockoutEndMoment || clockoutTime.isSameOrBefore(clockoutEndMoment);
+
+    const isHoursInRange =
+      (!minHours || att.totalHours >= Number(minHours)) &&
+      (!maxHours || att.totalHours <= Number(maxHours));
+    const isExactHoursMatch =
+      exactHours === null ||
+      (att.totalHours >= exactHours && att.totalHours < exactHours + 1);
 
     return (
       isNameMatch &&
       isDateInRange &&
       isStatusMatch &&
+      isClockinInRange &&
       isClockoutInRange &&
       isHoursInRange &&
       isExactHoursMatch
     );
   });
+
+  console.log(filteredAttendances, "filteredAttendances");
 
   return (
     <>
@@ -388,7 +427,11 @@ const AttendanceList = () => {
         </h4>
         <div className="mb-3">
           <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic" className="btn btn-success btn-sm">
+            <Dropdown.Toggle
+              variant="success"
+              id="dropdown-basic"
+              className="btn btn-success btn-sm"
+            >
               Export Options
             </Dropdown.Toggle>
 
@@ -406,13 +449,17 @@ const AttendanceList = () => {
                 By Employee Name
               </Dropdown.Item>
               <Dropdown.Item onClick={() => exportReport("filtered")}>
-    Download Filtered Data
-  </Dropdown.Item>
+                Download Filtered Data
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </div>
       </div>
-      <div className="d-flex flex-wrap align-items-center"><p><strong>Apply Filters</strong></p></div>
+      <div className="d-flex flex-wrap align-items-center">
+        <p>
+          <strong>Apply Filters</strong>
+        </p>
+      </div>
       <div className="filters-container">
         <div className="d-flex flex-wrap align-items-center">
           <Form.Group className="mr-2 mb-2">
@@ -475,32 +522,36 @@ const AttendanceList = () => {
               onChange={(e) => setMaxHours(e.target.value)}
             />
           </Form.Group>
-          <div className="d-flex flex-wrap align-items-center mb-3">Sort By Hours(24Hrs.): </div>
-          <Form.Group className="mr-2 mb-2">
-            <Form.Control
-              type="time"
-              placeholder="Clock Out Start"
-              value={clockoutStart || ""}
-              onChange={(e) => setClockoutStart(e.target.value)}
+          <div className="d-flex flex-wrap align-items-center mb-3">
+            Sort By Hours(24Hrs.):{" "}
+          </div>
+          <Form.Group className="mr-3 mb-3">
+            <Form.Label>Clock In Start (hh:mm AM/PM)</Form.Label>
+            <TimePicker
+              format="hh:mm a"
+              value={clockinStart}
+              onChange={setClockinStart}
+              className="timePicker"
             />
           </Form.Group>
 
-          <Form.Group className="mr-2 mb-2">
-            <Form.Control
-              type="time"
-              placeholder="Clock Out End"
-              value={clockoutEnd || ""}
-              onChange={(e) => setClockoutEnd(e.target.value)}
+          <Form.Group className="mr-3 mb-3">
+            <Form.Label>Clock Out End (hh:mm AM/PM)</Form.Label>
+            <TimePicker
+              format="hh:mm a"
+              value={clockoutEnd}
+              onChange={setClockoutEnd}
+              className="timePicker"
             />
           </Form.Group>
           <Form.Group className="mr-2 mb-2">
-      <Form.Control
-        type="number"
-        placeholder="By Exact Hours"
-        value={exactHours || ""}
-        onChange={(e) => setExactHours(e.target.value)}
-      />
-    </Form.Group>
+            <Form.Control
+              type="number"
+              placeholder="By Exact Hours"
+              value={exactHours || ""}
+              onChange={(e) => setExactHours(e.target.value)}
+            />
+          </Form.Group>
         </div>
       </div>
 
@@ -514,6 +565,7 @@ const AttendanceList = () => {
             <th onClick={() => handleSort("clockinTime")}>Clock In</th>
             <th onClick={() => handleSort("clockoutTime")}>Clock Out</th>
             <th onClick={() => handleSort("totalHours")}>Total Hours</th>
+            {/* <th onClick={() => handleSort("applicationType")}>Application Type</th> */}
             <th className="text-center">Actions</th>
           </tr>
         </thead>
@@ -524,11 +576,15 @@ const AttendanceList = () => {
               <td>{att.user.fullName}</td>
               <td>{att.date}</td>
               <td style={{ color: getStatusColor(att.status) }}>
-                {att.status}
+                {att.status === "Absent"
+                  ? `${att.applicationType}`
+                  : att.status}
               </td>
+
               <td>{att.clockinTime}</td>
               <td>{att.clockoutTime}</td>
               <td>{att.totalHours || "N/A"}</td>
+              {/* <td>{}</td> */}
               <td className="text-center">
                 <Button
                   variant="info"
@@ -553,21 +609,26 @@ const AttendanceList = () => {
         </tbody>
       </Table>
       {showModal.selectEmployee && (
-  <Modal show={showModal.selectEmployee} onHide={closeModal}>
-    <Modal.Header closeButton>
-    <p><strong>Please Select an Employee to proceed</strong></p>
-    </Modal.Header>
-    <Modal.Body>
-      <ul>
-        {employeeList.map((employeeName) => (
-          <li key={employeeName} onClick={() => handleEmployeeSelect(employeeName)}>
-            <p>{employeeName}</p>
-          </li>
-        ))}
-      </ul>
-    </Modal.Body>
-  </Modal>
-)}
+        <Modal show={showModal.selectEmployee} onHide={closeModal}>
+          <Modal.Header closeButton>
+            <p>
+              <strong>Please Select an Employee to proceed</strong>
+            </p>
+          </Modal.Header>
+          <Modal.Body>
+            <ul>
+              {employeeList.map((employeeName) => (
+                <li
+                  key={employeeName}
+                  onClick={() => handleEmployeeSelect(employeeName)}
+                >
+                  <p>{employeeName}</p>
+                </li>
+              ))}
+            </ul>
+          </Modal.Body>
+        </Modal>
+      )}
 
       {showModal.edit && (
         <AttendanceEditModal
