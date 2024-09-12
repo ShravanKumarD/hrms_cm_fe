@@ -9,6 +9,7 @@ import { Modal } from "react-bootstrap";
 import axios from "axios";
 import API_BASE_URL from "./../env";
 import './../components/TimeSheet.css';
+
 import ApplicationModal from "../components/ApplicationModal";
 
 export default function Calendar() {
@@ -44,13 +45,14 @@ export default function Calendar() {
         const userResponse = await axios.get("/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
-
+     console.log(userResponse,"userres")
+        // Set birthday events
         const birthdayEvents = userResponse.data.map(user => {
-          const birthDate = moment(user.user_personal_info.dateOfBirth, 'YYYY-MM-DD');
-                    if (birthDate.isValid()) {
+          const birthDate = moment(user.user_personal_info?.dateOfBirth, 'YYYY-MM-DD');
+          if (birthDate.isValid()) {
             return {
               title: `${user.fullName.split(' ')[0]}'s Birthday`,
-              date: birthDate.format('YYYY-MM-DD'),
+              date: birthDate.format('YYYY-MM-DD'),          
               backgroundColor: "rgba(255, 223, 186, 0.5)",
               borderColor: "rgba(255, 223, 186, 0.8)"
             };
@@ -58,7 +60,8 @@ export default function Calendar() {
           return null;
         }).filter(event => event !== null);
         setBirthdays(birthdayEvents);
-        console.log(birthdays,birthdayEvents,"birthdays")
+        
+
         setEmpCount(userResponse.data.length);
 
       } catch (error) {
@@ -158,7 +161,6 @@ export default function Calendar() {
     backgroundColor: event.backgroundColor || (event.description === "Optional" ? "#8adcd2" : "#a7a4a4"),
     borderColor: event.borderColor || (event.description === "Optional" ? "#8adcd2" : "#a7a4a4")
   }));
-
   return (
     <>
       <FullCalendar
@@ -176,15 +178,15 @@ export default function Calendar() {
         events={events}
         className="calendar-container"
       />
-    <Modal show={showModal} onHide={() => setShowModal(false)}
-    centered
-    closeButton>
-    <Modal.Header closeButton>
-    <h3>Start Your Work Here</h3>
-          </Modal.Header>
-        <div closeButton></div>
+      <Modal show={showModal} 
+      centered
+      onHide={() => setShowModal(false)} closeButton>
+        <Modal.Header closeButton>
+          <Modal.Title>Start Work</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
           <LightweightStartWork />
-          <div><p></p></div>
+        </Modal.Body>
       </Modal>
       <ApplicationModal
         show={showApplicationModal}

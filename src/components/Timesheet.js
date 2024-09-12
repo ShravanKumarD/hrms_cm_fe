@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import API_BASE_URL from "../env";
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+// import 'react-calendar/dist/Calendar.css';
 import './TimeSheet.css'; // Custom styles for calendar and holidays
 
 const TimeSheet = () => {
@@ -109,11 +108,11 @@ const TimeSheet = () => {
     <div className="timesheet-container">
       <h3 className="timesheet-title">{currentMonthYear}</h3>
       <div className="calendar-container">
-        <Calendar
+        {/* <Calendar
           value={new Date(2024, 8,10 )} 
           tileContent={tileContent}
           className="custom-calendar"
-        />
+        /> */}
         {popupContent && (
           <div
             className="popup-content"
