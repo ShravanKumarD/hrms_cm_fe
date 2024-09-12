@@ -16,7 +16,7 @@ export const GlobalStyle = createGlobalStyle`
   body {
     font-family: 'Poppins', sans-serif;
     background: background: rgb(2,0,36);
-background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(1,138,72,0.636467086834734) 34%, rgba(0,255,102,1) 100%);
+// background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(1,138,72,0.636467086834734) 34%, rgba(0,255,102,1) 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -57,7 +57,7 @@ export const LoginBox = styled.div`
   background-color: rgba(255, 255, 255, 0.9);
   padding: 2rem;
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(255, 165, 0, 0.2);
+  box-shadow: 0 8px 32px #8adcd2;
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   z-index: 1;
@@ -118,12 +118,12 @@ export const Input = styled.input`
   border: none;
   border-radius: 25px;
   font-size: 1rem;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: #8adcd2;
   transition: all 0.3s ease;
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.5);
+    box-shadow: 0 0 0 2px #8adcd2);
     background-color: white;
   }
 `;
@@ -134,14 +134,15 @@ export const PasswordToggle = styled.span`
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #ffa500;
+  color: #8adcd2;
   user-select: none;
 `;
 
 export const LoginButton = styled.button`
   width: 100%;
   padding: 0.75rem;
-  background: linear-gradient(135deg, #ffa500, #ff6347);
+  // background: linear-gradient(135deg, #ffa500, #ff6347);
+  background-color: #8adcd2;
   color: white;
   border: none;
   border-radius: 25px;
@@ -165,7 +166,7 @@ export const RegisterLink = styled(Link)`
   display: block;
   text-align: center;
   margin-top: 1rem;
-  color: #ffa500;
+  color: #8adcd2;
   text-decoration: none;
   transition: color 0.3s ease;
 
@@ -200,11 +201,12 @@ export const EmpowermentContainer = styled.div`
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent;
   // background: linear-gradient(180deg, #1b9bdc, rgb(117.94, 208.84, 255) 54.51%, #1b9bdc);
-  background: linear-gradient(
-    135deg,
-    #ffd700,
-    #ffeb3b
-  ); 
+  // background: linear-gradient(
+  //   135deg,
+  //   #ffd700,
+  //   #ffeb3b
+  // ); 
+ background-color: #000000;
   background-clip: text;
   color: transparent;
   text-align: center;

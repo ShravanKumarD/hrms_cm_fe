@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import CalendarIcon from "react-calendar-icon";
 import { ThemeProvider } from "styled-components";
 import API_BASE_URL from "../env";
-
 
 const RecentAnnouncements = () => {
   const [recentAnnouncements, setRecentAnnouncements] = useState([]);
@@ -21,7 +19,10 @@ const RecentAnnouncements = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       }).then((res) => {
         if (isMounted) {
-          setRecentAnnouncements(res.data);
+          const sortedAnnouncements = res.data.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+          setRecentAnnouncements(sortedAnnouncements);
         }
       });
     }
@@ -65,8 +66,8 @@ const RecentAnnouncements = () => {
   ];
 
   return (
-    <div className="card">
-      <div className="mt-1" style={{ textAlign: "center" }}></div>
+    <div className="card"style={{backgroundColor:"#8adcd2"}}>
+      <div  style={{ textAlign: "center" }}></div>
       <ul>
         {recentAnnouncements.map((announcement) => (
           <li
@@ -75,7 +76,7 @@ const RecentAnnouncements = () => {
             className="mb-2 mt-1"
           >
             <div className="float-left mr-2">
-              <time dateTime="2014-09-20" className="icon p-0">
+              <time dateTime={announcement.createdAt} className="icon p-0">
                 <em>{days[new Date(announcement.createdAt).getDay()]}</em>
                 <strong>
                   {monthNames[new Date(announcement.createdAt).getMonth()]}
@@ -88,7 +89,7 @@ const RecentAnnouncements = () => {
             </span>
             <br className="p-1" />
             <small>{announcement.announcementDescription}</small>
-            <hr className=" pt-2 pb-1 mb-0" />
+            <hr className="pt-2 pb-1 mb-0" />
           </li>
         ))}
       </ul>

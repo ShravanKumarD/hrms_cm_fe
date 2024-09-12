@@ -40,18 +40,20 @@ const Dashboard = () => {
         {/* Right column (1/3 width) */}
         <div className="col-md-4">
           <LightweightStartWork theme={selectedTheme} />
-          <HoursWorkedLastWeek theme={selectedTheme} />
+          {/* <HoursWorkedLastWeek theme={selectedTheme} /> */}
           <LeaveBalance theme={selectedTheme} />
+          <RecentAnnouncements />
         </div>
       </div>
 
       {/* Fourth Row with Recent Applications and Announcements */}
       <div className="row pt-4">
         <div className="col-md-6">
-          <RecentApplications />
+          {/* <RecentApplications /> */}
+        
         </div>
         <div className="col-md-6">
-          <RecentAnnouncements />
+   
         </div>
       </div>
     </div>

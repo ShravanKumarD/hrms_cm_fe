@@ -17,7 +17,7 @@ import {
 } from "react-icons/fa";
 import LogoWhite from "../assets/samcintlogowhite.png";
 import Logo from "../assets/samcint_logo_2.png";
-import LogoMini from "../assets/samcint_black.jpeg";
+import LogoMini from "../assets/10.png";
 import { GiFallingBlob } from "react-icons/gi";
 
 // Define your theme (same as SidebarEmployee)
@@ -26,27 +26,24 @@ const theme = {
   secondary: "#27ae60",
   active: "#1e8449",
   hover: "rgba(255, 255, 255, 0.2)",
-  text: "#000000",
+  text: "#FFFFFF",
   scrollbarThumb: "rgba(255, 255, 255, 0.3)",
   scrollbarTrack: "rgba(255, 255, 255, 0.1)",
 };
 
-// Styled components (same as SidebarEmployee)
 const Sidebar = styled.aside`
   position: fixed;
   left: ${(props) => (props.isCollapsed ? "20px" : "20px")};
-  top: 42.7%;
-  transform: translateY(-42.7%);
+  top: 50%;
+  transform: translateY(-50%);
   height: 70vh;
   width: ${(props) => (props.isCollapsed ? "70px" : "250px")};
-  background: #8adcd2;
+
+background:#8adcd2;
   backdrop-filter: blur(10px);
   border-radius: 20px;
   transition: all 0.3s ease;
   overflow-y: auto;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
   color: ${(props) => props.theme.text};
   z-index: 1001;
 `;
@@ -55,8 +52,7 @@ const LogoContainer = styled.div`
   padding: 20px;
   text-align: center;
   cursor: pointer;
-  // background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 20px 20px 0 0;
   backdrop-filter: blur(10px);
   transition: box-shadow 0.3s ease;
@@ -77,56 +73,44 @@ const NavMenu = styled.nav`
   flex-grow: 1;
   overflow-y: auto;
   padding: 10px 0;
-  // background: rgba(255, 255, 255, 0.2);
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
   backdrop-filter: blur(10px);
 
-  // dont show scrollbar when not hovering
-  scrollbar-width: none;
-
-  &:hover {
   /* Scrollbar Styles */
+  scrollbar-width: thin;
+  scrollbar-color: ${(props) => props.theme.scrollbarThumb} ${(props) => props.theme.scrollbarTrack};
+
   &::-webkit-scrollbar {
     width: 8px;
   }
 
   &::-webkit-scrollbar-track {
-    background: #8adcd2;
+    background: ${(props) => props.theme.scrollbarTrack};
     border-radius: 8px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #8adcd2;
+    background: ${(props) => props.theme.scrollbarThumb};
     border-radius: 8px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #a7a4a4;
+    background: ${(props) => props.theme.hover};
   }
-
-  scrollbar-width: thin;
-  scrollbar-color: ${(props) => props.theme.scrollbarThumb}
-    ${(props) => props.theme.scrollbarTrack};
-    
 `;
 
-const NavItem = styled(NavLink)`
+const NavItem = styled.div`
   display: flex;
   align-items: center;
   padding: 15px;
   color: ${(props) => props.theme.text};
   text-decoration: none;
   transition: background-color 0.3s, color 0.3s;
+  cursor: pointer;
 
   &:hover {
-    background-color: #a7a4a4;
-    color:#000000;
-  }
-
-  &.active {
-    // background-color: ${(props) => props.theme.active};
-    color: ${(props) => props.theme.text};
+    background-color: ${(props) => props.theme.hover};
   }
 
   svg {
@@ -149,6 +133,7 @@ const ToggleButton = styled.button`
   cursor: pointer;
   font-size: 1.2em;
 `;
+
 
 const SidebarEmployee = ({ onToggle }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);

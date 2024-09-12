@@ -95,11 +95,11 @@ const NavLink = styled.a`
 `;
 
 const DropdownMenu = styled.div`
-  background: linear-gradient(
-    135deg,
-    ${theme.primary}E6 0%,
-    ${theme.secondary}E6 100%
-  );
+  // background: linear-gradient(
+  //   135deg,
+  //   ${theme.primary}E6 0%,
+  //   ${theme.secondary}E6 100%
+  // );
   color: ${theme.text};
   border-radius: 8px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -115,7 +115,7 @@ const DropdownMenu = styled.div`
   font-size: ${theme.fontSize};
   z-index: 1001;
   overflow: hidden;
-  transition: all 0.3s ease;
+  // transition: all 0.3s ease;
 `;
 
 const DropdownItem = styled.a`
@@ -126,16 +126,16 @@ const DropdownItem = styled.a`
   font-size: ${theme.fontSize};
   margin: 0;
 
-  &:hover {
-    background-color: ${theme.hover}40;
-    color: ${theme.text};
-    transform: translateX(5px);
-    box-shadow: inset 0 0 10px ${theme.hover}60;
-  }
+  // &:hover {
+  //   background-color: ${theme.hover}40;
+  //   color: ${theme.text};
+  //   transform: translateX(5px);
+  //   box-shadow: inset 0 0 10px ${theme.hover}60;
+  // }
 
-  i {
-    margin-right: 12px;
-  }
+  // i {
+  //   margin-right: 12px;
+  // }
 `;
 
 const Header = () => {

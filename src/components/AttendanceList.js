@@ -411,7 +411,18 @@ const AttendanceList = () => {
     );
   });
 
-  console.log(filteredAttendances, "filteredAttendances");
+  const clearFilters = () => {
+    setFilterText("");
+    setStartDate(null);
+    setEndDate(null);
+    setStatusFilter("");
+    setClockinStart(null);
+    setClockoutEnd(null);
+    setMinHours(null);
+    setMaxHours(null);
+    setExactHours(null);
+  };
+  
 
   return (
     <>
@@ -554,6 +565,12 @@ const AttendanceList = () => {
           </Form.Group>
         </div>
       </div>
+      <br/>
+      <button  className="dashboard-icons" onClick={clearFilters}>
+    Clear Filters
+  </button>
+<p></p>
+     
 
       <Table striped bordered hover>
         <thead>

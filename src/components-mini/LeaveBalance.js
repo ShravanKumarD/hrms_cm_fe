@@ -5,11 +5,7 @@ import styled from "styled-components";
 const LeaveContainer = styled.div`
   width: 100%;
   height: 150px;
-  background: linear-gradient(
-    to bottom right,
-    ${(props) => props.theme.leaveColor}40,
-    ${(props) => props.theme.leaveColor}20
-  );
+  background: #8adcd2;
   backdrop-filter: blur(10px);
   border-radius: 10px;
   overflow: hidden;
@@ -22,11 +18,7 @@ const LeaveContainer = styled.div`
     left: 0;
     right: 0;
     height: 40px;
-    background: linear-gradient(
-      to right,
-      ${(props) => props.theme.leaveColor},
-      ${(props) => props.theme.leaveColor}80
-    );
+    background: #8adcd2;
     z-index: 0;
   }
 `;
@@ -65,7 +57,7 @@ const LeaveTitle = styled.h3`
   margin: 0;
   padding-bottom: 10px;
   font-size: 18px;
-  color: ${(props) => props.theme.leaveTextColor};
+  color: ${(props) => props.theme.leaveTextColor};//teext colour
   z-index: 1;
   position: relative;
 `;
@@ -116,7 +108,7 @@ const LeaveBalanceContainer = ({ theme = "green" }) => {
       fluid
       className="d-flex flex-column justify-content-center align-items-center"
     >
-      <Card
+      <div
         className="shadow-sm"
         style={{
           maxWidth: "400px",
@@ -147,7 +139,7 @@ const LeaveBalanceContainer = ({ theme = "green" }) => {
             &gt;
           </ScrollIndicator>
         </LeaveContainer>
-      </Card>
+      </div>
     </Container>
   );
 };

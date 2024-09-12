@@ -16,11 +16,12 @@ import API_BASE_URL from "../env";
 const WorkContainer = styled.div`
   width: 100%;
   height: 200px;
-  background: linear-gradient(
-    to bottom right,
-    ${(props) => props.theme.topColor}40,
-    ${(props) => props.theme.bottomColor}20
-  );
+  // background: linear-gradient(
+  //   to bottom right,
+  //   ${(props) => props.theme.topColor}40,
+  //   ${(props) => props.theme.bottomColor}20
+  // );
+  background-color:#8adcd2;
   backdrop-filter: blur(10px);
   border-radius: 10px;
   overflow: hidden;
@@ -37,11 +38,7 @@ const WorkContainer = styled.div`
     left: 0;
     right: 0;
     height: 40px;
-    background: linear-gradient(
-      to right,
-      ${(props) => props.theme.topColor},
-      ${(props) => props.theme.bottomColor}80
-    );
+    background: #8adcd2;
     z-index: 0;
   }
 `;
@@ -86,14 +83,14 @@ const WorkTime = styled.div`
 const ProgressBarWrapper = styled.div`
   width: 100%;
   height: 10px;
-  background-color: ${(props) => getLighterColor(props.theme.progressColor)};
+  background-color:#a7a4a4;
   // border-radius: 5px;
   overflow: hidden;
 `;
 
 const StyledProgressBar = styled.div`
   height: 100%;
-  background-color: ${(props) => props.style.backgroundColor};
+  background-color: #a7a4a4;
 `;
 
 const ProgressText = styled.div`
@@ -435,10 +432,10 @@ const LightweightStartWork = ({ theme }) => {
 // Provide a default theme if needed
 LightweightStartWork.defaultProps = {
   theme: {
-    topColor: "#32CD32", // Lime Green for top
+    topColor: "#a7a4a4", // Lime Green for top
     bottomColor: "#98FB98", // Pale Green for bottom
     textColor: "#000000", // Black text color
-    progressColor: "#32CD32", // Lime Green for the progress bar
+    progressColor: "#ffffff", // Lime Green for the progress bar
   },
 };
 

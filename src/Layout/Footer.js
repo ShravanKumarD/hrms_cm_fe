@@ -10,11 +10,11 @@ export default class Footer extends Component {
           <strong>
             Copyright © 2023-2024{" "}
             <a href="https://samcintsolutions.in/" target="_blank" rel="noopener noreferrer">
-              Samcint Solutions
+              Samcint Solutions Pvt. Ltd
             </a>
-            .
+            .{" "}
           </strong>
-          All rights reserved.
+          All rights reserved.{" "}
         </div>
         <p>&nbsp;</p>
         {/* <div style={{ textAlign: "right" }}>

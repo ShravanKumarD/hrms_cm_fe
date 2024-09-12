@@ -23,7 +23,7 @@ import {
   FaShoppingCart,
   FaFileInvoice,
   FaHollyBerry,
-  FaCalendarAlt,
+  FaCalendarAlt, FaUserClock 
 } from "react-icons/fa";
 import LogoWhite from "../assets/samcintlogowhite.png";
 import LogoMini from "../assets/10.png";
@@ -228,11 +228,11 @@ const SidebarAdmin = ({ onToggle }) => {
        {expandedMenus.holidays && !isCollapsed &&(
         <>
             <SubNavItem onClick={() => { history.push("/holidays")}}>
-            <FaBuilding />
+            <FaCalendarAlt />
           General Holidays
           </SubNavItem>
            <SubNavItem onClick={() => { history.push("/personal-leaves")}}>
-           <FaBuilding />
+           <FaUserClock/>
          Employees' Leaves
          </SubNavItem>
          </>
@@ -313,7 +313,7 @@ const SidebarAdmin = ({ onToggle }) => {
               </SubNavItem>
             </>
           )}
-          <NavItem onClick={() => toggleSubMenu("expense")}>
+          {/* <NavItem onClick={() => toggleSubMenu("expense")}>
             <FaMoneyBill />
             {!isCollapsed && "Expense"}
           </NavItem>
@@ -328,7 +328,7 @@ const SidebarAdmin = ({ onToggle }) => {
                 Expense Report
               </SubNavItem>
             </>
-          )}
+          )} */}
           <NavItem onClick={() => { history.push("/announcement") }}>
             <FaBell />
             {!isCollapsed && "Announcements"}

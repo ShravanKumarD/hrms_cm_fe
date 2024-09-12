@@ -70,30 +70,30 @@ const ApplicationList = () => {
       MuiButton: {
         root: {
           color: "#000",
-          backgroundColor: "#E0FFE0",
+          backgroundColor: "#a7a4a4",
           "&:hover": {
-            backgroundColor: "#006400", // Darker green on hover
+            backgroundColor: "#8adcd2", // Darker green on hover
           },
           borderRadius: "12px", // More rounded buttons
         },
       },
       MuiToolbar: {
         root: {
-          backgroundColor: "#4CAF4F", // Dark leaf green
-          color: "#000", // White text color
+          backgroundColor: "#8adcd2", // Dark leaf green
+          color: "black", // White text color
           borderRadius: "8px 8px 8px 8px", // Rounded corners for the toolbar
           borderCollapse: "collapse",
         },
       },
       MuiTypography: {
         h6: {
-          color: "#FFF", // White color for the title
+          color: "#00000", // White color for the title
         },
         h5: {
-          color: "#FFF", // White color for the subtitle
+          color: "#00000", // White color for the subtitle
         },
         h4: {
-          color: "#FFF", // White color for the subtitle
+          color: "#00000", // White color for the subtitle
         },
       },
       MuiPaper: {
@@ -101,8 +101,8 @@ const ApplicationList = () => {
           boxShadow: "none", // Remove default shadow
           borderRadius: "12px", // Rounded border for the table
           border: "2px solid #E0FFE0", // Dark leaf green border
-          backgroundColor: "#E0FFE0", // Dark leaf green background
-          color: "#000", // White text inside the table
+          backgroundColor: "#ffffff", // Dark leaf green background
+          color: "#000000", // White text inside the table
         },
       },
       MuiTable: {
@@ -113,7 +113,7 @@ const ApplicationList = () => {
       },
       MuiTableRow: {
         root: {
-          backgroundColor: "#E0FFE0",
+          backgroundColor: "#ffffff",
         },
       },
       MuiTableHead: {
@@ -144,33 +144,33 @@ const ApplicationList = () => {
       MuiInput: {
         underline: {
           "&:before": {
-            borderBottomColor: "#FFF", // White underline before focus
+            borderBottomColor: "#000000", // White underline before focus
           },
           "&:hover:not(.Mui-disabled):before": {
-            borderBottomColor: "#FFF", // White underline on hover
+            borderBottomColor: "#000000", // White underline on hover
           },
           "&:after": {
-            borderBottomColor: "#FFF", // White underline after focus
+            borderBottomColor: "#000000", // White underline after focus
           },
         },
       },
       MuiSelect: {
         icon: {
-          color: "#FFF", // White dropdown icon
+          color: "#000000", // White dropdown icon
         },
       },
       MuiTablePagination: {
         toolbar: {
-          color: "#FFF", // White color for pagination toolbar
+          color: "#000000", // White color for pagination toolbar
         },
         selectIcon: {
-          color: "#FFF", // White dropdown icon in pagination
+          color: "#000000", // White dropdown icon in pagination
         },
         caption: {
-          color: "#FFF", // White text for "1-4 of 4"
+          color: "#000000", // White text for "1-4 of 4"
         },
         actions: {
-          color: "#FFF", // White color for pagination actions (icons)
+          color: "#000000", // White color for pagination actions (icons)
         },
       },
     },
@@ -254,15 +254,15 @@ const ApplicationList = () => {
   options={{
     toolbar: true,
     toolbarStyle: {
-      backgroundColor: "#E0FFE0", // Dark leaf green
+      backgroundColor: "#ffffff", // Dark leaf green
       color: "#000", // White text color
     },
     headerStyle: {
-      backgroundColor: "#E0FFE0", // Dark leaf green
+      backgroundColor: "#ffffff", // Dark leaf green
       color: "#000", // White text color
     },
     rowStyle: {
-      backgroundColor: "#E0FFE0", // Dark leaf green background color for rows
+      backgroundColor: "#ffffff", // Dark leaf green background color for rows
       color: "#000", // Ensure text is black #000
     },
     pageSize: 10,

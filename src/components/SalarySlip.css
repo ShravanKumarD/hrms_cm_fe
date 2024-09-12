@@ -1,0 +1,11 @@
+.table td, .table th {
+    padding: 3px;
+    text-align: center;
+    align-content: space-around;
+    text-align: left;
+    border-color: #000000;
+    color: #000000;
+}
+.table-bordered td, .table-bordered th {
+    border: 1px solid #000000;
+}

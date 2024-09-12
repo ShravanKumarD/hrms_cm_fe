@@ -131,7 +131,7 @@ const EmployeeView = () => {
                       <span className="font-weight-bold">Employee ID:</span>
                     </Col>
                     <Col lg={7}>
-                      {user.id}
+                      {user.username}
                     </Col>
                   </Row>
                   <Row className="mb-2">

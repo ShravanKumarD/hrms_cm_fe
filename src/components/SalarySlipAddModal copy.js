@@ -26,21 +26,26 @@ const SalarySlipAdd = ({
   const [specialAllowance, setSpecialAllowance] = useState(0);
   const [medicalAllowance, setMedicalAllowance] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
+  const [lop, setLop] = useState(0); // New state for LOP
   const [tds, setTds] = useState('');
   const [professionalTax, setProfessionalTax] = useState(0);
   const [employeePf, setEmployeePf] = useState(0);
   const [otherDeductions, setOtherDeductions] = useState(0);
   const [totalDeductions, setTotalDeductions] = useState(0);
   const [daysWorked, setDaysWorked] = useState(0); // New state for days worked
-const [totalDaysInMonth,setTotalDaysInMonth]=useState(0);
+  const [totalDaysInMonth,setTotalDaysInMonth]=useState(0);
   const [showAlert, setShowAlert] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [done, setDone] = useState(false);
-
+  const months = [
+    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+  ];
   useEffect(() => {
     fetchUsers();
     if (selectedUserId) fetchUserFinanceDetails(selectedUserId);
-  }, [selectedUserId]);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    setTotalDaysInMonth(daysInMonth);
+}, [selectedUserId,month, year]);
 
   const fetchUsers = async () => {
     try {
@@ -88,23 +93,36 @@ const [totalDaysInMonth,setTotalDaysInMonth]=useState(0);
     </option>
   ));
 
-  const months = [
-    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-  ];
+ 
 
   const years = Array.from({ length: 10 }, (v, i) => new Date().getFullYear() - i);
-
   const calculateTotalEarnings = () => {
-    const totalDaysInMonth = 30; // Assuming 30 days for the month
+ console.log(totalDaysInMonth,"totalDaysInMonth")
+    // const totalDaysInMonth = 30;
     const dailySalary = basicSalary / totalDaysInMonth;
-    const earningsFromDaysWorked = dailySalary * daysWorked;
-    const total = earningsFromDaysWorked + Number(hra) + Number(conveyanceAllowance) + Number(specialAllowance) + Number(medicalAllowance);
+    let lopdays = Number(totalDaysInMonth) - Number(daysWorked)
+    const calculatedLop = dailySalary * lopdays;
+    setLop(calculatedLop);
+    console.log(dailySalary,"dailySalary")
+    console.log(lopdays,"lopdays")
+    console.log(calculatedLop,"calculatedLop")
+    const total = Number(basicSalary) + Number(hra) + Number(conveyanceAllowance) + Number(specialAllowance) + Number(medicalAllowance);
     setTotalEarnings(total);
-  };
+    console.log(total,"totLEARNINGS")
+};
+
+const calculateTotalDeductions = () => {
+    const total = Number(tds) + Number(professionalTax) + Number(employeePf) + Number(otherDeductions);
+    setTotalDeductions(total);
+};
 
   useEffect(() => {
     calculateTotalEarnings();
   }, [daysWorked, basicSalary, hra, conveyanceAllowance, specialAllowance, medicalAllowance]);
+
+  useEffect(() => {
+    calculateTotalDeductions();
+  }, [lop, tds, professionalTax, employeePf, otherDeductions]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -123,6 +141,7 @@ const [totalDaysInMonth,setTotalDaysInMonth]=useState(0);
         special_allowance: Number(specialAllowance),
         medical_allowance: Number(medicalAllowance),
         total_earnings: Number(totalEarnings),
+        lop: Number(lop),
         tds: Number(tds),
         professional_tax: Number(professionalTax),
         employee_pf: Number(employeePf),
@@ -130,11 +149,11 @@ const [totalDaysInMonth,setTotalDaysInMonth]=useState(0);
         total_deductions: Number(totalDeductions),
         daysWorked:Number(daysWorked)
       };
-console.log(salarySlip,"before submission")
-     let res =  await axios.post(`${API_BASE_URL}/api/salary-slip`, salarySlip, {
+      console.log(salarySlip, "before submission");
+      let res = await axios.post(`${API_BASE_URL}/api/salary-slip`, salarySlip, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-console.log(res,'after submission')
+      console.log(res, 'after submission');
       setDone(true);
       if (onAddSuccess) {
         onAddSuccess(); // Callback to handle success
@@ -162,6 +181,35 @@ console.log(res,'after submission')
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
+        <Form.Group>
+      <Form.Label className="mb-2 required">Set the month to generate the salary slip</Form.Label>
+      <Form.Control
+        as="select"
+        value={month}
+        onChange={(e) => setMonth(Number(e.target.value))}
+      >
+        {months.map((monthName, index) => (
+          <option key={index} value={index}>
+            {monthName}
+          </option>
+        ))}
+      </Form.Control>
+      <p>Total Days in Month: {totalDaysInMonth}</p>
+    </Form.Group>
+          <Form.Group controlId="formYear">
+            <Form.Label className="mb-2 required">Year</Form.Label>
+            <Form.Control
+              as="select"
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+            >
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
           <Form.Group>
             <Form.Label className="mb-2 required">Select Employee</Form.Label>
             <Form.Control
@@ -207,55 +255,25 @@ console.log(res,'after submission')
               required
             />
           </Form.Group>
-
-          <Form.Group controlId="formMonth">
-            <Form.Label className="mb-2 required">Month</Form.Label>
-            <Form.Control
-              as="select"
-              value={month}
-              onChange={(e) => setMonth(Number(e.target.value))}
-              required
-            >
-              {months.map((monthName, index) => (
-                <option key={index} value={index}>
-                  {monthName}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-
-          <Form.Group controlId="formYear">
-            <Form.Label className="mb-2 required">Year</Form.Label>
-            <Form.Control
-              as="select"
-              value={year}
-              onChange={(e) => setYear(Number(e.target.value))}
-              required
-            >
-              {years.map((yr) => (
-                <option key={yr} value={yr}>
-                  {yr}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-
           <Form.Group controlId="formDateOfJoining">
             <Form.Label className="mb-2 required">Date of Joining</Form.Label>
             <DatePicker
               selected={dateOfJoining}
               onChange={(date) => setDateOfJoining(date)}
-              dateFormat="yyyy-MM-dd"
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Select date of joining"
               className="form-control"
               required
             />
           </Form.Group>
+
           <Form.Group controlId="formDaysWorked">
             <Form.Label className="mb-2 required">Days Worked</Form.Label>
             <Form.Control
-              type="number"
+              type="text"
               value={daysWorked}
-              onChange={(e) => setDaysWorked(e.target.value)}
+              onChange={(e) => setDaysWorked(Number(e.target.value))}
+              placeholder="Number of days worked +totalDaysInMonth+"
               required
             />
           </Form.Group>
@@ -265,7 +283,8 @@ console.log(res,'after submission')
             <Form.Control
               type="number"
               value={basicSalary}
-              onChange={(e) => setBasicSalary(e.target.value)}
+              onChange={(e) => setBasicSalary(Number(e.target.value))}
+              placeholder="Basic salary"
               required
             />
           </Form.Group>
@@ -275,7 +294,8 @@ console.log(res,'after submission')
             <Form.Control
               type="number"
               value={hra}
-              onChange={(e) => setHra(e.target.value)}
+              onChange={(e) => setHra(Number(e.target.value))}
+              placeholder="House Rent Allowance"
               required
             />
           </Form.Group>
@@ -285,7 +305,8 @@ console.log(res,'after submission')
             <Form.Control
               type="number"
               value={conveyanceAllowance}
-              onChange={(e) => setConveyanceAllowance(e.target.value)}
+              onChange={(e) => setConveyanceAllowance(Number(e.target.value))}
+              placeholder="Conveyance Allowance"
               required
             />
           </Form.Group>
@@ -295,7 +316,8 @@ console.log(res,'after submission')
             <Form.Control
               type="number"
               value={specialAllowance}
-              onChange={(e) => setSpecialAllowance(e.target.value)}
+              onChange={(e) => setSpecialAllowance(Number(e.target.value))}
+              placeholder="Special Allowance"
               required
             />
           </Form.Group>
@@ -305,8 +327,19 @@ console.log(res,'after submission')
             <Form.Control
               type="number"
               value={medicalAllowance}
-              onChange={(e) => setMedicalAllowance(e.target.value)}
+              onChange={(e) => setMedicalAllowance(Number(e.target.value))}
+              placeholder="Medical Allowance"
               required
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formLop">
+            <Form.Label className="mb-2 required">Loss of Pay (LOP)</Form.Label>
+            <Form.Control
+              type="number"
+              value={lop}
+              placeholder="Calculated LOP"
+              readOnly
             />
           </Form.Group>
 
@@ -315,7 +348,8 @@ console.log(res,'after submission')
             <Form.Control
               type="number"
               value={tds}
-              onChange={(e) => setTds(e.target.value)}
+              onChange={(e) => setTds(Number(e.target.value))}
+              placeholder="TDS"
               required
             />
           </Form.Group>
@@ -325,7 +359,8 @@ console.log(res,'after submission')
             <Form.Control
               type="number"
               value={professionalTax}
-              onChange={(e) => setProfessionalTax(e.target.value)}
+              onChange={(e) => setProfessionalTax(Number(e.target.value))}
+              placeholder="Professional Tax"
               required
             />
           </Form.Group>
@@ -335,7 +370,8 @@ console.log(res,'after submission')
             <Form.Control
               type="number"
               value={employeePf}
-              onChange={(e) => setEmployeePf(e.target.value)}
+              onChange={(e) => setEmployeePf(Number(e.target.value))}
+              placeholder="Employee Provident Fund"
               required
             />
           </Form.Group>
@@ -345,17 +381,8 @@ console.log(res,'after submission')
             <Form.Control
               type="number"
               value={otherDeductions}
-              onChange={(e) => setOtherDeductions(e.target.value)}
-              required
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formTotalDeductions">
-            <Form.Label className="mb-2 required">Total Deductions</Form.Label>
-            <Form.Control
-              type="number"
-              value={totalDeductions}
-              onChange={(e) => setTotalDeductions(e.target.value)}
+              onChange={(e) => setOtherDeductions(Number(e.target.value))}
+              placeholder="Other Deductions"
               required
             />
           </Form.Group>
@@ -365,29 +392,34 @@ console.log(res,'after submission')
             <Form.Control
               type="number"
               value={totalEarnings}
-              onChange={(e) => setTotalEarnings(e.target.value)}
-              required
+              placeholder="Calculated Total Earnings"
+              readOnly
             />
           </Form.Group>
 
-          <Button variant="success" type="submit" className="mt-2">
+          <Form.Group controlId="formTotalDeductions">
+            <Form.Label className="mb-2 required">Total Deductions</Form.Label>
+            <Form.Control
+              type="number"
+              value={totalDeductions}
+              placeholder="Calculated Total Deductions"
+              readOnly
+            />
+          </Form.Group>
+
+          {showAlert && <Alert variant="danger">{errorMsg}</Alert>}
+
+          {done && (
+            <Alert variant="success">
+              Salary Slip added successfully!
+            </Alert>
+          )}
+
+          <Button variant="primary" type="submit">
             Add Salary Slip
           </Button>
-          {done && (
-          <Alert variant="success" className="m-1">
-            Salary slip added successfully!
-          </Alert>
-        )}
-        {showAlert && (
-          <Alert variant="danger" className="m-1">
-            {errorMsg}
-          </Alert>
-        )}
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={onHide}>Close</Button>
-      </Modal.Footer>
     </Modal>
   );
 };

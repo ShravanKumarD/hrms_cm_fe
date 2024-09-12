@@ -6,6 +6,7 @@ import axios from "axios";
 import API_BASE_URL from "../env";
 import moment from "moment";
 import jsPDF from "jspdf";
+import "./SalarySlip.css"
 
 let userData = null;
 
@@ -133,6 +134,13 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
         );
 
         pdf.setFontSize(10);
+        pdf.setProperties({
+          title: 'Salary slip',
+          author: 'Samcint Solutions Pvt. Ltd.',
+          subject: 'Salary slip Document',
+          keywords: 'Salary slip, samcint, employment'
+        });
+  
         // pdf.text(
         //   "This is a computer-generated payslip and does not require a signature or stamp.",
         //   pageWidth / 2,
@@ -251,7 +259,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
         </tbody>
       </Table>
 
-      <Table
+      <Table 
         bordered
         size="sm"
         className="mt-4"
@@ -260,6 +268,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
           lineHeight: "1.2",
           margin: "0",
           color: "black",
+          textAlign:"left"
         }}
       >
         <thead style={{ backgroundColor: "#f0f0f0" }}>

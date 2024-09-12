@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import "../App.css";
 import TimesheetMini from "./../components-mini/TimesheetMini";
 import axios from "axios";
 import Modal from 'react-bootstrap/Modal';
@@ -18,6 +17,7 @@ const Dashboard = () => {
   const [showModal3, setShowModal3] = useState(false);
   const [attendances, setAttendances] = useState([]);
   const [todaysCount, setTodaysCount] = useState(0);
+  const [absentCount, setAbsentCount] = useState(0);
   const [monthlyAttendance, setMonthlyAttendance] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
   const [empCount, setEmpCount] = useState(0);
@@ -110,6 +110,8 @@ const Dashboard = () => {
         moment(attendance.date).isSame(today, "day")
       );
       setTodaysCount(todaysAttendance.length);
+      const absentCountToday = formattedAttendances.length-todaysAttendance.length;
+      setAbsentCount(absentCountToday);
 
       const monthlyData = {};
       formattedAttendances.forEach((att) => {
@@ -324,7 +326,10 @@ const Dashboard = () => {
           <h4><strong>Total Employees: {empCount}</strong></h4>
         </div>
         <div className=" card mb-3">
-          <h4><strong>Total Employees Present Today: {todaysCount}</strong></h4>
+          <h4><strong>Total Employees' Present Today: {todaysCount}</strong></h4>
+        </div>
+        <div className=" card mb-3">
+          <h4><strong>Total Employees' Absent Today:{absentCount}</strong></h4>
         </div>
       </Modal.Body>
       <Modal.Footer>

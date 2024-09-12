@@ -1,209 +1,199 @@
-// import React, { useState } from "react";
-// import { Redirect } from "react-router-dom";
-// import NewPasswordModal from "../components/NewPasswordModal";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import styled, { ThemeProvider, keyframes, css } from "styled-components";
+import NewPasswordModal from "../components/NewPasswordModal";
+import GlobalStyle from "../constants/GlobalStyleSidebar";
 
-// const Header = () => {
-//   // State variables to manage completion and modal visibility
-//   const [completed, setCompleted] = useState(false);
-//   const [showModal, setShowModal] = useState(false);
+// Updated theme with warm green steel colors
+const theme = {
+  primary: "#2c5e1a",
+  secondary: "#4a8c34",
+  tertiary: "#76b852",
+  // text: "#e0e0e0",
+  text: "#000000",
+  hover: "#8ed160",
+  fontSize: "14px",
+  padding: "12px 16px",
+};
 
-//   // Logout function to remove tokens and redirect to login
-//   const onLogout = (event) => {
-//     event.preventDefault();
+const glowAnimation = keyframes`
+  0% { box-shadow: 0 0 5px ${theme.tertiary}40, 0 0 10px ${theme.tertiary}40, 0 0 15px ${theme.tertiary}40; }
+  50% { box-shadow: 0 0 10px ${theme.tertiary}60, 0 0 20px ${theme.tertiary}60, 0 0 30px ${theme.tertiary}60; }
+  100% { box-shadow: 0 0 5px ${theme.tertiary}40, 0 0 10px ${theme.tertiary}40, 0 0 15px ${theme.tertiary}40; }
+`;
 
-//     localStorage.removeItem("token");
-//     localStorage.removeItem("user");
-//     setCompleted(true);
-//   };
+const HeaderWrapper = styled.nav`
+  // background: linear-gradient(
+  //   135deg,
+  //   ${theme.primary} 0%,
+  //   ${theme.secondary} 50%,
+  //   ${theme.tertiary} 100%
+  // );
+  background: #8adcd2;
+  color: ${theme.text};
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 30px;
+  position: relative;
+  z-index: 1000;
+  border-bottom: 1px solid ${theme.tertiary};
+  border-radius: 20px 20px 20px 20px;
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
 
-//   // Function to display the password change modal
-//   const newPassword = (event) => {
-//     event.preventDefault();
-//     setShowModal(true);
-//   };
+  // animation: ${glowAnimation} 3s infinite;
 
-//   // Function to close the password change modal
-//   const closeModal = () => setShowModal(false);
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    // background: linear-gradient(
+    //   135deg,
+    //   ${theme.primary}80 0%,
+    //   ${theme.secondary}80 50%,
+    //   ${theme.tertiary}80 100%
+    // );
+    filter: blur(10px);
+    opacity: 0.7;
+    z-index: -1;
+  }
+`;
 
-//   return (
-//     <nav className="main-header navbar navbar-expand navbar-white navbar-light">
-//       {/* Redirect to login if the logout process is completed */}
-//       {completed ? <Redirect to="/login" /> : null}
-//       {/* Show the password change modal if showModal is true */}
-//       {showModal ? (
-//         <NewPasswordModal show={true} onHide={closeModal} />
-//       ) : null}
-//       {/* Left navbar links */}
-//       <ul className="navbar-nav">
-//         {/* <li className="nav-item">
-//             <a
-//               className="nav-link"
-//               data-widget="pushmenu"
-//               href="#"
-//               role="button"
-//             >
-//               <i className="fas fa-bars" />
-//             </a>
-//           </li> */}
-//         {/* <li className="nav-item d-none d-sm-inline-block">
-//             <a href="index3.html" className="nav-link">
-//               Home
-//             </a>
-//           </li>
-//           <li className="nav-item d-none d-sm-inline-block">
-//             <a href="#" className="nav-link">
-//               Contact
-//             </a>
-//           </li> */}
-//       </ul>
-//       {/* SEARCH FORM */}
-//       {/* <form className="form-inline ml-3">
-//           <div className="input-group input-group-sm">
-//             <input
-//               className="form-control form-control-navbar"
-//               type="search"
-//               placeholder="Search"
-//               aria-label="Search"
-//             />
-//             <div className="input-group-append">
-//               <button className="btn btn-navbar" type="submit">
-//                 <i className="fas fa-search" />
-//               </button>
-//             </div>
-//           </div>
-//         </form> */}
-//       {/* Right navbar links */}
-//       <ul className="navbar-nav ml-auto">
-//         {/* Messages Dropdown Menu */}
-//         {/* <li className="nav-item dropdown">
-//             <a className="nav-link" data-toggle="dropdown" href="#">
-//               <i className="far fa-comments" />
-//               <span className="badge badge-danger navbar-badge">3</span>
-//             </a>
-//             <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-//               <a href="#" className="dropdown-item">
-//                 //Message Start
-//                 <div className="media">
-//                   <img
-//                     src={process.env.PUBLIC_URL + '/dist/img/user1-128x128.jpg'}
-//                     alt="User Avatar"
-//                     className="img-size-50 mr-3 img-circle"
-//                   />
-//                   <div className="media-body">
-//                     <h3 className="dropdown-item-title">
-//                       Brad Diesel
-//                       <span className="float-right text-sm text-danger">
-//                         <i className="fas fa-star" />
-//                       </span>
-//                     </h3>
-//                     <p className="text-sm">Call me whenever you can...</p>
-//                     <p className="text-sm text-muted">
-//                       <i className="far fa-clock mr-1" /> 4 Hours Ago
-//                     </p>
-//                   </div>
-//                 </div>
-//                 // Message End
-//               </a>
-//               <div className="dropdown-divider" />
-//               <a href="#" className="dropdown-item">
-//                 // Message Start
-//                 <div className="media">
-//                   <img
-//                     src={process.env.PUBLIC_URL + '/dist/img/user8-128x128.jpg'}
-//                     alt="User Avatar"
-//                     className="img-size-50 img-circle mr-3"
-//                   />
-//                   <div className="media-body">
-//                     <h3 className="dropdown-item-title">
-//                       John Pierce
-//                       <span className="float-right text-sm text-muted">
-//                         <i className="fas fa-star" />
-//                       </span>
-//                     </h3>
-//                     <p className="text-sm">I got your message bro</p>
-//                     <p className="text-sm text-muted">
-//                       <i className="far fa-clock mr-1" /> 4 Hours Ago
-//                     </p>
-//                   </div>
-//                 </div>
-//                 // Message End
-//               </a>
-//               <div className="dropdown-divider" />
-//               <a href="#" className="dropdown-item">
-//                 // Message Start
-//                 <div className="media">
-//                   <img
-//                     src={process.env.PUBLIC_URL + '/dist/img/user3-128x128.jpg'}
-//                     alt="User Avatar"
-//                     className="img-size-50 img-circle mr-3"
-//                   />
-//                   <div className="media-body">
-//                     <h3 className="dropdown-item-title">
-//                       Nora Silvester
-//                       <span className="float-right text-sm text-warning">
-//                         <i className="fas fa-star" />
-//                       </span>
-//                     </h3>
-//                     <p className="text-sm">The subject goes here</p>
-//                     <p className="text-sm text-muted">
-//                       <i className="far fa-clock mr-1" /> 4 Hours Ago
-//                     </p>
-//                   </div>
-//                 </div>
-//                 // Message End
-//               </a>
-//               <div className="dropdown-divider" />
-//               <a href="#" className="dropdown-item dropdown-footer">
-//                 See All Messages
-//               </a>
-//             </div>
-//           </li> */}
-//         {/* Notifications Dropdown Menu */}
-//         <li className="nav-item dropdown">
-//           <a className="nav-link" data-toggle="dropdown" href="#">
-//             <i className="fas fa-user" />
-//             <span className="pl-1">
-//               {JSON.parse(localStorage.getItem("user")).fullname}
-//             </span>
-//             {/* <span className="badge badge-warning navbar-badge">15</span> */}
-//           </a>
-//           <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-//             <span className="dropdown-header">Options</span>
-//             <div className="dropdown-divider" />
-//             <a onClick={newPassword} href="#" className="dropdown-item">
-//               <i className="fas fa-key mr-2" /> Change Password
-//               {/* <span className="float-right text-muted text-sm">3 mins</span> */}
-//             </a>
-//             <div className="dropdown-divider" />
-//             <a onClick={onLogout} href="#" className="dropdown-item">
-//               <i className="fas fa-sign-out-alt mr-2" /> Log out
-//               {/* <span className="float-right text-muted text-sm">12 hours</span> */}
-//             </a>
-//             {/* <div className="dropdown-divider" />
-//               <a href="#" className="dropdown-item">
-//                 <i className="fas fa-file mr-2" /> 3 new reports
-//                 <span className="float-right text-muted text-sm">2 days</span>
-//               </a>
-//               <div className="dropdown-divider" />
-//               <a href="#" className="dropdown-item dropdown-footer">
-//                 See All Notifications
-//               </a> */}
-//           </div>
-//         </li>
-//         {/* <li className="nav-item">
-//             <a
-//               className="nav-link"
-//               data-widget="control-sidebar"
-//               data-slide="true"
-//               href="#"
-//               role="button"
-//             >
-//               <i className="fas fa-th-large" />
-//             </a>
-//           </li> */}
-//       </ul>
-//     </nav>
-//   );
-// };
+const NavItem = styled.ul`
+  list-style: none;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+`;
 
-// export default Header;
+const NavLink = styled.a`
+  color: ${theme.text};
+  margin-right: 20px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease, transform 0.3s ease, text-shadow 0.3s ease;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &:hover {
+    color: ${theme.hover};
+    transform: translateY(-2px);
+    text-shadow: 0 0 10px ${theme.hover}, 0 0 20px ${theme.hover},
+      0 0 30px ${theme.hover};
+  }
+
+  i {
+    margin-right: 8px;
+  }
+`;
+
+const DropdownMenu = styled.div`
+  background: linear-gradient(
+    135deg,
+    ${theme.primary}E6 0%,
+    ${theme.secondary}E6 100%
+  );
+  color: ${theme.text};
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid ${theme.tertiary};
+  position: absolute;
+  top: 120%;
+  right: 20px;
+  min-width: 220px;
+  display: ${(props) => (props.show ? "flex" : "none")};
+  flex-direction: column;
+  font-size: ${theme.fontSize};
+  z-index: 1001;
+  overflow: hidden;
+  transition: all 0.3s ease;
+`;
+
+const DropdownItem = styled.a`
+  padding: ${theme.padding};
+  color: ${theme.text};
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+  font-size: ${theme.fontSize};
+  margin: 0;
+
+  &:hover {
+    background-color: ${theme.hover}40;
+    color: ${theme.text};
+    transform: translateX(5px);
+    box-shadow: inset 0 0 10px ${theme.hover}60;
+  }
+
+  i {
+    margin-right: 12px;
+  }
+`;
+
+const Header = () => {
+  const [completed, setCompleted] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const history = useHistory();
+
+  const onLogout = (event) => {
+    event.preventDefault();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setCompleted(true);
+    history.push("/login");
+  };
+
+  const newPassword = (event) => {
+    event.preventDefault();
+    setShowModal(true);
+  };
+
+  const closeModal = () => setShowModal(false);
+
+  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
+
+  return (
+    <>
+      <GlobalStyle />
+      <ThemeProvider theme={theme}>
+        <HeaderWrapper>
+          {showModal ? (
+            <NewPasswordModal show={true} onHide={closeModal} />
+          ) : null}
+
+          <NavItem>{/* Other left-aligned nav items can go here */}</NavItem>
+
+          <NavItem>
+            <li className="nav-item">
+              <NavLink  onClick={toggleDropdown}>
+                <i className="fas fa-user" />
+                <span className="pl-1">
+                  {JSON.parse(localStorage.getItem("user")).fullname}
+                </span>
+              </NavLink>
+              <DropdownMenu show={dropdownOpen}>
+                <DropdownItem onClick={newPassword} >
+                  <i className="fas fa-key" /> Change Password
+                </DropdownItem>
+                <DropdownItem onClick={onLogout} >
+                  <i className="fas fa-sign-out-alt" /> Log out
+                </DropdownItem>
+              </DropdownMenu>
+            </li>
+          </NavItem>
+        </HeaderWrapper>
+      </ThemeProvider>
+    </>
+  );
+};
+
+export default Header;

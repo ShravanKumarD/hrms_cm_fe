@@ -50,16 +50,16 @@ const Announcement = () => {
       MuiButton: {
         root: {
           color: "#000",
-          backgroundColor: "#E0FFE0",
+          backgroundColor: "#ffffff",
           "&:hover": {
-            backgroundColor: "#006400", // Darker green on hover
+            backgroundColor: "#ffffff", // Darker green on hover
           },
           borderRadius: "12px", // More rounded buttons
         },
       },
       MuiToolbar: {
         root: {
-          backgroundColor: "#4CAF4F", // Dark leaf green
+          backgroundColor: "#8adcd2", // Dark leaf green
           color: "#000", // White text color
           borderRadius: "8px 8px 8px 8px", // Rounded corners for the toolbar
           borderCollapse: "collapse",
@@ -80,8 +80,8 @@ const Announcement = () => {
         elevation2: {
           boxShadow: "none", // Remove default shadow
           borderRadius: "12px", // Rounded border for the table
-          border: "2px solid #E0FFE0", // Dark leaf green border
-          backgroundColor: "#E0FFE0", // Dark leaf green background
+          // border: "1px solid #a7a4a4", // Dark leaf green border
+          backgroundColor: "#ffffff", // Dark leaf green background
           color: "#000", // Black text inside the table
         },
       },
@@ -190,18 +190,18 @@ const Announcement = () => {
                   data={announcements}
                   options={{
                     rowStyle: {
-                      backgroundColor: "#E0FFE0", // Dark leaf green background color for rows
+                      backgroundColor: "#ffffff", // Dark leaf green background color for rows
                       color: "#000", // Ensure text is black
                     },
                     pageSize: 10,
                     pageSizeOptions: [10, 20, 30, 50, 75, 100],
                     headerStyle: {
-                      backgroundColor: "#E0FFE0", // Dark leaf green for header
+                      backgroundColor: "#ffffff", // Dark leaf green for header
                       color: "#000", // Black text color for header
                     },
                     toolbar: true,
                     toolbarStyle: {
-                      backgroundColor: "#E0FFE0", // Dark leaf green for toolbar
+                      backgroundColor: "#ffffff", // Dark leaf green for toolbar
                       color: "#000", // Black text color for toolbar
                     },
                   }}
