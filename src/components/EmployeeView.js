@@ -5,28 +5,9 @@ import axios from "axios";
 import moment from "moment";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-import SalarySlipTemplate from "./SalarySlipTemplate";
-import OfferLetterTemplate from "./OfferLetterTemplate";
-import HikeLetterTemplate from "./HikeLetterTemplate";
-import RelievingLetterTemplate from "./RelievingLetterTemplate";
 import API_BASE_URL from "../env";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 
 const EmployeeView = () => {
   const [user, setUser] = useState({});
@@ -51,10 +32,8 @@ const EmployeeView = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [salarySlip, setSalarySlip] = useState(null);
 
-  const navigate = useHistory();
   const history = useHistory();
   const location = useLocation();
-  const slipRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,288 +85,218 @@ const EmployeeView = () => {
           console.error("Error fetching data:", error);
         }
       } else {
-        // navigate("/payroll/employee/search");
-        history.push("/payroll/employee/search")
+        history.push("/payroll/employee/search");
       }
     };
 
     fetchData();
-  }, [location.state, navigate]);
+  }, [location.state, history]);
 
   const handleMonthChange = (event) => {
     setSelectedMonth(event.target.value);
   };
 
   const onEdit = () => {
-    // navigate("/payroll/employee/edit", { state: { selectedUser: user } });
-    history.push("/employee-edit", { selectedUser: user } );
+    history.push("/employee-edit", { selectedUser: user });
   };
 
   return (
-    <div>
-      <Card>
-        <Card.Body>
-          <div className="container-fluid pt-3">
-            <Row>
-              <Col sm={12}>
-                <Card>
-                  <Card.Header
-                    style={{
-                      backgroundColor: "#515e73",
-                      color: "white",
-                      fontSize: "17px",
-                    }}
-                  >
-                    Employee Details{" "}
-                    <Form className="float-right">
-                      <span style={{ cursor: "pointer" }} onClick={onEdit}>
-                        <i className="far fa-edit"></i> Edit
-                      </span>
-                    </Form>
-                  </Card.Header>
-                  <Card.Body>
-                    <Card.Title>
-                      <strong>{user.fullName}</strong>
-                    </Card.Title>
-                    <div>
-                      <Col lg={12}>
-                        <Row className="pt-4">
-                          <Col lg={3}>
-                            <img
-                              className="img-circle elevation-1 bp-2"
-                              src={process.env.PUBLIC_URL + "/user-128.png"}
-                              alt="User"
-                            />
-                          </Col>
-                          <Col className="pt-4" lg={9}>
-                            <div className="emp-view-list">
-                              <ul>
-                                <li>
-                                  <span>Employee ID: </span> {user.id}
-                                </li>
-                                <li>
-                                  <span>Department: </span>{" "}
-                                  {department.departmentName}
-                                </li>
-                                <li>
-                                  <span>Job Title: </span> {jobTitle}
-                                </li>
-                                <li>
-                                  <span>Role: </span>
-                                  {user.role === "ROLE_ADMIN"
-                                    ? "Admin"
-                                    : user.role === "ROLE_MANAGER"
-                                    ? "Manager"
-                                    : "Employee"}
-                                </li>
-                              </ul>
-                            </div>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col sm={6}>
-                            <Card className="secondary-card emp-view">
-                              <Card.Header>Personal Details</Card.Header>
-                              <Card.Body>
-                                <Card.Text id="emp-view-personal">
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Date of Birth:
-                                    </Form.Label>
-                                    <span>{userPersonalInfo.dateOfBirth}</span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Gender:
-                                    </Form.Label>
-                                    <span>{userPersonalInfo.gender}</span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Marital Status:
-                                    </Form.Label>
-                                    <span>
-                                      {userPersonalInfo.maritalStatus}
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Father's Name:
-                                    </Form.Label>
-                                    <span>{userPersonalInfo.fatherName}</span>
-                                  </Form.Group>
-                                </Card.Text>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                          <Col sm={6}>
-                            <Card className="secondary-card emp-view">
-                              <Card.Header>Contact Details</Card.Header>
-                              <Card.Body>
-                                <Card.Text id="emp-view-contact">
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Location:
-                                    </Form.Label>
-                                    <span>
-                                      {userPersonalInfo.country},{" "}
-                                      {userPersonalInfo.city}
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Address:
-                                    </Form.Label>
-                                    <span>{userPersonalInfo.address}</span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Mobile:
-                                    </Form.Label>
-                                    <span>
-                                      {userPersonalInfo.mobile}{" "}
-                                      {userPersonalInfo.phone
-                                        ? ` (${userPersonalInfo.phone})`
-                                        : null}
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Email Address:
-                                    </Form.Label>
-                                    <span>{userPersonalInfo.emailAddress}</span>
-                                  </Form.Group>
-                                </Card.Text>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col sm={6}>
-                            <Card className="secondary-card">
-                              <Card.Header>Bank Information</Card.Header>
-                              <Card.Body>
-                                <Card.Text id="emp-view-bank">
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Bank Name:
-                                    </Form.Label>
-                                    <span>{userFinancialInfo.bankName}</span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Account Name:
-                                    </Form.Label>
-                                    <span>{userFinancialInfo.accountName}</span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Account Number:
-                                    </Form.Label>
-                                    <span>
-                                      {userFinancialInfo.accountNumber}
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      IBAN:
-                                    </Form.Label>
-                                    <span>{userFinancialInfo.iban}</span>
-                                  </Form.Group>
-                                </Card.Text>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                          <Col sm={12}>
-                            <Card className="secondary-card mb-2">
-                              <Card.Header className="p-2">
-                                Salary Slip
-                              </Card.Header>
-                              <Card.Body className="p-2">
-                                <Row>
-                                  <Col>
-                                    <Form.Group controlId="monthSelect">
-                                      <Form.Label>Select Month</Form.Label>
-                                      <Form.Control
-                                        as="select"
-                                        value={selectedMonth}
-                                        onChange={handleMonthChange}
-                                      >
-                                        <option value="">Select a month</option>
-                                        {months.map((month, index) => (
-                                          <option key={index} value={month}>
-                                            {month}
-                                          </option>
-                                        ))}
-                                      </Form.Control>
-                                    </Form.Group>
-                                    <SalarySlipTemplate
-                                      user={user}
-                                      salarySlip={salarySlip}
-                                      selectedMonth={selectedMonth}
-                                    />
-                                  </Col>
-                                </Row>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                          <Col sm={12}>
-                            <Card className="secondary-card mb-2">
-                              <Card.Header className="p-2">
-                                Offer Letter
-                              </Card.Header>
-                              <Card.Body className="p-2">
-                                <Row>
-                                  <Col>
-                                    <OfferLetterTemplate />
-                                  </Col>
-                                </Row>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                          <Col sm={12}>
-                            <Card className="secondary-card mb-2">
-                              <Card.Header className="p-2">
-                                Hike Letter
-                              </Card.Header>
-                              <Card.Body className="p-2">
-                                <Row>
-                                  <Col>
-                                    <HikeLetterTemplate
-                                      effective_date="2024-09-01"
-                                      new_salary="$75,000"
-                                      previous_salary="$65,000"
-                                      hr_name="John Doe"
-                                    />
-                                  </Col>
-                                </Row>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                          <Col sm={12}>
-                            <Card className="secondary-card mb-2">
-                              <Card.Header className="p-2">
-                                Relieving Letter
-                              </Card.Header>
-                              <Card.Body className="p-2">
-                                <Row>
-                                  <Col>
-                                    <RelievingLetterTemplate />
-                                  </Col>
-                                </Row>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
+    <div className="container-fluid pt-3">
+      <Row>
+        <Col sm={12}>
+        <h3>Employee Details</h3>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <p></p>
+            <Form>
+              <span style={{ cursor: "pointer" }} onClick={onEdit}>
+                <i className="far fa-edit"></i>
+                <strong>Edit</strong>
+              </span>
+            </Form>
           </div>
-        </Card.Body>
-      </Card>
+          <Row className="pt-4">
+            <Col lg={3} className="d-flex justify-content-center mb-4">
+              <img
+                className="img-fluid rounded-circle border border-secondary"
+                src={process.env.PUBLIC_URL + "/user-128.png"}
+                alt="User"
+              />
+            </Col>
+            <Col lg={9}>
+              <Card className="shadow-sm mb-4">
+                <Card.Body>
+                  <h2 className="text-primary mb-3">{user.fullName}</h2>
+                  <Row className="mb-2">
+                    <Col lg={5}>
+                      <span className="font-weight-bold">Employee ID:</span>
+                    </Col>
+                    <Col lg={7}>
+                      {user.id}
+                    </Col>
+                  </Row>
+                  <Row className="mb-2">
+                    <Col lg={5}>
+                      <span className="font-weight-bold">Department:</span>
+                    </Col>
+                    <Col lg={7}>
+                      {department.departmentName}
+                    </Col>
+                  </Row>
+                  <Row className="mb-2">
+                    <Col lg={5}>
+                      <span className="font-weight-bold">Job Title:</span>
+                    </Col>
+                    <Col lg={7}>
+                      {jobTitle}
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col lg={5}>
+                      <span className="font-weight-bold">Role:</span>
+                    </Col>
+                    <Col lg={7}>
+                      {user.role === "ROLE_ADMIN"
+                        ? "Admin"
+                        : user.role === "ROLE_MANAGER"
+                        ? "Manager"
+                        : "Employee"}
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={12} lg={6} className="mb-4">
+              <Card className="shadow-sm">
+                <Card.Header className="globalHeader">
+                  <h5 className="mb-0">Personal Details</h5>
+                </Card.Header>
+                <Card.Body>
+                  <Row className="mb-3">
+                    <Col xs={5}>
+                      <strong>Date of Birth:</strong>
+                    </Col>
+                    <Col xs={7}>
+                      {userPersonalInfo.dateOfBirth || "Not available"}
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                    <Col xs={5}>
+                      <strong>Gender:</strong>
+                    </Col>
+                    <Col xs={7}>
+                      {userPersonalInfo.gender || "Not available"}
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                    <Col xs={5}>
+                      <strong>Marital Status:</strong>
+                    </Col>
+                    <Col xs={7}>
+                      {userPersonalInfo.maritalStatus || "Not available"}
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                    <Col xs={5}>
+                      <strong>Father's Name:</strong>
+                    </Col>
+                    <Col xs={7}>
+                      {userPersonalInfo.fatherName || "Not available"}
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col sm={12} lg={6} className="mb-4">
+              <Card className="shadow-sm">
+                <Card.Header className="globalHeader">
+                  <h5 className="mb-0">Contact Details</h5>
+                </Card.Header>
+                <Card.Body>
+                  <Row className="mb-3">
+                    <Col xs={5}>
+                      <strong>Location:</strong>
+                    </Col>
+                    <Col xs={7}>
+                      {userPersonalInfo.country || "Not available"}, {" "}
+                      {userPersonalInfo.city || "Not available"}
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                    <Col xs={5}>
+                      <strong>Address:</strong>
+                    </Col>
+                    <Col xs={7}>
+                      {userPersonalInfo.address || "Not available"}
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                    <Col xs={5}>
+                      <strong>Mobile:</strong>
+                    </Col>
+                    <Col xs={7}>
+                      {userPersonalInfo.mobile || "Not available"}
+                      {userPersonalInfo.phone
+                        ? ` (${userPersonalInfo.phone})`
+                        : ""}
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                    <Col xs={5}>
+                      <strong>Email Address:</strong>
+                    </Col>
+                    <Col xs={7}>
+                      {userPersonalInfo.emailAddress || "Not available"}
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col sm={12} lg={12}>
+              <Card className="shadow-sm">
+                <Card.Header className="globalHeader">
+                  <h5 className="mb-0">Bank Information</h5>
+                </Card.Header>
+                <Card.Body>
+                  <Row className="mb-3">
+                    <Col xs={5}>
+                      <strong>Bank Name:</strong>
+                    </Col>
+                    <Col xs={7}>
+                      {userFinancialInfo.bankName || "Not available"}
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                    <Col xs={5}>
+                      <strong>Account Name:</strong>
+                    </Col>
+                    <Col xs={7}>
+                      {userFinancialInfo.accountName || "Not available"}
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                    <Col xs={5}>
+                      <strong>Account Number:</strong>
+                    </Col>
+                    <Col xs={7}>
+                      {userFinancialInfo.accountNumber || "Not available"}
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                    <Col xs={5}>
+                      <strong>IBAN:</strong>
+                    </Col>
+                    <Col xs={7}>
+                      {userFinancialInfo.iban || "Not available"}
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
     </div>
   );
 };

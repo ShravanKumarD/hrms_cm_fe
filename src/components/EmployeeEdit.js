@@ -624,9 +624,11 @@ export default class EmployeeEdit extends Component {
                       </div>
                     </Card.Body>
                   </Card>
-                  <Button variant="primary" type="submit" block>
-                    Submit
-                  </Button>
+                  <p>&nbsp;</p>
+                  <button className="dashboard-icons d-flex justify-content-center text-center btn-block">
+  Submit
+</button>
+
                 </div>
               </div>
             </div>

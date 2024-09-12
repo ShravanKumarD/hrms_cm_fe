@@ -3,7 +3,9 @@ import React, { Component } from "react";
 export default class Footer extends Component {
   render() {
     return (
-      <footer style={{ display: "flex", justifyContent: "center", alignItems: "center",}}>
+      <>
+      <hr/>
+      <footer style={{ display: "flex", justifyContent: "right"}}>
         <div>
           <strong>
             Copyright © 2023-2024{" "}
@@ -19,6 +21,7 @@ export default class Footer extends Component {
           <b>Version</b> 1.0.0
         </div> */}
       </footer>
+      </>
     );
   }
 }

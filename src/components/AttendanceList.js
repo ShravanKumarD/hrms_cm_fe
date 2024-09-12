@@ -430,7 +430,7 @@ const AttendanceList = () => {
             <Dropdown.Toggle
               variant="success"
               id="dropdown-basic"
-              className="btn btn-success btn-sm"
+              className="dashboard-icons btn-sm"
             >
               Export Options
             </Dropdown.Toggle>
@@ -523,10 +523,10 @@ const AttendanceList = () => {
             />
           </Form.Group>
           <div className="d-flex flex-wrap align-items-center mb-3">
-            Sort By Hours(24Hrs.):{" "}
+            Sort By Time:{" "}
           </div>
           <Form.Group className="mr-3 mb-3">
-            <Form.Label>Clock In Start (hh:mm AM/PM)</Form.Label>
+            {/* <Form.Label>Clock In Start (hh:mm AM/PM)</Form.Label> */}
             <TimePicker
               format="hh:mm a"
               value={clockinStart}
@@ -536,7 +536,7 @@ const AttendanceList = () => {
           </Form.Group>
 
           <Form.Group className="mr-3 mb-3">
-            <Form.Label>Clock Out End (hh:mm AM/PM)</Form.Label>
+            {/* <Form.Label>Clock Out End (hh:mm AM/PM)</Form.Label> */}
             <TimePicker
               format="hh:mm a"
               value={clockoutEnd}

@@ -76,12 +76,13 @@ const AttendanceListDetailed = () => {
   return (
     <div className="container mt-4">
       <div>
-        <Card.Title>Detailed Attendance List</Card.Title>
+        <h3>Detailed Attendance List</h3>
         <p>&nbsp;</p>
         <Form.Group controlId="monthFilter">
           <Form.Label>Select Month</Form.Label>
           <Form.Control
             as="select"
+            // className='dashboard-icons'
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
           >
