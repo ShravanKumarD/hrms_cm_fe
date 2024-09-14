@@ -44,21 +44,21 @@ const theme = {
 // Styled components
 const Sidebar = styled.aside`
   position: fixed;
-  left: ${(props) => (props.isCollapsed ? "20px" : "20px")};
+  left: 20px;
   top: 50%;
   transform: translateY(-50%);
   height: 70vh;
   width: ${(props) => (props.isCollapsed ? "70px" : "250px")};
-
-background:#8adcd2;
+  background: #8adcd2;;
   backdrop-filter: blur(10px);
   border-radius: 20px;
   transition: all 0.3s ease;
-  overflow-y: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   color: ${(props) => props.theme.text};
   z-index: 1001;
 `;
-
 const LogoContainer = styled.div`
   padding: 20px;
   text-align: center;
@@ -89,7 +89,11 @@ const NavMenu = styled.nav`
   backdrop-filter: blur(10px);
 
   /* Scrollbar Styles */
-  scrollbar-width: thin;
+  scrollbar-width: none;
+    &:hover {
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
   scrollbar-color: ${(props) => props.theme.scrollbarThumb} ${(props) => props.theme.scrollbarTrack};
 
   &::-webkit-scrollbar {
@@ -108,6 +112,10 @@ const NavMenu = styled.nav`
 
   &::-webkit-scrollbar-thumb:hover {
     background: ${(props) => props.theme.hover};
+  }
+        scrollbar-width: thin;
+    scrollbar-color: ${(props) => props.theme.scrollbarThumb} ${(props) =>
+  props.theme.scrollbarTrack};
   }
 `;
 

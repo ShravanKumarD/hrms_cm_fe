@@ -30,7 +30,7 @@ export default function Calendar() {
       try {
         axios.defaults.baseURL = API_BASE_URL;
         const token = localStorage.getItem("token");
-
+  
         // Fetch holidays
         const holidayResponse = await axios.get('/api/holiday', {
           headers: {
@@ -40,18 +40,20 @@ export default function Calendar() {
         const allHolidays = holidayResponse.data;
         setHolidays(allHolidays);
         setOptionalHolidays(allHolidays.filter(x => x.description === "Optional"));
-
+  
         // Fetch users
         const userResponse = await axios.get("/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
+  
         // Set birthday events
         const birthdayEvents = userResponse.data.map(user => {
           const birthDate = moment(user.user_personal_info?.dateOfBirth, 'YYYY-MM-DD');
+  
           if (birthDate.isValid()) {
             return {
               title: `${user.fullName.split(' ')[0]}'s Birthday`,
-              date: birthDate.format('YYYY-MM-DD'),          
+              date: birthDate.format('YYYY-MM-DD'),
               backgroundColor: "rgba(255, 223, 186, 0.5)",
               borderColor: "rgba(255, 223, 186, 0.8)"
             };
@@ -60,17 +62,59 @@ export default function Calendar() {
         }).filter(event => event !== null);
         setBirthdays(birthdayEvents);
         
-
-        setEmpCount(userResponse.data.length);
-
       } catch (error) {
         console.error(error);
       }
     };
-
+  
     fetchData();
   }, []);
-
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        axios.defaults.baseURL = API_BASE_URL;
+        const token = localStorage.getItem("token");
+  
+        // Fetch holidays
+        const holidayResponse = await axios.get('/api/holiday', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const allHolidays = holidayResponse.data;
+  
+        // Set holidays and optional holidays only once
+        setHolidays(allHolidays.filter(x => x.description !== "Optional")); // Non-optional holidays
+        setOptionalHolidays(allHolidays.filter(x => x.description === "Optional")); // Optional holidays
+  
+        // Fetch users
+        const userResponse = await axios.get("/api/users", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        // Set birthday events
+        const birthdayEvents = userResponse.data.map(user => {
+          const birthDate = moment(user.user_personal_info?.dateOfBirth, 'YYYY-MM-DD');
+          if (birthDate.isValid()) {
+            return {
+              title: `${user.fullName.split(' ')[0]}'s Birthday`,
+              date: birthDate.format('YYYY-MM-DD'),
+              backgroundColor: "rgba(255, 223, 186, 0.5)",
+              borderColor: "rgba(255, 223, 186, 0.8)"
+            };
+          }
+          return null;
+        }).filter(event => event !== null);
+  
+        setBirthdays(birthdayEvents);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
   const handleDayCellDidMount = (info) => {
     const { date, el } = info;
     const cellDateString = date.toDateString();
@@ -160,23 +204,24 @@ export default function Calendar() {
     backgroundColor: event.backgroundColor || (event.description === "Optional" ? "#8adcd2" : "#a7a4a4"),
     borderColor: event.borderColor || (event.description === "Optional" ? "#8adcd2" : "#a7a4a4")
   }));
+  
   return (
     <>
-      <FullCalendar
-        plugins={[dayGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        headerToolbar={{
-          left: "title",
-          right: "prev,next",
-        }}
-        dayHeaderContent={(arg) => arg.date.toLocaleDateString('en-US', { weekday: 'short' })}
-        dayCellDidMount={handleDayCellDidMount}
-        dateClick={handleDateClick}
-        titleFormat={{ month: "long" }}
-        height="auto"
-        events={events}
-        className="calendar-container"
-      />
+     <FullCalendar
+      plugins={[dayGridPlugin, interactionPlugin]}
+      initialView="dayGridMonth"
+      headerToolbar={{
+        left: "title",
+        right: "prev,next",
+      }}
+      dayHeaderContent={(arg) => arg.date.toLocaleDateString('en-US', { weekday: 'short' })}
+      dayCellDidMount={handleDayCellDidMount}
+      dateClick={handleDateClick}
+      titleFormat={{ month: "long" }}
+      height="auto"
+      events={events}
+      className="calendar-container"
+    />
       <Modal show={showModal} 
       centered
       onHide={() => setShowModal(false)} closeButton>

@@ -28,8 +28,9 @@ const RecentApplications = () => {
   }, []); // Empty dependency array means this effect runs once on mount
 
   return (
-    <div className="card">
+    <div className="card" style={{background:"#8adcd2"}}>
       <div className="mt-1" style={{ textAlign: "center" }}></div>
+      <h3>Reacent Applications</h3>
       <div>
         <ul>
           {recentApplications.map((app) => (

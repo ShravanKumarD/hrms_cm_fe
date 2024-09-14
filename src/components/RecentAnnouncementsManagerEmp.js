@@ -68,6 +68,7 @@ const RecentAnnouncements = () => {
   return (
     <div className="card"style={{backgroundColor:"#8adcd2"}}>
       <div  style={{ textAlign: "center" }}></div>
+      <h3>Recent Announcements</h3>
       <ul>
         {recentAnnouncements.map((announcement) => (
           <li

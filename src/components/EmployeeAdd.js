@@ -534,24 +534,18 @@ export default class EmployeeAdd extends Component {
                             Date of Birth
                           </Form.Label>
                           <Form.Row>
-                            <DatePicker
-                              selected={this.state.dateOfBirth}
-                              onChange={(dateOfBirth) =>
-                                this.setState({ dateOfBirth })
-                              }
-                              showMonthDropdown
-                              showYearDropdown
-                              dropdownMode="select"
-                              timeFormat="HH:mm"
-                              name="dateOfBirth"
-                              timeIntervals={30}
-                              timeCaption="time"
-                              dateFormat="yyyy-MM-dd"
-                              className="form-control ml-1"
-                              placeholderText="Select Date Of Birth"
-                              autoComplete="off"
-                              required
-                            />
+                          <DatePicker
+  selected={this.state.dateOfBirth}
+  onChange={(dateOfBirth) => this.setState({ dateOfBirth })}
+  showMonthDropdown
+  showYearDropdown
+  dropdownMode="select"
+  dateFormat="yyyy-MM-dd"
+  className="form-control ml-1"
+  placeholderText="Select Date Of Birth"
+  autoComplete="off"
+  required
+/>
                           </Form.Row>
                         </Form.Group>
 

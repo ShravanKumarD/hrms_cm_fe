@@ -6,6 +6,25 @@ import Button from 'react-bootstrap/Button';
 import API_BASE_URL from "../env";
 import moment from "moment"
 import RecentAnnouncements from "./RecentAnnouncements";
+import{
+FaMoneyBill,
+FaBell,
+FaAngleLeft,
+FaBriefcase,
+FaList,
+FaPlus,
+FaUsers,
+FaBuilding,
+FaFileInvoiceDollar,
+FaFileSignature,
+FaFileExport,
+FaMoneyCheck,
+FaShoppingCart,
+FaFileInvoice,
+FaHollyBerry,
+FaCalendarAlt, FaUserClock,
+FaBellSlash 
+} from "react-icons/fa";
 
 const Dashboard = () => {
   const [filteredApplications, setFilteredApplications] = useState([]);
@@ -102,7 +121,7 @@ const Dashboard = () => {
           clockoutTime,
         };
       });
-
+   
       setAttendances(formattedAttendances.reverse());
 
       const today = moment().startOf("day");
@@ -110,7 +129,8 @@ const Dashboard = () => {
         moment(attendance.date).isSame(today, "day")
       );
       setTodaysCount(todaysAttendance.length);
-      const absentCountToday = formattedAttendances.length-todaysAttendance.length;
+      console.log( empCount, todaysCount,todaysAttendance.length,"usersss")
+      const absentCountToday = empCount - todaysCount;
       setAbsentCount(absentCountToday);
 
       const monthlyData = {};
@@ -228,8 +248,8 @@ const Dashboard = () => {
       >
         <div className="d-flex justify-content-center">
         <Modal.Header closeButton>
-          <h3>Employees' Applications</h3>
-          </Modal.Header>
+    <h3>Employees' Applications</h3>
+  </Modal.Header>
         </div>
         <div className="d-flex justify-content-center">
           <table>
@@ -270,6 +290,7 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
+        <p>&nbsp;</p>
         <div className="d-flex justify-content-center">
           <Button
             variant="info"

@@ -1,165 +1,191 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { useHistory } from "react-router-dom";
-import axios from "axios";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from "@fullcalendar/interaction";
 import moment from "moment";
-import "@fullcalendar/core/main.css";
-import "@fullcalendar/daygrid/main.css";
-import "../Timesheet.css";
 import LightweightStartWork from "./LightweightStartWork";
-import ApplicationModal from "../components/ApplicationModal";
-import API_BASE_URL from "../env";
 import { Modal } from "react-bootstrap";
+import axios from "axios";
+import API_BASE_URL from "./../env";
+import './../components/TimeSheet.css';
 
-const Timesheet = () => {
+import ApplicationModal from "../components/ApplicationModal";
+
+export default function Calendar() {
   const [applications, setApplications] = useState([]);
   const [attendances, setAttendances] = useState([]);
   const [clickedDate, setClickedDate] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [holidays, setHolidays] = useState([]);
+  const [optionalHolidays, setOptionalHolidays] = useState([]);
+  const [birthdays, setBirthdays] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [empCount, setEmpCount] = useState(0);
   const history = useHistory();
 
-  const userId = (() => {
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      return user?.id || null;
-    } catch (error) {
-      console.error("Failed to fetch user data from localStorage", error);
-      return null;
-    }
-  })();
-
   useEffect(() => {
-    if (!userId) {
-      console.error("User ID not found. Redirecting to login.");
-      history.push("/login");
-    }
-  }, [userId, history]);
-
-  useEffect(() => {
-    const fetchAttendances = async () => {
+    const fetchData = async () => {
       try {
         axios.defaults.baseURL = API_BASE_URL;
-        const response = await axios.get(`api/attendance/user/${userId}`, {
+        const token = localStorage.getItem("token");
+  
+        // Fetch holidays
+        const holidayResponse = await axios.get('/api/holiday', {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
-        if (response.data) {
-          setAttendances(response.data);
-        } else {
-          console.warn("No attendances data received.");
-        }
+        const allHolidays = holidayResponse.data;
+        setHolidays(allHolidays);
+        setOptionalHolidays(allHolidays.filter(x => x.description === "Optional"));
+  
+        // Fetch users
+        const userResponse = await axios.get("/api/users", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        // Set birthday events
+        const birthdayEvents = userResponse.data.map(user => {
+          const birthDate = moment(user.user_personal_info?.dateOfBirth, 'YYYY-MM-DD');
+          console.log(user.user_personal_info?.dateOfBirth, 'raw birthdate'); // Log raw birthdate
+          console.log(birthDate.isValid(), 'birthDate is valid'); // Log validity
+  
+          if (birthDate.isValid()) {
+            return {
+              title: `${user.fullName.split(' ')[0]}'s Birthday`,
+              date: birthDate.format('YYYY-MM-DD'),
+              backgroundColor: "rgba(255, 223, 186, 0.5)",
+              borderColor: "rgba(255, 223, 186, 0.8)"
+            };
+          }
+          return null;
+        }).filter(event => event !== null);
+  
+        console.log(birthdayEvents, "birthdayEvents");
+        setBirthdays(birthdayEvents);
+        
       } catch (error) {
-        console.error("Error fetching attendances: ", error);
+        console.error(error);
       }
     };
-
-    if (userId) fetchAttendances();
-  }, [userId]);
-
+  
+    fetchData();
+  }, []);
   useEffect(() => {
-    const fetchApplications = async () => {
+    const fetchData = async () => {
       try {
         axios.defaults.baseURL = API_BASE_URL;
-        const response = await axios.get(`/api/applications/user/${userId}`, {
+        const token = localStorage.getItem("token");
+  
+        // Fetch holidays
+        const holidayResponse = await axios.get('/api/holiday', {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
-        if (response.data) {
-          setApplications(response.data);
-        } else {
-          console.warn("No applications data received.");
-        }
+        const allHolidays = holidayResponse.data;
+  
+        // Set holidays and optional holidays only once
+        setHolidays(allHolidays.filter(x => x.description !== "Optional")); // Non-optional holidays
+        setOptionalHolidays(allHolidays.filter(x => x.description === "Optional")); // Optional holidays
+  
+        // Fetch users
+        const userResponse = await axios.get("/api/users", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        // Set birthday events
+        const birthdayEvents = userResponse.data.map(user => {
+          const birthDate = moment(user.user_personal_info?.dateOfBirth, 'YYYY-MM-DD');
+          if (birthDate.isValid()) {
+            return {
+              title: `${user.fullName.split(' ')[0]}'s Birthday`,
+              date: birthDate.format('YYYY-MM-DD'),
+              backgroundColor: "rgba(255, 223, 186, 0.5)",
+              borderColor: "rgba(255, 223, 186, 0.8)"
+            };
+          }
+          return null;
+        }).filter(event => event !== null);
+  
+        setBirthdays(birthdayEvents);
       } catch (error) {
-        console.error("Error fetching applications: ", error);
+        console.error(error);
       }
     };
-
-    if (userId) fetchApplications();
-  }, [userId]);
-
-  const handleDayRender = (info) => {
+  
+    fetchData();
+  }, []);
+  
+  console.log(birthdays, 'birthdays updated'); // Log updated birthdays
+  const handleDayCellDidMount = (info) => {
     const { date, el } = info;
     const cellDateString = date.toDateString();
-
-    el.style.cssText = `
-      background-color: '';
-      font-size: 1em;
-      position: relative;
-      padding: 4px;
-    `;
-
-    const dateNumber = document.createElement("div");
-    const content = document.createElement("div");
-
-    dateNumber.innerText = date.getDate();
-    dateNumber.style.cssText = `
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background-color: transparent;
-    `;
-
-    content.style.fontSize = "0.7em";
 
     const application = applications.find(
       (app) => new Date(app.startDate).toDateString() === cellDateString
     );
 
-    if (application) {
-      el.style.backgroundColor =
-        application.status === "Pending"
-          ? "rgba(255, 165, 0, 0.2)"
-          : "rgba(0, 255, 0, 0.2)";
-      content.innerText = `${application.status}\n${application.type}`;
-    }
-
     const attendance = attendances.find(
       (att) => new Date(att.date).toDateString() === cellDateString
     );
 
-    if (attendance) {
-      const clockInTime = moment(attendance.clockinTime, [
-        "YYYY-MM-DD HH:mm:ss",
-        "HH:mm:ss",
-      ]);
-      const clockOutTime = attendance.clockoutTime
-        ? moment(attendance.clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"])
-        : moment();
-      const hoursWorked = moment
-        .duration(clockOutTime.diff(clockInTime))
-        .asHours();
+    el.classList.add('calendar-cell');
 
-      let status = "Partial Day";
-      if (hoursWorked > 9) {
-        status = "Overtime";
-        el.style.backgroundColor = "rgba(0, 128, 0, 0.4)";
-      } else if (hoursWorked >= 9) {
-        status = "Full Day";
-        el.style.backgroundColor = "rgba(0, 255, 0, 0.2)";
-      } else if (hoursWorked < 4) {
-        status = "Partial Day";
-        el.style.backgroundColor = "rgba(144, 238, 144, 0.2)";
+    if (application || attendance) {
+      if (application) {
+        el.classList.add(application.status === "Pending" ? 'application-pending' : 'application-approved');
+        el.querySelector('.calendar-content').innerText = `${application.status}\n${application.type}`;
       }
 
-      content.innerText = `${status}\n${clockInTime.format(
-        "HH:mm"
-      )} - ${clockOutTime.format("HH:mm")}`;
+      if (attendance) {
+        const clockInTime = moment(attendance.clockinTime, [
+          "YYYY-MM-DD HH:mm:ss",
+          "HH:mm:ss",
+        ]);
+        const clockOutTime = attendance.clockoutTime
+          ? moment(attendance.clockoutTime, ["YYYY-MM-DD HH:mm:ss", "HH:mm:ss"])
+          : moment();
+        const hoursWorked = moment
+          .duration(clockOutTime.diff(clockInTime))
+          .asHours();
 
-      if (attendance.status === "Absent") {
-        el.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
-        content.innerText = "Absent";
-      } else if (attendance.status === "Leave") {
-        el.style.backgroundColor = "rgba(173, 216, 230, 0.2)";
-        content.innerText = "Leave";
+        let status = "Partial Day";
+        if (hoursWorked > 9) {
+          status = "Overtime";
+          el.classList.add('attendance-overtime');
+        } else if (hoursWorked >= 9) {
+          status = "Full Day";
+          el.classList.add('attendance-full-day');
+        } else if (hoursWorked < 4) {
+          status = "Partial Day";
+          el.classList.add('attendance-partial-day');
+        }
+
+        el.querySelector('.calendar-content').innerText = `${status}\n${clockInTime.format(
+          "HH:mm"
+        )} - ${clockOutTime.format("HH:mm")}`;
+
+        if (attendance.status === "Absent") {
+          el.classList.add('attendance-absent');
+          el.querySelector('.calendar-content').innerText = "Absent";
+        } else if (attendance.status === "Leave") {
+          el.classList.add('attendance-leave');
+          el.querySelector('.calendar-content').innerText = "Leave";
+        }
       }
+    } else {
+      el.classList.add('no-event');
     }
 
-    dateNumber.style.backgroundColor = el.style.backgroundColor;
+    const dateNumber = document.createElement("div");
+    dateNumber.className = 'calendar-date';
+    dateNumber.innerText = date.getDate();
+
+    const content = document.createElement("div");
+    content.className = 'calendar-content';
 
     el.innerHTML = "";
     el.appendChild(dateNumber);
@@ -177,39 +203,45 @@ const Timesheet = () => {
     }
   };
 
-  return (
-    <div className="attendance-container">
-      <div className="calendar-wrapper">
-        <FullCalendar
-          plugins={[dayGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          headerToolbar={{
-            left: "title",
-            right: "prev,next",
-          }}
-          dayHeaderContent={(arg) => arg.date.toLocaleDateString('en-US', { weekday: 'short' })}
-          dayRender={handleDayRender}
-          dayCellDidMount={handleDayRender}
-          dateClick={handleDateClick}
-          titleFormat={{ month: "long" }}
-          height="auto"
-        />
-      </div>
-      <Modal show={showModal} onHide={() => setShowModal(false)} closeButton>
-        <div closeButton>
-  <p>Start Work</p>
-        </div>
-       
-          <LightweightStartWork />
+  const events = [...holidays, ...optionalHolidays, ...birthdays].map(event => ({
+    title: event.title || event.name,
+    date: event.date,
+    backgroundColor: event.backgroundColor || (event.description === "Optional" ? "#8adcd2" : "#a7a4a4"),
+    borderColor: event.borderColor || (event.description === "Optional" ? "#8adcd2" : "#a7a4a4")
+  }));
   
+  return (
+    <>
+     <FullCalendar
+      plugins={[dayGridPlugin, interactionPlugin]}
+      initialView="dayGridMonth"
+      headerToolbar={{
+        left: "title",
+        right: "prev,next",
+      }}
+      dayHeaderContent={(arg) => arg.date.toLocaleDateString('en-US', { weekday: 'short' })}
+      dayCellDidMount={handleDayCellDidMount}
+      dateClick={handleDateClick}
+      titleFormat={{ month: "long" }}
+      height="auto"
+      events={events}
+      className="calendar-container"
+    />
+      <Modal show={showModal} 
+      centered
+      onHide={() => setShowModal(false)} closeButton>
+        <Modal.Header closeButton>
+          <Modal.Title>Start Work</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <LightweightStartWork />
+        </Modal.Body>
       </Modal>
       <ApplicationModal
         show={showApplicationModal}
         onHide={() => setShowApplicationModal(false)}
         date={clickedDate}
       />
-    </div>
+    </>
   );
-};
-
-export default Timesheet;
+}
