@@ -129,9 +129,6 @@ const Dashboard = () => {
         moment(attendance.date).isSame(today, "day")
       );
       setTodaysCount(todaysAttendance.length);
-      console.log( empCount, todaysCount,todaysAttendance.length,"usersss")
-      const absentCountToday = empCount - todaysCount;
-      setAbsentCount(absentCountToday);
 
       const monthlyData = {};
       formattedAttendances.forEach((att) => {
@@ -167,6 +164,7 @@ const Dashboard = () => {
     }
   }, []);
 
+  const absentCountToday = empCount - todaysCount;
 
   const handleStatusChange = useCallback((app, status) => {
     axios.defaults.baseURL = API_BASE_URL;
@@ -344,13 +342,13 @@ const Dashboard = () => {
       </Modal.Header>
       <Modal.Body>
         <div className=" card mb-3">
-          <h4><strong>Total Employees: {empCount}</strong></h4>
+          <h4><strong>Total Employees: {empCount }</strong></h4>
         </div>
         <div className=" card mb-3">
           <h4><strong>Total Employees' Present Today: {todaysCount}</strong></h4>
         </div>
         <div className=" card mb-3">
-          <h4><strong>Total Employees' Absent Today:{absentCount}</strong></h4>
+          <h4><strong>Total Employees' Absent Today:{absentCountToday}</strong></h4>
         </div>
       </Modal.Body>
       <Modal.Footer>
