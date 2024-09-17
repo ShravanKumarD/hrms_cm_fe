@@ -92,10 +92,10 @@ const EmployeeDashboard = () => {
     userData;
 
   return (
-    <ThemeProvider theme={theme}>
-      <DashboardContainer>
+    <>
+      {/* <DashboardContainer> */}
         {/* <DashboardTitle>Employee Dashboard</DashboardTitle> */}
-        <FlexContainer>
+        {/* <FlexContainer>
           <FlexItem fullWidth>
             <Card title="Profile">
               <ProfileContainer>
@@ -179,9 +179,158 @@ const EmployeeDashboard = () => {
               <DataItem label="IBAN" value={userFinancialInfo.iban} />
             </Card>
           </FlexItem>
-        </FlexContainer>
-      </DashboardContainer>
-    </ThemeProvider>
+        </FlexContainer> */}
+           <div className="card col-sm-10">
+          <table>
+            <thead>
+              <tr>
+                <th colSpan="2">Profile</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {/* <tr>
+      <td>Initial</td>
+      <td>{user.fullName?.charAt(0) || "U"}</td>
+    </tr> */}
+              <tr>
+                <td>Full Name</td>
+                <td className="text-primary mb-3"><strong>{user.fullName}</strong></td>
+              </tr>
+              <tr>
+                <td>Job Title</td>
+                <td>{job.jobTitle}</td>
+              </tr>
+              <tr>
+                <td>Department</td>
+                <td>{department.departmentName}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="row">
+            <div className="card col-5">
+            <table>
+              <thead>
+                <tr>
+                  <th colSpan="2">Personal Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Date of Birth</td>
+                  <td>{userPersonalInfo.dateOfBirth}</td>
+                </tr>
+                <tr>
+                  <td>Gender</td>
+                  <td>{userPersonalInfo.gender}</td>
+                </tr>
+                <tr>
+                  <td>Marital Status</td>
+                  <td>{userPersonalInfo.maritalStatus}</td>
+                </tr>
+                <tr>
+                  <td>Father's Name</td>
+                  <td>{userPersonalInfo.fatherName}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="card col-5">
+            <table>
+              <thead>
+                <tr>
+                  <th colSpan="2">Work Information</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Employee ID</td>
+                  <td>{user.username}</td>
+                </tr>
+                <tr>
+                  <td>Department</td>
+                  <td>{department.departmentName}</td>
+                </tr>
+                <tr>
+                  <td>Job Title</td>
+                  <td>{job.jobTitle || "n/a"}</td>
+                </tr>
+                <tr>
+                  <td>Role</td>
+                  <td>
+                    {user.role === "ROLE_ADMIN"
+                      ? "Admin"
+                      : user.role === "ROLE_MANAGER"
+                      ? "Manager"
+                      : "Employee"}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        
+        </div>
+        <div className="row">
+          <div className="card col-5">
+            <table>
+              <thead>
+                <tr>
+                  <th colSpan="2">Contact Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Location</td>
+                  <td>{`${userPersonalInfo.country}, ${userPersonalInfo.city}`}</td>
+                </tr>
+                <tr>
+                  <td>Address</td>
+                  <td>{userPersonalInfo.address}</td>
+                </tr>
+                <tr>
+                  <td>Mobile</td>
+                  <td>{`${userPersonalInfo.mobile} ${
+                    userPersonalInfo.phone ? `(${userPersonalInfo.phone})` : ""
+                  }`}</td>
+                </tr>
+                <tr>
+                  <td>Email</td>
+                  <td>{userPersonalInfo.emailAddress}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="card  col-5">
+            <table>
+              <thead>
+                <tr>
+                  <th colSpan="2">Bank Information</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Bank Name</td>
+                  <td>{userFinancialInfo.bankName}</td>
+                </tr>
+                <tr>
+                  <td>Account Name</td>
+                  <td>{userFinancialInfo.accountName}</td>
+                </tr>
+                <tr>
+                  <td>Account Number</td>
+                  <td>{userFinancialInfo.accountNumber}</td>
+                </tr>
+                <tr>
+                  <td>IBAN</td>
+                  <td>{userFinancialInfo.iban}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {/* </DashboardContainer> */}
+    </>
   );
 };
 

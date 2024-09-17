@@ -201,10 +201,10 @@ const SidebarEmployee = ({ onToggle }) => {
             <FaCalendarAlt />
             {!isCollapsed && "Timesheet"}
           </NavItem> */}
-          {/* <NavItem to="/attendance/startwork">
+          <NavItem to="/attendance/startwork">
             <FaBriefcase />
-            {!isCollapsed && "Start Work"}
-          </NavItem> */}
+            {!isCollapsed && "Attendance"}
+          </NavItem>
           <NavItem to="/application-list">
             <FaRocket />
             {!isCollapsed && "Applications"}

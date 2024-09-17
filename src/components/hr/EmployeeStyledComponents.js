@@ -3,18 +3,18 @@ import styled, { ThemeProvider } from "styled-components";
 
 export const theme = {
   colors: {
-    primary: "#004d00",
-    secondary: "#007a00",
+    primary: "#ffffff",
+    secondary: "#ffffff",
     background: "#ffffff",
-    text: "#333333",
+    text: "black",
     lightText: "#666666",
     cardHeader: "#006400",
-    cardBody: "#e0ffe0",
+    cardBody: "#ffffff  ",
   },
   gradients: {
-    primary: "linear-gradient(135deg, #004d00 0%, #007a00 100%)",
-    secondary: "linear-gradient(135deg, #002200 0%, #004d00 100%)",
-    cardHeader: "linear-gradient(135deg, #4CAF4F 0%, #85E184 100%)",
+    primary: "#a7a4a4",
+    secondary: "#8adcd2",
+    cardHeader: "#8adcd2",
   },
   fontSizes: {
     small: "0.875rem",

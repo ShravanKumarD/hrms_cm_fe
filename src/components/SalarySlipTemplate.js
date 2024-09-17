@@ -369,18 +369,23 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
   );
 
   return (
-    <Card>
+    <>
       <Card.Body>
-        <Row className="mt-3">
-          <Col>
-            <Button onClick={toggleSlip}>
-              {showSlip ? "Hide Salary Slip" : "Show Salary Slip"}
-            </Button>
-          </Col>
-          <Col>
-            <Button onClick={downloadPDF}>Download PDF</Button>
-          </Col>
-        </Row>
+      <div style={{ textAlign: "center", marginTop: "20px", }}>
+   <Row>
+<Col>
+  <button className="dashboard-icons" onClick={toggleSlip}>
+    {showSlip ? "Hide Salary Slip" : "Show Salary Slip"}
+  </button>
+  </Col>
+  <Col>
+  <button className="dashboard-icons" onClick={downloadPDF} style={{ marginLeft: "10px" }}>
+    Download PDF
+  </button>
+  </Col>
+  </Row>
+</div>
+
 
         {showSlip && (
           <>
@@ -403,7 +408,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
           </>
         )}
       </Card.Body>
-    </Card>
+    </>
   );
 });
 

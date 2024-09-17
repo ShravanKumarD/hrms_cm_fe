@@ -92,12 +92,12 @@ const ScrollIndicator = styled.div`
 `;
 
 const leaveTypes = [
-  { type: "Leave Balance", balance: 23, total: 37 },
-  { type: "Paid Leave", balance: 12, total: 12 },
-  { type: "Privilege Leave", balance: 5, total: 10 },
-  { type: "Casual Leave", balance: 3, total: 5 },
+  { type: "Leave Balance", balance: 10, total: 22 },
+  { type: "Paid Leave", balance: 0, total: 12 },
+  // { type: "Privilege Leave", balance: 5, total: 10 },
+  // { type: "Casual Leave", balance: 3, total: 5 },
   { type: "Sick Leave", balance: 2, total: 7 },
-  { type: "Comp-Off", balance: 1, total: 3 },
+  // { type: "Comp-Off", balance: 1, total: 3 },
 ];
 
 const LeaveBalanceContainer = ({ theme = "green" }) => {

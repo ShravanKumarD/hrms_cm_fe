@@ -498,7 +498,9 @@ export default class EmployeeAdd extends Component {
                 {/* Personal Details Card */}
                 <div className="col-sm-6">
                   <Card className="secondary-card">
-                    <Card.Header>Personal Details</Card.Header>
+                    <Card.Header>
+                      <strong>Personal Details</strong>
+                    </Card.Header>
                     <Card.Body>
                       <div>
                         <Form.Group controlId="formFirstName">
@@ -534,18 +536,20 @@ export default class EmployeeAdd extends Component {
                             Date of Birth
                           </Form.Label>
                           <Form.Row>
-                          <DatePicker
-  selected={this.state.dateOfBirth}
-  onChange={(dateOfBirth) => this.setState({ dateOfBirth })}
-  showMonthDropdown
-  showYearDropdown
-  dropdownMode="select"
-  dateFormat="yyyy-MM-dd"
-  className="form-control ml-1"
-  placeholderText="Select Date Of Birth"
-  autoComplete="off"
-  required
-/>
+                            <DatePicker
+                              selected={this.state.dateOfBirth}
+                              onChange={(dateOfBirth) =>
+                                this.setState({ dateOfBirth })
+                              }
+                              showMonthDropdown
+                              showYearDropdown
+                              dropdownMode="select"
+                              dateFormat="yyyy-MM-dd"
+                              className="form-control ml-1"
+                              placeholderText="Select Date Of Birth"
+                              autoComplete="off"
+                              required
+                            />
                           </Form.Row>
                         </Form.Group>
 
@@ -563,6 +567,7 @@ export default class EmployeeAdd extends Component {
                             <option value="">Choose...</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
+                            {/* <option value="prefernottosay">Prefer not to say</option> */}
                             {/* <option value="others">Others</option> */}
                           </Form.Control>
                         </Form.Group>
@@ -581,6 +586,7 @@ export default class EmployeeAdd extends Component {
                             <option value="">Choose...</option>
                             <option value="married">Married</option>
                             <option value="single">Unmarried</option>
+                            <option value="Widowed">Widowed</option>
                           </Form.Control>
                         </Form.Group>
 
@@ -617,7 +623,9 @@ export default class EmployeeAdd extends Component {
                 </div>
                 <div className="col-sm-6">
                   <Card className="secondary-card">
-                    <Card.Header>Contact Details</Card.Header>
+                    <Card.Header>
+                      <strong>Contact Details</strong>
+                    </Card.Header>
                     <Card.Body>
                       <div>
                         <Form.Group controlId="formPhysicalAddress">
@@ -741,7 +749,9 @@ export default class EmployeeAdd extends Component {
               <div className="row">
                 <div className="col-sm-6">
                   <Card className="secondary-card">
-                    <Card.Header>Bank Information</Card.Header>
+                    <Card.Header>
+                      <strong>Bank Information</strong>
+                    </Card.Header>
                     <Card.Body>
                       <div>
                         <Form.Group controlId="formBankName">
@@ -802,7 +812,9 @@ export default class EmployeeAdd extends Component {
                 </div>
                 <div className="col-sm-6">
                   <Card className="secondary-card">
-                    <Card.Header>Official Status</Card.Header>
+                    <Card.Header>
+                      <strong>Employment Status</strong>
+                    </Card.Header>
                     <Card.Body>
                       <div>
                         <Form.Group controlId="formEmployeeId">
@@ -873,7 +885,7 @@ export default class EmployeeAdd extends Component {
               <div className="row">
                 <div className="col-sm-6">
                   <Card className="secondary-card">
-                    <Card.Header>Job</Card.Header>
+                    <Card.Header>Role Description</Card.Header>
                     <Card.Body>
                       <div>
                         <Form.Group controlId="formJobTitle">
@@ -890,7 +902,7 @@ export default class EmployeeAdd extends Component {
                         </Form.Group>
                         <Form.Group controlId="formJobStart">
                           <Form.Label className="text-muted required">
-                            Start Date
+                            Date of Joining
                           </Form.Label>
                           <Form.Row>
                             <DatePicker
@@ -926,6 +938,7 @@ export default class EmployeeAdd extends Component {
                             <option value="Full-time">Full-time</option>
                             <option value="Part-time">Part-time</option>
                             <option value="Contract">Contract</option>
+                            <option value="Internship">Internship</option>
                           </Form.Control>
                         </Form.Group>
                         {/* <Form.Group controlId="formJobEnd">
@@ -1044,13 +1057,15 @@ export default class EmployeeAdd extends Component {
                       </Form.Group>
                     </Card.Body>
                   </Card> */}
-                  <Button variant="primary" type="submit" block>
-                    Submit
-                  </Button>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+        <div className="d-flex justify-content-center">
+          <button className="dashboard-icons" type="submit" block>
+            Submit
+          </button>
         </div>
       </Form>
     );

@@ -32,7 +32,7 @@ const ApplicationList = () => {
           endDate: moment(app.endDate).format("Do MMM YYYY"),
         }));
         setApplications(formattedApplications.reverse());
-        setFilteredApplications(formattedApplications.reverse()); // Initially show all applications
+        setFilteredApplications(formattedApplications);
         setApplicationsCount(res.data.length);
         
         // Extract user IDs and fetch names
@@ -183,6 +183,7 @@ const ApplicationList = () => {
             <th>Start Date</th>
             <th>End Date</th>
             <th>Reason</th>
+            <th>Applied On</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -194,29 +195,30 @@ const ApplicationList = () => {
               <td>{app.type}</td>
               <td>{app.startDate}</td>
               <td>{app.endDate}</td>
+             
               <td>{app.reason}</td>
+              <td>{moment(app.appliedOn).format("Do MMM YYYY")}</td>
+
               {/* <td>{app.status}</td> */}
               <td>  <span className={`badge ${app.status === 'Approved' ? 'bg-success' :
-                 app.status === 'Rejected' ? 'bg-danger' : 'bg-warning'}`}>
+                 app.status === 'Rejected' ? 'bg-warning' : 'bg-light'}`}>
                                             {app.status}
                                         </span></td>
               <td>
-                <Button
-                  variant="success"
-                  className="btn btn-success btn-sm"
+                <button
+                  className="btn btn-light btn-sm"
                   onClick={() => handleStatusChange(app, 'Approved')}
                   disabled={disabledButtons[app.id]}
                 >
-                  Approve
-                </Button>{" "}
-                <Button
-                  variant="danger"
-                  className="btn btn-danger btn-sm"
+                  <i className="fa fa-check"></i>
+                </button>{" "}
+                <button
+                  className="btn btn-grey btn-sm"
                   onClick={() => handleStatusChange(app, 'Rejected')}
                   disabled={disabledButtons[app.id]}
                 >
-                  Reject
-                </Button>
+                  <i className="fa fa-times"></i>
+                </button>
               </td>
             </tr>
           ))}

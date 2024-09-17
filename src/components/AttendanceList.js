@@ -377,8 +377,8 @@ const AttendanceList = () => {
       : true;
 
     // Convert clockinTime and clockoutTime to moment objects for comparison
-    const clockinTime = moment(att.clockinTime, "hh:mm A");
-    const clockoutTime = moment(att.clockoutTime, "hh:mm A");
+    const clockinTime = att.clockinTime?moment(att.clockinTime, "hh:mm A"):null;
+    const clockoutTime =att.clockoutTime? moment(att.clockoutTime, "hh:mm A"):null;
 
     // Create moment objects for filter start and end times
     const clockinStartMoment = clockinStart
@@ -604,21 +604,21 @@ const AttendanceList = () => {
               {/* <td>{}</td> */}
               <td className="text-center">
                 <Button
-                  variant="info"
+                  variant="light"
                   size="sm"
                   onClick={() => handleModalShow("edit", att)}
                   className="mx-1"
                 >
-                  <i className="fa fa-edit"></i> Edit
+                  <i className="fa fa-edit"></i>
                 </Button>
 
                 <Button
-                  variant="danger"
+                  variant="light"
                   size="sm"
                   onClick={() => handleModalShow("delete", att)}
                   className="mx-1"
                 >
-                  <i className="fa fa-trash"></i> Delete
+                  <i className="fa fa-trash"></i>
                 </Button>
               </td>
             </tr>

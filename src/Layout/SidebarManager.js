@@ -210,10 +210,10 @@ const SidebarManager = ({ onToggle }) => {
                 <FaUsers />
                 Employee Salary List
               </SubNavItem>
-              <SubNavItem to="/payment">
+              {/* <SubNavItem to="/payment">
                 <FaMoneyCheck />
                 Make Payment
-              </SubNavItem>
+              </SubNavItem> */}
             </>
           )}
           <NavItem to="/announcement">

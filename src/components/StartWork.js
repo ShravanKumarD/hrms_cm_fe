@@ -357,6 +357,7 @@ const StartWork = () => {
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
   const [error, setError] = useState(null);
   const [modal, setModal] = useState({ show: false, action: "" });
+  const [applications, setApplications] = useState([]);
 
   const { location, fetchUserLocation } = useLocation();
   const {
@@ -431,6 +432,36 @@ const StartWork = () => {
       setError("Failed to start work. Please try again.");
     }
   };
+
+  useEffect(()=>{
+    const fetchApplications = async () => {
+      try {
+        axios.defaults.baseURL = API_BASE_URL;
+        const response = await axios.get("/api/applications", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        console.log(response.data,"data")
+
+        const formattedApplications = response.data.map((app) => ({
+          ...app,
+          startDate: moment(app.startDate, [
+            "YYYY-MM-DD HH:mm:ss",
+            "HH:mm:ss",
+          ]).format("Do MMM YYYY"),
+          endDate: moment(app.endDate, [
+            "YYYY-MM-DD HH:mm:ss",
+            "HH:mm:ss",
+          ]).format("Do MMM YYYY"),
+        }));
+  let sortedApplications = formattedApplications.filter(x=>x.type ==="Leave" || x.type==="Restricted Holiday" || x.type==="Short Leave");
+  console.log(sortedApplications,"sortedApplications")     
+  setApplications(sortedApplications.reverse());
+      } catch (error) {
+      console.log(error)
+      }
+    };
+    fetchApplications();
+  },[])
 
   const handleEnd = () => {
     setModal({ show: true, action: "end" });

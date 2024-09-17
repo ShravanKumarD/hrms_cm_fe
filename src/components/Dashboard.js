@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useLocation } from 'react-router-dom';
 import TimesheetMini from "./../components-mini/TimesheetMini";
 import axios from "axios";
 import Modal from 'react-bootstrap/Modal';
@@ -46,12 +47,14 @@ const Dashboard = () => {
   const button2Ref = useRef(null);
   const modal3Ref = useRef(null);
   const button3Ref = useRef(null);
+  const location = useLocation();
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     axios.defaults.baseURL = API_BASE_URL;
     axios
       .get("/api/applications", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
         const formattedApplications = res.data
@@ -76,7 +79,7 @@ const Dashboard = () => {
       fetchUsers()
     fetchData();
 
-  }, []);
+  }, [location]);
 
   const fetchUsers = useCallback(async () => {
     try {

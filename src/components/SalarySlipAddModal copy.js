@@ -194,6 +194,15 @@ const calculateTotalDeductions = () => {
           </option>
         ))}
       </Form.Control>
+
+      {/* <Form.Label className="mb-2 required">Year</Form.Label> */}
+      {/* <Form.Control
+        type="number"
+        value={year}
+        onChange={(e) => setYear(Number(e.target.value))}
+        min="1900"
+        max="2100"
+      /> */}
       <p>Total Days in Month: {totalDaysInMonth}</p>
     </Form.Group>
           <Form.Group controlId="formYear">

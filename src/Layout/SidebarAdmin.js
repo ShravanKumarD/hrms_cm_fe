@@ -315,10 +315,10 @@ const SidebarAdmin = ({ onToggle }) => {
                 <FaUsers />
                 Employee Salary List
               </SubNavItem>
-              <SubNavItem onClick={() => { history.push("/payment")}}>
+              {/* <SubNavItem onClick={() => { history.push("/payment")}}>
                 <FaMoneyCheck />
                 Make Payment
-              </SubNavItem>
+              </SubNavItem> */}
             </>
           )}
           {/* <NavItem onClick={() => toggleSubMenu("expense")}>

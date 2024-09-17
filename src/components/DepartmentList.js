@@ -1,181 +1,166 @@
-import React, { Component } from "react";
-import { Card, Button, Form, Alert } from "react-bootstrap";
-import { Redirect, NavLink } from "react-router-dom";
-import AddDepartment from "./DepartmentAdd";
-import EditDepartmentModal from "./EditDepartmentModal";
+import React, { useState, useEffect } from "react";
+import { Card, Button, Alert } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 import axios from "axios";
-import MaterialTable from "material-table";
-import { ThemeProvider } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
+import EditDepartmentModal from "./EditDepartmentModal";
 import AlertModal from "./AlertModal";
+import AddDepartment from "./DepartmentAdd";
 import API_BASE_URL from "../env";
 
-export default class DepartmentList extends Component {
-  constructor(props) {
-    super(props);
+const DepartmentList = () => {
+  const [departments, setDepartments] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [hasError, setHasError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [completed, setCompleted] = useState(false);
+  const [showEditModel, setShowEditModel] = useState(false);
+  const [showAlertModel, setShowAlertModel] = useState(false);
 
-    this.state = {
-      departments: [],
-      jobs: [],
-      selectedDepartment: null,
-      hasError: false,
-      errorMsg: "",
-      completed: false,
-      showEditModel: false,
-      showAlertModel: false,
-    };
-  }
-
-  componentDidMount() {
+  // Fetch departments on component mount
+  useEffect(() => {
     axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "get",
-      url: "/api/departments",
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    }).then((res) => {
-      this.setState({ departments: res.data });
-    });
-  }
+    axios
+      .get("/api/departments", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then((res) => {
+        console.log(res,"dept data")
+        setDepartments(res.data);
+      })
+      .catch((err) => {
+        setHasError(true);
+        setErrorMsg(err.response?.data?.message || "Error fetching departments");
+      });
+  }, []);
 
-  onEdit(department) {
-    return (event) => {
-      event.preventDefault();
+  const onEdit = (department) => (event) => {
+    event.preventDefault();
+    setSelectedDepartment(department);
+    setShowEditModel(true);
+  };
 
-      this.setState({ selectedDepartment: department, showEditModel: true });
-    };
-  }
-
-  onDelete(department) {
-    return (event) => {
-      event.preventDefault();
-
-      if (department.users.length > 0) {
-        this.setState({ showAlertModel: true });
-      } else {
-        axios.defaults.baseURL = API_BASE_URL;
-        axios({
-          method: "delete",
-          url: "/api/departments/" + department.id,
+  const onDelete = (department) => (event) => {
+    event.preventDefault();
+    if (department.users.length > 0) {
+      setShowAlertModel(true);
+    } else {
+      axios.defaults.baseURL = API_BASE_URL;
+      axios
+        .delete(`/api/departments/${department.id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
-          .then((res) => {
-            this.setState({ completed: true });
-          })
-          .catch((err) => {
-            this.setState({
-              hasError: true,
-              errorMsg: err.response.data.message,
-            });
-          });
-      }
-    };
-  }
+        .then(() => {
+          setCompleted(true);
+          setDepartments((prevDepartments) =>
+            prevDepartments.filter((d) => d.id !== department.id)
+          );
+        })
+        .catch((err) => {
+          setHasError(true);
+          setErrorMsg(err.response?.data?.message || "Error deleting department");
+        });
+    }
+  };
 
-  render() {
-    let closeEditModel = () => this.setState({ showEditModel: false });
-    let closeAlertModel = () => this.setState({ showAlertModel: false });
+  const closeEditModel = () => setShowEditModel(false);
+  const closeAlertModel = () => setShowAlertModel(false);
 
-    const theme = createTheme({
-      overrides: {
-        MuiTableCell: {
-          root: {
-            padding: "6px 6px 6px 6px",
-          },
-        },
-      },
-    });
-
-    return (
-      <div className="container-fluid pt-2">
-        <div className="row">
-          <div className="col-sm-12">
-            <AddDepartment />
+  return (
+    <div className="container">
+   
+      <div className="mt-4">
+      <AddDepartment/>
+        <Card.Header>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2>Department List</h2>
+            {/* <NavLink to="/AddDepartment" className="btn btn-primary">
+              Add Department
+            </NavLink> */}
           </div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12">
-            <div>
-              <ThemeProvider theme={theme}>
-                <MaterialTable
-                  columns={[
-                    { title: "DEPT ID", field: "id" },
-                    { title: "Department Name", field: "departmentName" },
-                    {
-                      title: "Jobs",
-                      render: (dept) => (
+        </Card.Header>
+
+        <Card.Body>
+          {hasError && <Alert variant="danger">{errorMsg}</Alert>}
+
+          <div className="table-responsive">
+            <table className="table table-striped table-bordered text-center">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Employees'</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {departments.length > 0 ? (
+                  departments.map((department) => (
+                    <tr key={department.id}>
+                      <td>{department.id}</td>
+                      <td>{department.departmentName}</td>
+                      <td>
                         <NavLink
                           to={{
                             pathname: "/job-list",
-                            state: { selectedDepartment: dept.id },
+                            state: { selectedDepartment: department.id },
                           }}
                         >
-                          Go to Job List
+                          <i className="fas fa-eye"></i> {department.users.length}
                         </NavLink>
-                      ),
-                    },
-                    {
-                      title: "Action",
-                      render: (rowData) => (
-                        <Form className="row">
-                          <div className="col pl-5">
-                            <Button
-                              size="sm"
-                              variant="info"
-                              onClick={this.onEdit(rowData)}
-                            >
-                              <i className="fas fa-edit"></i>Edit
-                            </Button>
-                          </div>
-                          <div className="col pr-5">
-                            <Button
-                              onClick={this.onDelete(rowData)}
-                              size="sm"
-                              variant="danger"
-                            >
-                              <i className="fas fa-trash"></i>Delete
-                            </Button>
-                          </div>
-                        </Form>
-                      ),
-                    },
-                  ]}
-                  data={this.state.departments}
-                  options={{
-                    rowStyle: (rowData, index) => {
-                      if (index % 2) {
-                        return { backgroundColor: "#f2f2f2" };
-                      }
-                    },
-                    pageSize: 8,
-                    pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
-                  }}
-                  title="Departments"
-                />
-              </ThemeProvider>
-            </div>
-            {this.state.showEditModel ? (
-              <EditDepartmentModal
-                show={true}
-                onHide={closeEditModel}
-                data={this.state.selectedDepartment}
-              />
-            ) : this.state.showAlertModel ? (
-              <AlertModal show={true} onHide={closeAlertModel} />
-            ) : (
-              <></>
-            )}
+                        <p></p>
+                               
+                       
+                      </td>
+                      <td>
+                        <Button
+                          variant="light"
+                          size="sm"
+                          onClick={onEdit(department)}
+                          className="mr-2"
+                        >
+                                <i className="fas fa-edit"></i>
+                        </Button>
+                        <Button
+                          variant="light"
+                          size="sm"
+                          onClick={onDelete(department)}
+                        >
+                      <i className="fas fa-trash"></i>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="text-center">
+                      No departments found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-        </div>
-        {this.state.hasError ? (
-          <Alert variant="danger" className="m-3" block>
-            {this.state.errMsg}
-          </Alert>
-        ) : this.state.completed ? (
-          <Redirect to="/departments" />
-        ) : (
-          <></>
-        )}
+        </Card.Body>
       </div>
-    );
-  }
-}
+
+      {showEditModel && (
+       <EditDepartmentModal
+       show={true}
+       onHide={closeEditModel}
+       data={selectedDepartment}
+     />
+      )}
+
+      {showAlertModel && (
+        <AlertModal
+          show={showAlertModel}
+          onHide={closeAlertModel}
+          message="Cannot delete department with active users."
+        />
+      )}
+    </div>
+  );
+};
+
+export default DepartmentList;

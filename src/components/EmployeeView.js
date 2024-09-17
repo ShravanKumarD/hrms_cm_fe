@@ -244,7 +244,7 @@ const EmployeeView = () => {
                   </Row>
                   <Row className="mb-3">
                     <Col xs={5}>
-                      <strong>Email Address:</strong>
+                      <strong>Email:</strong>
                     </Col>
                     <Col xs={7}>
                       {userPersonalInfo.emailAddress || "Not available"}

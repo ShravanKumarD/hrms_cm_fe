@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import { loadTree } from "../menuTreeHelper";
 import styled, { ThemeProvider } from "styled-components";
 import {
   FaTachometerAlt,
+  FaCalendarCheck,
   FaRocket,
   FaUser,
   FaFileAlt,
@@ -14,7 +15,6 @@ import {
   FaPlus,
   FaList,
   FaUsers,
-  FaBuilding,
   FaFileInvoiceDollar,
   FaFileSignature,
   FaFileExport,
@@ -23,7 +23,6 @@ import {
   FaFileInvoice,
 } from "react-icons/fa";
 import LogoWhite from "../assets/samcintlogowhite.png";
-import Logo from "../assets/samcint_logo_2.png";
 import LogoMini from "../assets/10.png";
 import './../App.css';
 
@@ -39,17 +38,16 @@ const theme = {
 
 const Sidebar = styled.aside`
   position: fixed;
-  left: ${(props) => (props.isCollapsed ? "20px" : "20px")};
+  left: 20px;
   top: 42.7%;
   transform: translateY(-42.7%);
   height: 70vh;
   width: ${(props) => (props.isCollapsed ? "70px" : "250px")};
-  background: #8adcd2;;
+  background: #8adcd2;
   backdrop-filter: blur(10px);
   border-radius: 20px;
-  transition: width 0.3s ease, left 0.3s ease; /* Animate only width and left */
-  overflow-y: hidden; /* Hide the vertical scrollbar */
-  overflow-x: hidden;
+  transition: width 0.3s ease, left 0.3s ease;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   color: ${(props) => props.theme.text};
@@ -66,7 +64,7 @@ const LogoContainer = styled.div`
   transition: box-shadow 0.3s ease;
 
   &:hover {
-    box-shadow: 0 0 15px rgba(57, 255, 20, 0.3); /* Neon green shadow */
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
   }
 `;
 
@@ -88,21 +86,17 @@ const NavMenu = styled.nav`
   scrollbar-width: none;
 
   &:hover {
-    /* Scrollbar Styles */
     &::-webkit-scrollbar {
       width: 8px;
     }
-
     &::-webkit-scrollbar-track {
       background: ${(props) => props.theme.scrollbarTrack};
       border-radius: 8px;
     }
-
     &::-webkit-scrollbar-thumb {
       background: ${(props) => props.theme.scrollbarThumb};
       border-radius: 8px;
     }
-
     &::-webkit-scrollbar-thumb:hover {
       background: ${(props) => props.theme.hover};
     }
@@ -154,6 +148,7 @@ const SidebarHr = ({ onToggle }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState({});
   const [user, setUser] = useState({});
+  const history = useHistory();
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user")) || {};
@@ -203,6 +198,23 @@ const SidebarHr = ({ onToggle }) => {
             <FaTachometerAlt />
             {!isCollapsed && "Dashboard"}
           </NavItem>
+          <NavItem to="#" onClick={(e) => toggleSubMenu("attendance", e)}>
+  <FaCalendarCheck />
+  {!isCollapsed && "Attendance"}
+</NavItem>
+{expandedMenus.attendance && !isCollapsed && (
+  <>
+    <SubNavItem to="/attendance-list">
+      <FaCalendarCheck />
+      Attendance Status
+    </SubNavItem>
+    <SubNavItem to="/attendance-list-detailed">
+      <FaList />
+      Attendance Overview
+    </SubNavItem>
+  </>
+)}
+
           <NavItem to="#" onClick={(e) => toggleSubMenu("applications", e)}>
             <FaRocket />
             {!isCollapsed && "Applications"}
@@ -219,82 +231,28 @@ const SidebarHr = ({ onToggle }) => {
               </SubNavItem>
             </>
           )}
-          <NavItem to="#" onClick={(e) => toggleSubMenu("employee", e)}>
-            <FaUser />
-            {!isCollapsed && "Employee"}
-          </NavItem>
-          {expandedMenus.employee && !isCollapsed && (
-            <>
-              <SubNavItem to="/employee-list">
-                <FaUsers />
-                Employee List
-              </SubNavItem>
-              <SubNavItem to ="/employee">
-              <FaUser/>
-              My Profile
-              </SubNavItem>
-            </>
-          )}
-          <NavItem to="#" onClick={(e) => toggleSubMenu("documents", e)}>
-            <FaFileAlt />
-            {!isCollapsed && "Documents"}
-          </NavItem>
-          {expandedMenus.documents && !isCollapsed && (
-            <>
-              <SubNavItem to="/salary-slip-list">
-                <FaFileInvoiceDollar />
-                Salary Slip
-              </SubNavItem>
-              <SubNavItem to="/offer-letter-list">
-                <FaFileSignature />
-                Offer Letter
-              </SubNavItem>
-              <SubNavItem to="/hike-letter-list">
-                <FaFileAlt />
-                Hike Letter
-              </SubNavItem>
-              <SubNavItem to="/relieving-letter-list">
-                <FaFileExport />
-                Relieving Letter
-              </SubNavItem>
-            </>
-          )}
-          <NavItem to="#" onClick={(e) => toggleSubMenu("payroll", e)}>
-            <FaRupeeSign />
-            {!isCollapsed && "Payroll"}
-          </NavItem>
-          {expandedMenus.payroll && !isCollapsed && (
-            <>
-              <SubNavItem to="/salary-details">
-                <FaRupeeSign />
-                Manage Salary Details
-              </SubNavItem>
-              <SubNavItem to="/salary-list">
-                <FaUsers />
-                Employee Salary List
-              </SubNavItem>
-              <SubNavItem to="/payment">
-                <FaMoneyCheck />
-                Make Payment
-              </SubNavItem>
-            </>
-          )}
-          <NavItem to="#" onClick={(e) => toggleSubMenu("expense", e)}>
-            <FaMoneyBill />
-            {!isCollapsed && "Expense"}
-          </NavItem>
-          {expandedMenus.expense && !isCollapsed && (
-            <>
-              <SubNavItem to="/expense">
-                <FaShoppingCart />
-                Make Expense
-              </SubNavItem>
-              <SubNavItem to="/expense-report">
-                <FaFileInvoice />
-                Expense Report
-              </SubNavItem>
-            </>
-          )}
+        <NavItem to="#" onClick={(e) => toggleSubMenu("employee", e)}>
+  <FaUser />
+  {!isCollapsed && "Employee"}
+</NavItem>
+{expandedMenus.employee && !isCollapsed && (
+  <>
+    <SubNavItem to="/employee-add">
+      <FaPlus />
+      Add Employee
+    </SubNavItem>
+    <SubNavItem to="/employee-list">
+      <FaUsers />
+      Employee List
+    </SubNavItem>
+    <SubNavItem to="/employee">
+      <FaUser />
+      My Profile
+    </SubNavItem>
+  </>
+)}
+
+          {/* Add other menus similarly */}
           <NavItem to="/announcement">
             <FaBell />
             {!isCollapsed && "Announcements"}

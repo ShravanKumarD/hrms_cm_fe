@@ -495,7 +495,7 @@ a{
   height: 5vh;
   margin: 0;
   font-size: small;
-  width:12vw;
+  /* width:12vw; */
 }
 .dashboard-icons{
 background: #8adcd2;

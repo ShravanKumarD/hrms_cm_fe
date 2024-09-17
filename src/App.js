@@ -10,6 +10,7 @@ import Footer from "./Layout/Footer";
 import SidebarAdmin from "./Layout/SidebarAdmin";
 import SidebarManager from "./Layout/SidebarManager";
 import SidebarEmployee from "./Layout/SidebarEmployee";
+import SidebarHr from "./Layout/SidebarHr";
 import Dashboard from "./components/Dashboard";
 import DashboardManager from "./components/manager/Dashboard";
 import DashboardEmployee from "./components/employee/Dashboard";
@@ -64,7 +65,6 @@ import JobList from "./components/JobList";
 import JobListManager from "./components/manager/JobList";
 import MyDocuments from "./components/MyDocuments";
 import "./App.css";
-import SidebarHr from "./Layout/SidebarHr";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import Holidays from "./components/Holidays";
@@ -319,22 +319,30 @@ const HRContainer = () => {
 return(
   <div>
     <Header />
-    <SidebarHr onToggle={handleSidebarToggle}  />
-    <Pusher isCollapsed={isCollapsed}>
-    <MainContent isCollapsed={isCollapsed}>
-
+      <SidebarHr onToggle={handleSidebarToggle} />
+      <Pusher isCollapsed={isCollapsed}>
+        <MainContent isCollapsed={isCollapsed}>
     <Layout>
       <Switch>
-        {/* <Route exact path="/" component={withAuth(Dashboard)} /> */}
-        <Route 
-        exact
-        path="/"
-        component={withAuth(DashboardHr)} />
+        <Route exact path="/" component={withAuth(DashboardHr)} />
         <Route exact path="/employee-list" component={withAuth(EmployeeList)} />
         <Route exact path="/employee-add" component={withAuth(EmployeeAdd)} />
         <Route exact path="/employee-view" component={withAuth(EmployeeView)} />
         <Route exact path="/employee-edit" component={withAuth(EmployeeEdit)} />
+        <Route  
+                exact
+                path="/employee-add"
+                component={withAuth(EmployeeAdd)}
+              />
         <Route exact path="/document-list" component={withAuth(DocumentList)} />
+        <Route exact path="/employee-list" component={withAuth(EmployeeList)} />
+        <Route
+                exact
+                path="/attendance-list"
+                component={withAuth(AttendanceList)}
+              />
+        <Route exact path="/attendance-list-detailed" component={withAuth(AttendanceListDetailed)}/>
+
         <Route exact path="/document-add" component={withAuth(DocumentAdd)} />
         <Route exact path="/document-view" component={withAuth(DocumentView)} />
         <Route exact path="/document-edit" component={withAuth(DocumentEdit)} />

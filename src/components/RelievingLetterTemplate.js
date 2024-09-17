@@ -65,21 +65,25 @@ const RelievingLetterTemplate = ({
   };
   return (
     <div>
-      <Card>
+
         <Card.Body>
-          <Row className="mt-3">
-            <Col>
-              <Button onClick={toggleLetter}>
-                {showLetter ? "Hide Relieving Letter" : "Show Relieving Letter"}
-              </Button>
-            </Col>
-            <Col>
-              <Button onClick={downloadPDF}>Download PDF</Button>
-            </Col>
-          </Row>
+          <div>
+ 
+  <button className="dashboard-icons" onClick={toggleLetter}>
+    {showLetter ? "Hide Salary Slip" : "Show Salary Slip"}
+  </button>
+ 
+  <button className="dashboard-icons" onClick={downloadPDF} style={{ marginLeft: "10px" }}>
+    Download PDF
+  </button>
+  
+</div>
+
+
+
+
           {showLetter && (
-            <Row>
-              <Col>
+           
                 <div
                   ref={letterRef}
                   style={{
@@ -170,11 +174,9 @@ const RelievingLetterTemplate = ({
                   <p>HR Manager</p>
                   <p>{companyName}</p>
                 </div>
-              </Col>
-            </Row>
+           
           )}
         </Card.Body>
-      </Card>
     </div>
   );
 };

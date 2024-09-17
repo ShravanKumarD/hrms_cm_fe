@@ -18,7 +18,6 @@ export default class SalaryView extends Component {
 
   componentDidMount() {
     if (this.props.location.state) {
-      console.log(this.props.location.state);
       axios.defaults.baseURL = API_BASE_URL;
       axios({
         method: "get",
@@ -26,7 +25,6 @@ export default class SalaryView extends Component {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
         .then((res) => {
-          console.log(res);
           this.setState({ user: res.data }, () => {
             if (this.state.user.jobs) {
               // this.state.user.jobs.map((job) => {

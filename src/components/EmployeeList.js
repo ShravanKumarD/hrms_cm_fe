@@ -94,7 +94,8 @@ const EmployeeList = () => {
               {users.map((user) => (
                 <tr key={user.id}>
                   <td>{user.id}</td>
-                  <td>{user.fullName}</td>
+                  <td style={{ whiteSpace: "nowrap" }}>{user.fullName}</td>
+
                   <td>{user.user_personal_info?.emailAddress}</td>
                   {/* <td>{user.user_personal_info?.address}</td>
                   <td>{user.user_personal_info?.maritalStatus}</td>
@@ -114,22 +115,18 @@ const EmployeeList = () => {
 
 
                   <td>
-                    <Button
-                      size="sm"
-                      variant="info"
-                      className="action-btn"
+                    <button
+                      className="btn btn-light btn-sm"
                       onClick={() => handleView(user)}
                     >
-                      <i className="far fa-eye"></i> View
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="warning"
-                      className="action-btn"
+                      <i className="far fa-eye"/>
+                    </button>
+                    <button
+                      className="btn btn-light btn-sm"
                       onClick={() => handleEdit(user)}
                     >
-                      <i className="far fa-edit"></i> Edit
-                    </Button>
+                      <i className="far fa-edit"/>
+                    </button>
                     {/* {user.id !==
                       JSON.parse(localStorage.getItem("user")).id && (
                       <Button

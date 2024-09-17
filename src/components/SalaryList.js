@@ -1,30 +1,18 @@
-import React, { Component } from "react";
-import { Card, Badge, Button, Form, Modal } from "react-bootstrap";
-import { Redirect } from "react-router-dom";
-import MaterialTable from "material-table";
-import DeleteModal from "./DeleteModal";
+import React, { useState, useEffect } from "react";
+import { Card, Button, Form, Dropdown } from "react-bootstrap";
+import { Redirect } from "react-router-dom"; // For react-router-dom v5
 import axios from "axios";
-import { ThemeProvider } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
 import API_BASE_URL from "../env";
 import FileSaver from 'file-saver';
-import { Dropdown } from 'react-bootstrap';
 import * as XLSX from 'xlsx';
 
+const SalaryList = () => {
+  const [financialInformations, setFinancialInformations] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [editRedirect, setEditRedirect] = useState(false);
+  const [viewRedirect, setViewRedirect] = useState(false);
 
-export default class SalaryList extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      financialInformations: [],
-      selectedUser: null,
-      editRedirect: false,
-      deleteModal: false,
-    };
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     axios.defaults.baseURL = API_BASE_URL;
     axios({
       method: "get",
@@ -32,214 +20,132 @@ export default class SalaryList extends Component {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then((res) => {
-        this.setState({ financialInformations: res.data });
+        setFinancialInformations(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
-  }
-  
+  }, []);
 
-  // handleDownload = (type) => {
-  //   axios({
-  //     method: "get",
-  //     url: `/api/financialInformations/`,
-  //     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-  //     responseType: 'blob', // Important for binary data
-  //   })
-  //     .then((response) => {
-  //       // Create a blob from the response data
-  //       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  //       const fileName = type === 'monthly' ? 'monthly_report.xlsx' : 'employee_report.xlsx';
-  //       FileSaver.saveAs(blob, fileName);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Download error:", err); // Improved error logging
-  //     });
-  // };
-  
-  
-  handleDownload = (type) => {
+  const handleDownload = (type) => {
     axios({
       method: "get",
       url: `/api/financialInformations/`,
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
-    .then((response) => {
-      // Extract financial information data
-      const financialData = response.data;
-  
-      // Modify the data to include userId and fullName as separate columns
-      const modifiedData = financialData.map(info => {
-        return {
-          'Full Name': info.user.fullName,   // Add fullName as the second column
-          ...info,                           // Include the rest of the data
-        };
+      .then((response) => {
+        const financialData = response.data;
+        const modifiedData = financialData.map(info => ({
+          'Full Name': info.user.fullName,
+          ...info,
+        }));
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.json_to_sheet(modifiedData);
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+        const excelBuffer = XLSX.write(workbook, {
+          bookType: 'xlsx',
+          type: 'array'
+        });
+        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const fileName = type === 'monthly' ? 'monthly_report.xlsx' : 'employee_report.xlsx';
+        FileSaver.saveAs(blob, fileName);
+      })
+      .catch((err) => {
+        console.error("Download error:", err);
       });
-  
-      // Create a new workbook
-      const workbook = XLSX.utils.book_new();
-  
-      // Convert the modified data to a worksheet
-      const worksheet = XLSX.utils.json_to_sheet(modifiedData);
-  
-      // Append the worksheet to the workbook
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-  
-      // Generate a buffer to be saved as an Excel file
-      const excelBuffer = XLSX.write(workbook, {
-        bookType: 'xlsx',
-        type: 'array'
-      });
-  
-      // Create a blob from the buffer
-      const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
-      // Generate the file name
-      const fileName = type === 'monthly' ? 'monthly_report.xlsx' : 'employee_report.xlsx';
-  
-      // Use FileSaver to save the file
-      FileSaver.saveAs(blob, fileName);
-    })
-    .catch((err) => {
-      console.error("Download error:", err);
-    });
-  };
-  
-  
-  
-  onEdit = (financialInfo) => {
-    return (event) => {
-      event.preventDefault();
-
-      this.setState({ selectedUser: financialInfo.user, editRedirect: true });
-    };
   };
 
-  onView = (user) => {
-    return (event) => {
-      event.preventDefault();
-
-      this.setState({ selectedUser: user, viewRedirect: true });
-    };
+  const onEdit = (financialInfo) => (event) => {
+    event.preventDefault();
+    console.log("Setting selected user for edit:", financialInfo.user); // Debug log
+    setSelectedUser(financialInfo.user);
+    setEditRedirect(true);
   };
 
-  render() {
-    const theme = createTheme({
-      overrides: {
-        MuiTableCell: {
-          root: {
-            padding: "6px 6px 6px 6px",
-          },
-        },
-      },
-    });
+  const onView = (user) => (event) => {
+    event.preventDefault();
+    console.log("Setting selected user for view:", user); // Debug log
+    setSelectedUser(user);
+    setViewRedirect(true);
+  };
 
-    return (
-      <div className="container-fluid pt-4">
-        {this.state.editRedirect ? (
-          <Redirect
-            to={{
-              pathname: "/salary-details",
-              state: { selectedUser: this.state.selectedUser },
-            }}
-          ></Redirect>
-        ) : (
-          <></>
-        )}
-        {this.state.viewRedirect ? (
-          <Redirect
-            to={{
-              pathname: "/salary-view",
-              state: { selectedUser: this.state.selectedUser },
-            }}
-          ></Redirect>
-        ) : (
-          <></>
-        )}
-        {/* <div className="col-sm-12"> */}
-          <Card>
-            {/* <Card.Header style={{ backgroundColor: "#515e73", color: "white" }}>
-              <div className="panel-title">
-                <strong>List of Employees and Their Salaries</strong>
-              </div>
-            </Card.Header> */}
-            {/* <Card.Header style={{ backgroundColor: "#515e73", color: "white" }}> */}
-  <div className="d-flex justify-content-between align-items-center">
-    <strong>List of Employees and Their Salaries</strong>
-    <Dropdown>
-      <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-        Download Report
-      </Dropdown.Toggle>
-
-      <Dropdown.Menu>
-        {/* <Dropdown.Item onClick={() => this.handleDownload('monthly')}>
-          Monthly Report
-        </Dropdown.Item> */}
-        <Dropdown.Item onClick={() => this.handleDownload('employeeWise')}>
-          Employee-wise Report
-        </Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
-  </div>
-{/* </Card.Header> */}
-            {/* <Card.Body> */}
-              <ThemeProvider theme={theme}>
-                <MaterialTable
-                  columns={[
-                    { title: "EMP ID", field: "user.username" },
-                    { title: "Full Name", field: "user.fullName" },
-                    { title: "Gross Salary", field: "salaryGross" },
-                    { title: "Deductions", field: "deductionTotal" },
-                    { title: "Net Salary", field: "salaryNet" },
-                    { title: "Emp Type", field: "employmentType" },
-                    {
-                      title: "View",
-                      render: (rowData) => (
-                        <Form>
-                          <Button
-                            size="sm"
-                            variant="info"
-                            onClick={this.onView(rowData)}
-                          >
-                            <i className="far fa-address-card"></i>
-                          </Button>
-                        </Form>
-                      ),
-                    },
-                    // {
-                    //   title: "Action",
-                    //   render: (rowData) => (
-                    //     <>
-                    //       <Button
-                    //         size="sm"
-                    //         variant="info"
-                    //         className="mr-2"
-                    //         onClick={this.onEdit(rowData)}
-                    //       >
-                    //         <i className="far fa-edit"></i>Edit
-                    //       </Button>
-                    //     </>
-                    //   ),
-                    // },
-                  ]}
-                  data={this.state.financialInformations}
-                  options={{
-                    rowStyle: (rowData, index) => {
-                      if (index % 2) {
-                        return { backgroundColor: "#f2f2f2" };
-                      }
-                    },
-                    pageSize: 10,
-                    pageSizeOptions: [10, 20, 30, 50, 75, 100],
-                  }}
-                  title="Employees"
-                />
-              </ThemeProvider>
-            {/* </Card.Body> */}
-          </Card>
-        {/* </div> */}
-      </div>
-    );
+  if (editRedirect) {
+    if (selectedUser) {
+      return <Redirect to={{ pathname: "/salary-details", state: { selectedUser } }} />;
+    } else {
+      console.error("Redirect failed: selectedUser is undefined");
+    }
   }
-}
+
+  if (viewRedirect) {
+    if (selectedUser) {
+      return <Redirect to={{ pathname: "/salary-view", state: { selectedUser } }} />;
+    } else {
+      console.error("Redirect failed: selectedUser is undefined");
+    }
+  }
+
+  return (
+    <div className="container-fluid pt-4">
+      <div className="d-flex justify-content-between align-items-center">
+        <h2>List of Employees and Their Salaries</h2>
+        <Dropdown>
+          <Dropdown.Toggle className="dashboard-icons btn-sm" id="dropdown-basic">
+            Download Report
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={() => handleDownload('employeeWise')}>
+              Employee-wise Report
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
+      <p></p>
+      <div className="table-responsive">
+        <table className="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>EMP ID</th>
+              <th>Full Name</th>
+              <th>Gross Salary</th>
+              <th>Deductions</th>
+              <th>Net Salary</th>
+              <th>Emp Type</th>
+              <th>View</th>
+            </tr>
+          </thead>
+          <tbody>
+            {financialInformations.map((info, index) => (
+              <tr key={index}>
+                <td>{info.user.username}</td>
+                <td>{info.user.fullName}</td>
+                <td>{info.salaryGross}</td>
+                <td>{info.deductionTotal}</td>
+                <td>{info.salaryNet}</td>
+                <td>{info.employmentType}</td>
+                <td>
+                  <Form>
+                    <button
+                     className="btn btn-light btn-sm"
+                      onClick={onView(info.user)}
+                    >
+                      <i className="far fa-eye"></i>
+                    </button>
+                    <button
+                     className="btn btn-light btn-sm"
+                      onClick={onEdit(info)}
+                    >
+                      <i className="fas fa-edit"></i>
+                    </button>
+                  </Form>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default SalaryList;

@@ -77,21 +77,21 @@ const HikeLetterTemplate = ({
 
   return (
     <div>
-      <Card>
+      <>
         <Card.Body>
-          <Row className="mt-3">
-            <Col>
-              <Button onClick={toggleLetter}>
-                {showLetter ? "Hide Hike Letter" : "Show Hike Letter"}
-              </Button>
-            </Col>
-            <Col>
-              <Button onClick={downloadPDF}>Download PDF</Button>
-            </Col>
-          </Row>
+          <div style={{ marginLeft: "20px", }}>
+
+  <button className="dashboard-icons" onClick={toggleLetter}>
+    {showLetter ? "Hide Salary Slip" : "Show Salary Slip"}
+  </button>
+
+  <button className="dashboard-icons" onClick={downloadPDF} style={{ marginLeft: "10px" }}>
+    Download PDF
+  </button>
+  
+</div>
           {showLetter && (
-            <Row>
-              <Col>
+            <>
                 <div
                   ref={letterRef}
                   style={{
@@ -103,10 +103,9 @@ const HikeLetterTemplate = ({
                     padding: "20px",
                     border: "1px solid #000",
                     position: "relative",
-                    backgroundColor: "white", // Ensure background is white
+                    backgroundColor: "white",
                   }}
                 >
-                  {/* Watermark */}
                   <div
                     style={{
                       position: "absolute",
@@ -189,11 +188,11 @@ const HikeLetterTemplate = ({
                     4th Floor, B-Wing , Purva Summit, White field Road, Hitec city , Kondapur,<br/> Telangana- 500081
                   </p>
                 </div>
-              </Col>
-            </Row>
+       
+            </>
           )}
         </Card.Body>
-      </Card>
+      </>
     </div>
   );
 };

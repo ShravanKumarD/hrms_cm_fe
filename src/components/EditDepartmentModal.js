@@ -1,108 +1,91 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
-import moment from "moment";
 import axios from "axios";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import API_BASE_URL from "../env";
 
-export default class AddEventModel extends Component {
-  constructor(props) {
-    super(props);
+const AddEventModel = (props) => {
+  const [departmentName, setDepartmentName] = useState("");
+  const [id, setId] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [done, setDone] = useState(false);
 
-    this.state = {
-      departmentName: "",
-      id: null,
-      event: {},
-      showAlert: false,
-      errorMsg: "",
-      done: false,
-    };
-  }
+  // Simulate componentDidMount using useEffect
+  useEffect(() => {
+    setDepartmentName(props.data.departmentName);
+    setId(props.data.id);
+  }, [props.data]);
 
-  componentDidMount() {
-    this.setState({
-      departmentName: this.props.data.departmentName,
-      id: this.props.data.id,
-    });
-  }
-
-  handleChange = (event) => {
-    const { value, name } = event.target;
-    this.setState({
-      [name]: value,
-    });
+  const handleChange = (event) => {
+    const { value } = event.target;
+    setDepartmentName(value);
   };
 
-  onSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
 
-    let data = {
-      departmentName: this.state.departmentName,
-    };
+    const data = { departmentName };
 
     axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "put",
-      url: `/api/departments/${this.state.id}`,
-      data: data,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then((res) => {
-        this.setState({ done: true });
+    axios
+      .put(`/api/departments/${id}`, data, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then(() => {
+        setDone(true);
       })
       .catch((err) => {
-        this.setState({ showAlert: true, errorMsg: err.response.data.message });
+        setShowAlert(true);
+        setErrorMsg(err.response?.data?.message || "Error updating department");
       });
   };
 
-  render() {
-    const { showAlert, done } = this.state;
-    return (
-      <Modal
-        {...this.props}
-        size="sm"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Edit Department
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {done ? <Redirect to="/departments" /> : <></>}
-          {showAlert ? (
-            <Alert variant="alert alert-warning" className="m-1">
-              {this.state.err}
-            </Alert>
-          ) : (
-            <></>
-          )}
-          <Form onSubmit={this.onSubmit}>
-            <Form.Group controlId="formDepartmentName">
-              <Form.Label className="mb-2">Department Name</Form.Label>
-              <Form.Control
-                type="text"
-                className="col-8"
-                name="departmentName"
-                value={this.state.departmentName}
-                onChange={this.handleChange}
-                autoComplete="off"
-                required
-              />
-            </Form.Group>
-
-            <Button variant="success" type="submit" className="mt-2">
-              Submit
-            </Button>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={this.props.onHide}>Close</Button>
-        </Modal.Footer>
-      </Modal>
-    );
+  if (done) {
+    return <Redirect to="/departments" />;
   }
-}
+
+  return (
+    <Modal
+      {...props}
+      size="sm"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">
+          Edit Department
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {showAlert && (
+          <Alert variant="warning" className="m-1">
+            {errorMsg}
+          </Alert>
+        )}
+        <Form onSubmit={onSubmit}>
+          <Form.Group controlId="formDepartmentName">
+            <Form.Label className="mb-2">Department Name</Form.Label>
+            <Form.Control
+              type="text"
+              className="col-8"
+              name="departmentName"
+              value={departmentName}
+              onChange={handleChange}
+              autoComplete="off"
+              required
+            />
+          </Form.Group>
+          <button  type="submit" className="dashboard-icons">
+            Submit
+          </button>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <button className="dashboard-icons" onClick={props.onHide}>Close</button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
+
+export default AddEventModel;

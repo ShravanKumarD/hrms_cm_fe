@@ -20,11 +20,12 @@ export default class AlertModal extends Component {
         </Modal.Header>
         <Modal.Body>
             This Department has Employees. Transfer Employees to a new Department first.
-            <br />
-            <a href="/employee-list">Employee List</a>
+          <p>&nbsp;</p>
+            <button className="dashboard-icons"> <a href="/employee-list">Go To Employee List</a></button>
+           
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.props.onHide}>Close</Button>
+          <button className="dashboard-icons" onClick={this.props.onHide}>Close</button>
         </Modal.Footer>
       </Modal>
     )

@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Card, Button } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import axios from "axios";
 import moment from "moment";
-import MaterialTable from "material-table";
-import { ThemeProvider, createTheme } from "@material-ui/core/styles";
 import RelievingLetterAddModal from "./RelievingLetterAddModal";
 import RelievingLetterEditModal from "./RelievingLetterEditModal";
 import RelievingLetterDeleteModal from "./RelievingLetterDeleteModal";
@@ -22,7 +20,6 @@ const RelievingLetterList = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      console.log("Fetching relieving letters...");
       const response = await axios.get("/api/relievingLetters", {
         baseURL: API_BASE_URL,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -36,7 +33,6 @@ const RelievingLetterList = () => {
         ),
       }));
       setRelievingLetters(formattedLetters);
-      console.log("Relieving letters fetched successfully");
     } catch (error) {
       console.error("Failed to fetch relieving letters:", error);
     }
@@ -63,60 +59,6 @@ const RelievingLetterList = () => {
     });
   };
 
-  const theme = createTheme({
-    overrides: {
-      MuiTableCell: {
-        root: {
-          padding: "8px",
-        },
-      },
-    },
-  });
-
-  const ActionButton = ({ variant, icon, label, onClick }) => (
-    <Button size="sm" variant={variant} onClick={onClick} className="mx-1 mb-1">
-      <i className={`fas fa-${icon}`}></i> {label}
-    </Button>
-  );
-
-  const columns = [
-    { title: "ID", field: "id" },
-    { title: "Date", field: "date" },
-    { title: "Employee Name", field: "employee_name" },
-    { title: "Employee ID", field: "employee_id" },
-    { title: "Position", field: "position" },
-    { title: "Department", field: "department" },
-    { title: "Date of Joining", field: "date_of_joining" },
-    { title: "Date of Relieving", field: "date_of_relieving" },
-    { title: "HR Name", field: "hr_name" },
-    { title: "Company", field: "company_name" },
-    {
-      title: "Action",
-      render: (rowData) => (
-        <div className="text-center">
-          <ActionButton
-            variant="info"
-            icon="edit"
-            label="Edit"
-            onClick={() => handleModalShow("edit", rowData)}
-          />
-          <ActionButton
-            variant="primary"
-            icon="eye"
-            label="Preview"
-            onClick={() => handleModalShow("preview", rowData)}
-          />
-          <ActionButton
-            variant="danger"
-            icon="trash"
-            label="Delete"
-            onClick={() => handleModalShow("delete", rowData)}
-          />
-        </div>
-      ),
-    },
-  ];
-
   return (
     <div className="container-fluid pt-2">
       <div className="row">
@@ -131,38 +73,71 @@ const RelievingLetterList = () => {
               <i className="fa fa-plus" /> Add Relieving Letter
             </Button>
           </h4>
-          <div>
-            <ThemeProvider theme={theme}>
-              <MaterialTable
-                columns={columns}
-                data={relievingLetters}
-                options={{
-                  rowStyle: (rowData, index) =>
-                    index % 2 ? { backgroundColor: "#f2f2f2" } : {},
-                  pageSize: 10,
-                  pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
-                  headerStyle: {
-                    backgroundColor: "#f8f9fa",
-                    color: "#495057",
-                    fontWeight: "bold",
-                  },
-                  actionsColumnIndex: -1,
-                  actionsCellStyle: {
-                    paddingRight: "8px",
-                  },
-                }}
-                title="Relieving Letters"
-              />
-            </ThemeProvider>
-          </div>
-          {showModal.edit && (
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Employee Name</th>
+                <th>Employee ID</th>
+                <th>Position</th>
+                <th>Department</th>
+                <th>Date of Joining</th>
+                <th>Date of Relieving</th>
+                <th>HR Name</th>
+                <th>Company</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {relievingLetters.map((letter) => (
+                <tr key={letter.id}>
+                  <td>{letter.id}</td>
+                  <td>{letter.date}</td>
+                  <td>{letter.employee_name}</td>
+                  <td>{letter.employee_id}</td>
+                  <td>{letter.position}</td>
+                  <td>{letter.department}</td>
+                  <td>{letter.date_of_joining}</td>
+                  <td>{letter.date_of_relieving}</td>
+                  <td>{letter.hr_name}</td>
+                  <td>{letter.company_name}</td>
+                  <td className="text-center">
+                    {/* <Button
+                      size="sm"
+                      variant="info"
+                      onClick={() => handleModalShow("edit", letter)}
+                      className="mx-1 mb-1"
+                    >
+                      <i className="fas fa-edit" /> Edit
+                    </Button> */}
+                    <button
+                        className="btn btn-light btn-sm"
+                        onClick={() => handleModalShow("preview", letter)}
+                      >
+                        <i className="fas fa-eye" /> 
+                      </button>
+                    {/* <Button
+                      size="sm"
+                      variant="danger"
+                      onClick={() => handleModalShow("delete", letter)}
+                      className="mx-1 mb-1"
+                    >
+                      <i className="fas fa-trash" /> Delete
+                    </Button> */}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          {/* {showModal.edit && (
             <RelievingLetterEditModal
               show={showModal.edit}
               onHide={closeModal}
               data={selectedRelievingLetter}
               onUpdateSuccess={fetchData}
             />
-          )}
+          )} */}
           {showModal.add && (
             <RelievingLetterAddModal
               show={showModal.add}
@@ -177,14 +152,14 @@ const RelievingLetterList = () => {
               data={selectedRelievingLetter}
             />
           )}
-          {showModal.delete && (
+          {/* {showModal.delete && (
             <RelievingLetterDeleteModal
               show={showModal.delete}
               onHide={closeModal}
               relievingLetterId={selectedRelievingLetter.id}
               onDeleteSuccess={fetchData}
             />
-          )}
+          )} */}
         </div>
       </div>
     </div>

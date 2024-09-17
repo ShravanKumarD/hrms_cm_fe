@@ -23,13 +23,14 @@ export default function withAuth(ComponentToProtect) {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => {
+          console.log(res.data.authData.user,'res')
           this.setState({ isAuthenticated: true });
           console.log(`Access: ${this.state.isAuthenticated}`);
           localStorage.setItem("user", JSON.stringify(res.data.authData.user));
           this.setState({ loading: false });
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err,'error');
           console.log(`Access: ${this.state.isAuthenticated}`);
           // localStorage.removeItem('user')
           // localStorage.removeItem('token')

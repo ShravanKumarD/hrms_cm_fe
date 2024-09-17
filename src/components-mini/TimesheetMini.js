@@ -45,7 +45,6 @@ export default function Calendar() {
         const userResponse = await axios.get("/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
         // Set birthday events
         const birthdayEvents = userResponse.data.map(user => {
           const birthDate = moment(user.user_personal_info?.dateOfBirth, 'YYYY-MM-DD');

@@ -1,10 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { Card, Button, Form, Badge } from "react-bootstrap";
+import { Card, Button, Table, Modal } from "react-bootstrap";
 import axios from "axios";
 import moment from "moment";
-import MaterialTable from "material-table";
-import { ThemeProvider } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
 import API_BASE_URL from "../env";
 import OfferLetterEditModal from "./OfferLetterEditModal";
 import OfferLetterAddModal from "./OfferLetterAddModal";
@@ -13,6 +10,7 @@ import OfferLetterPreviewModal from "./OfferLetterPreviewModal";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import htmlToPdfmake from "html-to-pdfmake";
+import OfferLetterTemplate from "./OfferLetterTemplate";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -27,21 +25,13 @@ const OfferLetterList = () => {
   });
   const previewRef = useRef(null);
 
-  const theme = createTheme({
-    overrides: {
-      MuiTableCell: {
-        root: {
-          padding: "6px 6px",
-        },
-      },
-    },
-  });
-
+  // Fetch offer letters
   const fetchOfferLetters = useCallback(async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/offerLetters/`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+      console.log(  response.data)
       setOfferLetters(
         response.data.map((letter) => ({
           ...letter,
@@ -60,6 +50,7 @@ const OfferLetterList = () => {
     fetchOfferLetters();
   }, [fetchOfferLetters]);
 
+  // Modal handlers
   const openModal = (modalType, offerLetter = null) => {
     setModalState({
       showEdit: modalType === "edit",
@@ -78,9 +69,10 @@ const OfferLetterList = () => {
       showPreview: false,
       selectedOfferLetter: null,
     });
-    fetchOfferLetters(); // Refresh the list after any modal closes
+    fetchOfferLetters(); // Refresh the list after modal closes
   };
 
+  // Download offer letter as PDF
   const downloadPDF = () => {
     if (previewRef.current) {
       const offerLetterContent = previewRef.current.innerHTML;
@@ -88,136 +80,78 @@ const OfferLetterList = () => {
       const documentDefinition = { content: pdfContent };
       pdfMake.createPdf(documentDefinition).download("offer_letter.pdf");
     } else {
-      console.error("Preview element is not found");
+      console.error("Preview element not found");
     }
   };
 
-  const { showEdit, showAdd, showDelete, showPreview, selectedOfferLetter } =
-    modalState;
+  const { showEdit, showAdd, showDelete, showPreview, selectedOfferLetter } = modalState;
 
   return (
     <div className="container-fluid pt-2">
-      <div className="row">
-        <div className="col-sm-12">
-          <h4>
-            <Button
-              variant="link"
-              className="p-0"
-              onClick={() => openModal("add")}
-              style={{ color: "blue", cursor: "pointer" }}
-            >
-              <i className="fa fa-plus" />
-              Add Offer Letter
-            </Button>
-          </h4>
-          <div>
-            <ThemeProvider theme={theme}>
-              <MaterialTable
-                columns={[
-                  { title: "ID", field: "id" },
-                  { title: "Full Name", field: "full_name" },
-                  { title: "Role", field: "role" },
-                  { title: "Department", field: "department" },
-                  { title: "Start Date", field: "start_date" },
-                  { title: "End Date", field: "end_date" },
-                  {
-                    title: "Status",
-                    field: "end_date",
-                    render: (rowData) => {
-                      const today = new Date();
-                      if (new Date(rowData.start_date) > today) {
-                        return <Badge variant="warning">Future</Badge>;
-                      }
-                      if (
-                        !rowData.end_date ||
-                        new Date(rowData.end_date) >= today
-                      ) {
-                        return <Badge variant="success">Active</Badge>;
-                      }
-                      return <Badge variant="danger">Expired</Badge>;
-                    },
-                  },
-                  {
-                    title: "Action",
-                    render: (rowData) => (
-                      // <Form className="row">
-                      //   <div className="col pl-5">
-                      //     <Button
-                      //       size="sm"
-                      //       variant="info"
-                      //       onClick={() => openModal("edit", rowData)}
-                      //     >
-                      //       <i className="fas fa-edit"></i> Edit
-                      //     </Button>
-                      //   </div>
+      <>
+        <Card.Header>
+          <h4>Offer Letters</h4>
+          <button
+            onClick={() => openModal("add")}
+        className="dashboard-icons"
+          >
+            <i className="fa fa-plus" /> Add Offer Letter
+          </button>
+        </Card.Header>
+        <Card.Body>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Recipient</th>
+                <th>Role</th>
+                <th>Start Date</th>
+                <th>Department</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {offerLetters.length > 0 ? (
+                offerLetters.map((offerLetter) => (
+                  <tr key={offerLetter.id}>
+                    <td>{offerLetter.full_name}</td>
+                    <td>{offerLetter.role}</td>
+                    <td>{offerLetter.start_date}</td>
+                    <td>{offerLetter.department}</td>
+                    <td>
+                      <button
+                        className="dashboard-icons"
+                        onClick={() => openModal("preview", offerLetter)}
+                      >
+                        Preview
+                      </button>
+                      {/* <Button
+                     className="btn btn-light btn-sm"
+                        onClick={() => openModal("edit", offerLetter)}
+                      >
+                        Edit
+                      </Button> */}
+                      {/* <Button
+                     className="btn btn-light btn-sm"
+                        onClick={() => openModal("delete", offerLetter)}
+                      >
+                        Delete
+                      </Button> */}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-center">
+                    No offer letters found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </Table>
+        </Card.Body>
+      </>
 
-                      //   <div className="col pr-5">
-                      //     <Button
-                      //       size="sm"
-                      //       variant="danger"
-                      //       onClick={() => openModal("delete", rowData)}
-                      //     >
-                      //       <i className="fas fa-trash"></i> Delete
-                      //     </Button>
-                      //   </div>
-
-                      //   <div className="col pr-5">
-                      //     <Button
-                      //       size="sm"
-                      //       variant="secondary"
-                      //       onClick={() => openModal("preview", rowData)}
-                      //     >
-                      //       <i className="fas fa-eye"></i> Preview
-                      //     </Button>
-                      //   </div>
-                      // </Form>
-                      <Form className="row">
-                        <div className="col d-flex justify-content-center">
-                          <Button
-                            size="sm"
-                            variant="info"
-                            onClick={() => openModal("edit", rowData)}
-                          >
-                            <i className="fas fa-edit"></i> Edit
-                          </Button>
-                        </div>
-
-                        <div className="col d-flex justify-content-center">
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => openModal("preview", rowData)}
-                          >
-                            <i className="fas fa-eye"></i> Preview
-                          </Button>
-                        </div>
-                        <div className="col d-flex justify-content-center">
-                          <Button
-                            size="sm"
-                            variant="danger"
-                            onClick={() => openModal("delete", rowData)}
-                          >
-                            <i className="fas fa-trash"></i> Delete
-                          </Button>
-                        </div>
-                      </Form>
-                    ),
-                  },
-                ]}
-                data={offerLetters}
-                options={{
-                  rowStyle: (rowData, index) => ({
-                    backgroundColor: index % 2 ? "#f2f2f2" : "#ffffff",
-                  }),
-                  pageSize: 8,
-                  pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
-                }}
-                title="Offer Letter List"
-              />
-            </ThemeProvider>
-          </div>
-        </div>
-      </div>
+      {/* Modals for Edit, Add, Delete, and Preview */}
       {showEdit && selectedOfferLetter && (
         <OfferLetterEditModal
           show={showEdit}
@@ -229,8 +163,8 @@ const OfferLetterList = () => {
       {showAdd && (
         <OfferLetterAddModal
           show={showAdd}
-          onSuccess={fetchOfferLetters}
           onHide={closeModal}
+          onSuccess={fetchOfferLetters}
         />
       )}
       {showDelete && selectedOfferLetter && (

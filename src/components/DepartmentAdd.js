@@ -1,92 +1,80 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import { Card, Form, Button, Alert } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
 import API_BASE_URL from "../env";
 
-export default class DepartmentAdd extends Component {
-  constructor(props) {
-    super(props);
+const DepartmentAdd = () => {
+  const [departmentName, setDepartmentName] = useState("");
+  const [hasError, setHasError] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
+  const [completed, setCompleted] = useState(false);
 
-    this.state = {
-      departmentName: "",
-      hasError: false,
-      errMsg: "",
-      completed: false,
-    };
-  }
-
-  handleChange = (event) => {
-    const { value, name } = event.target;
-    this.setState({
-      [name]: value,
-    });
+  const handleChange = (event) => {
+    setDepartmentName(event.target.value);
   };
 
-  onSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
 
-    this.setState({ hasError: false, errorMsg: "", completed: false });
+    setHasError(false);
+    setErrMsg("");
+    setCompleted(false);
 
-    let department = {
-      departmentName: this.state.departmentName,
+    const department = {
+      departmentName: departmentName,
     };
 
     axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "post",
-      url: "/api/departments",
-      data: department,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
+    axios
+      .post("/api/departments", department, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
       .then((res) => {
-        this.setState({ completed: true });
+        setCompleted(true);
       })
       .catch((err) => {
-        this.setState({ hasError: true, errMsg: err.response.data.message });
+        setHasError(true);
+        setErrMsg(err.response?.data?.message || "Error adding department");
         window.scrollTo(0, 0);
       });
   };
 
-  render() {
-    return (
-      <Card className="mb-3 secondary-card">
-        <Card.Header>
-          <b>Add Department</b>
-        </Card.Header>
-        <Card.Body>
-          <div>
-            <Form onSubmit={this.onSubmit}>
-              <Form.Group controlId="formDepartmentName">
-                <Form.Label className="text-muted mb-2">
-                  Department Name
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Department Name"
-                  name="departmentName"
-                  style={{ width: "50%" }}
-                  value={this.state.departmentName}
-                  onChange={this.handleChange}
-                  required
-                />
-              </Form.Group>
-              <Button variant="primary" type="submit" className="mt-2">
-                Add
-              </Button>
-            </Form>
-          </div>
-        </Card.Body>
-        {this.state.hasError ? (
-          <Alert variant="danger" className="m-3" block>
-            {this.state.errMsg}
-          </Alert>
-        ) : this.state.completed ? (
-          <Redirect to="/departments" />
-        ) : (
-          <></>
-        )}
-      </Card>
-    );
+  if (completed) {
+    return <Redirect to="/departments" />;
   }
-}
+
+  return (
+    <div className="mb-3 secondary-card">
+      <Card.Header>
+        <b>Add Department</b>
+      </Card.Header>
+      <Card.Body>
+        <Form onSubmit={onSubmit}>
+          <Form.Group controlId="formDepartmentName">
+            <Form.Label className="text-muted mb-2">Department Name</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter Department Name"
+              name="departmentName"
+              style={{ width: "50%" }}
+              value={departmentName}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
+          <Button type="submit" className="dashboard-icons">
+            Add
+          </Button>
+        </Form>
+      </Card.Body>
+      {hasError && (
+        <Alert variant="danger" className="m-3">
+          {errMsg}
+        </Alert>
+      )}
+    </div>
+  );
+};
+
+export default DepartmentAdd;
