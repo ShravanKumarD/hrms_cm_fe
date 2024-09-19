@@ -181,8 +181,8 @@ const JobList = () => {
                   <th>Job Title</th>
                   <th>Employee</th>
                   <th>Start Date</th>
-                  <th>End Date</th>
-                  <th>State</th>
+                  {/* <th>End Date</th> */}
+                  {/* <th>State</th> */}
                   <th>Action</th>
                 </tr>
               </thead>
@@ -193,8 +193,8 @@ const JobList = () => {
                     <td>{job.jobTitle}</td>
                     <td>{job.user.fullName}</td>
                     <td>{job.startDate}</td>
-                    <td>{job.endDate}</td>
-                    <td>{renderJobState(job)}</td>
+                    {/* <td>{job.endDate}</td> */}
+                    {/* <td>{renderJobState(job)}</td> */}
                     <td>
                       <Button
                         size="sm"
