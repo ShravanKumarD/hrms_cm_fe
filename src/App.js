@@ -428,7 +428,7 @@ return(
           path="/announcement"
           component={withAuth(AnnouncementHR)}
         />
-         <Route exact path="/holidays" component={HolidaysHr}/>
+         <Route exact path="/holidays" component={withAuth(HolidaysHr)}/>
          {/* <Route exact path="/personal-leaves" component={withAuth(PersonalLeavesHr)}/> */}
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />
@@ -613,7 +613,7 @@ const EmployeeContainer = () => {
               <Route 
               exact 
               path="/holidays"
-              component={HolidaysEmployee}/>
+              component={withAuth(HolidaysEmployee)}/>
               {/* <Route
                 exact
                 path="/documents"

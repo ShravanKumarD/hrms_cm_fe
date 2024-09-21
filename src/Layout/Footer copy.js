@@ -4,23 +4,20 @@ export default class Footer extends Component {
   render() {
     return (
       <>
+        {/* <hr /> */}
         <footer
           style={{
-            position: "fixed",
+            // position: "fixed",
             bottom: 0,
             width: "100%",
             display: "flex",
             justifyContent: "right",
-            alignItems: "center", 
-            backgroundColor: "#f8f9fa",
-            padding: "5px 0",
+            // backgroundColor: "#f8f9fa",
+            padding: "0px",
             boxShadow: "0 -2px 5px rgba(0,0,0,0.1)",
-            opacity: 1,
-            height: "20px",
-            zIndex:1
           }}
         >
-          <div style={{ marginTop: "0" }}>
+          <div style={{marginTop:"6px"}}>
             <strong>
               Copyright © 2023-2024{" "}
               <a
@@ -34,6 +31,10 @@ export default class Footer extends Component {
             </strong>
             All rights reserved.{" "}
           </div>
+          <p>&nbsp;</p>
+          {/* <div style={{ textAlign: "right" }}>
+            <b>Version</b> 1.0.0
+          </div> */}
         </footer>
       </>
     );
