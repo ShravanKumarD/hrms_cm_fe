@@ -15,12 +15,15 @@ import {
   FaPlus,
   FaList,
   FaUsers,
+  FaBriefcase,
   FaFileInvoiceDollar,
   FaFileSignature,
   FaFileExport,
   FaMoneyCheck,
   FaShoppingCart,
   FaFileInvoice,
+  FaCalendarAlt,
+  FaUserClock
 } from "react-icons/fa";
 import LogoWhite from "../assets/samcintlogowhite.png";
 import LogoMini from "../assets/10.png";
@@ -212,9 +215,16 @@ const SidebarHr = ({ onToggle }) => {
       <FaList />
       Attendance Overview
     </SubNavItem>
+    <SubNavItem to="/attendance/startwork">
+            <FaBriefcase />
+            {!isCollapsed && "Start Work"}
+          </SubNavItem>
   </>
 )}
-
+     <NavItem to="/holidays">
+          <FaCalendarAlt />
+          {!isCollapsed && "Holidays"}
+          </NavItem>
           <NavItem to="#" onClick={(e) => toggleSubMenu("applications", e)}>
             <FaRocket />
             {!isCollapsed && "Applications"}

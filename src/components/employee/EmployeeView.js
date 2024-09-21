@@ -178,9 +178,9 @@ const EmployeeDashboard = () => {
               />
               <DataItem label="IBAN" value={userFinancialInfo.iban} />
             </Card>
-          </FlexItem>
+          </FlexItem> 
         </FlexContainer> */}
-           <div className="card col-sm-10">
+           <div className="card col-sm-5">
           <table>
             <thead>
               <tr>
@@ -322,7 +322,7 @@ const EmployeeDashboard = () => {
                   <td>{userFinancialInfo.accountNumber}</td>
                 </tr>
                 <tr>
-                  <td>IBAN</td>
+                  <td>IFSC</td>
                   <td>{userFinancialInfo.iban}</td>
                 </tr>
               </tbody>

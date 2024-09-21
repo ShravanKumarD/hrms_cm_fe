@@ -21,6 +21,7 @@ const EmployeeList = () => {
       });
       setEmpCount(res.data.length);
       res.data.shift(1);
+      console.log(res.data,"users")
       setUsers(res.data);
     } catch (err) {
       console.error(err);
@@ -93,7 +94,7 @@ const EmployeeList = () => {
             <tbody>
               {users.map((user) => (
                 <tr key={user.id}>
-                  <td>{user.id}</td>
+                  <td>{user.user_personal_info?.idNumber}</td>
                   <td style={{ whiteSpace: "nowrap" }}>{user.fullName}</td>
 
                   <td>{user.user_personal_info?.emailAddress}</td>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import API_BASE_URL from "../env";
+import API_BASE_URL from "../../env";
 import moment from 'moment';
 import './Holidays.css'; // Import CSS for styling
 
@@ -9,7 +9,7 @@ export default function Holidays() {
   const[optionalHolidays,setOptionalHolidays]=useState([]);
   const [error, setError] = useState(null);
   const [showHolidays, setShowHolidays] = useState(true);
-  const [showOtherTable, setShowOtherTable] = useState(true); // State for toggling the second table
+  const [showOtherTable, setShowOtherTable] = useState(true);
 
 
   useEffect(() => {
@@ -30,6 +30,7 @@ export default function Holidays() {
         }
        
         let optionalHolidays =response.data.filter(x=>x.description==="Optional")
+        console.log(optionalHolidays,"optionalHolidays")
         setOptionalHolidays(optionalHolidays)
         let holidays = response.data.filter(x=>x.description==="Holiday")
         holidays.sort((a, b) => new Date(a.date) - new Date(b.date));

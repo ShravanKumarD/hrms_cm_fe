@@ -130,6 +130,7 @@ const NavItem = styled.div`
 
   &:hover {
     background-color: ${(props) => props.theme.hover};
+        color:#000000;
   }
 
   svg {

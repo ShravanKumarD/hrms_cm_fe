@@ -1,416 +1,233 @@
-import React, { Component } from "react";
-import { Card, Row, Col, Form } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
-import moment from "moment";
 import API_BASE_URL from "../../env";
 
-export default class SalaryView extends Component {
-  constructor(props) {
-    super(props);
+const SalaryViewManager = () => {
+  const [user, setUser] = useState(null);
+  const [currentJobTitle, setCurrentJobTitle] = useState(null);
+  const [falseRedirect, setFalseRedirect] = useState(false);
+  const [editRedirect, setEditRedirect] = useState(false);
 
-    this.state = {
-      user: null,
-      currentJobTitle: null,
-      falseRedirect: false,
-    };
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const id = JSON.parse(localStorage.getItem("user")).id;
+        axios.defaults.baseURL = API_BASE_URL;
 
-  componentDidMount() {
-    if (this.props.location.state) {
-      axios.defaults.baseURL = API_BASE_URL;
-      axios({
-        method: "get",
-        url: "api/users/" + this.props.location.state.selectedUser.user.id,
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      })
-        .then((res) => {
-          this.setState({ user: res.data }, () => {
-            if (this.state.user.jobs) {
-              // this.state.user.jobs.map((job) => {
-              //   if (
-              //     new Date(job.startDate).setHours(0) < new Date() &&
-              //     new Date(job.endDate).setHours(24) > new Date()
-              //   ) {
-              //     this.setState({ currentJobTitle: job.jobTitle });
-              //   }
-              // });
-              this.setState({ currentJobTitle: this.state.user.jobs[0].jobTitle});
-            }
-          });
-        })
-        .catch((err) => {
-          console.log(err);
+        const response = await axios.get(`api/users/${id}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-    } else {
-      this.setState({ falseRedirect: true });
-    }
+
+        const userData = response.data;
+        setUser(userData);
+        if (userData.jobs && userData.jobs.length > 0) {
+          setCurrentJobTitle(userData.jobs[0].jobTitle);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (falseRedirect) {
+    return <Redirect to="/" />;
   }
 
-  render() {
+  if (editRedirect) {
     return (
-      <div className="container-fluid pt-3">
-        {this.state.falseRedirect ? <Redirect to="/" /> : <></>}
-        {this.state.editRedirect ? (
-          <Redirect
-            to={{
-              pathname: "/salary-details",
-              state: { selectedUser: this.state.user },
-            }}
-          />
-        ) : null}
-        {this.state.user ? (
-          <Row>
-            <Col sm={12}>
-              <div id="tableContainer">
-                <Card>
-                  <Card.Header
-                    style={{
-                      backgroundColor: "#515e73",
-                      color: "white",
-                      fontSize: "17px",
-                    }}
-                  >
-                    Employee Salary Detail{" "}
-                    <Form className="float-right">
-                      {/* <Button variant="primary" onClick={this.exportToPDF}>
-                        Export to PDF
-                      </Button>
-                      <br />
-                      <br /> */}
-                      {/* <span style={{ cursor: "pointer" }} onClick={this.onEdit}>
-                        <i className="far fa-edit"></i> Edit
-                      </span> */}
-                    </Form>
-                  </Card.Header>
-
-                  <Card.Body>
-                    <Card.Header style={{ textAlign: "center",fontSize:'22px' }}>
-                      <strong>Samcint solutions private limited</strong>
-                    </Card.Header>
-                    <br />
-                    <Card.Title>
-                      <strong>{this.state.user.fullName}</strong>
-                    </Card.Title>
-                    <div>
-                      <Col lg={12}>
-                        <Row className="pt-4">
-                          <Col lg={0}>
-                            <img
-                              className="img-circle elevation-1 bp-2"
-                              src={process.env.PUBLIC_URL + "/user-128.png"}
-                            ></img>
-                          </Col>
-                          <Col className="pt-4" lg={7}>
-                            <div className="emp-view-list">
-                              <ul>
-                                <li>
-                                  <span>Employee ID: </span>{" "}
-                                  {this.state.user.id}
-                                </li>
-                                <li>
-  <span>Department: </span>
-  {this.state.user.department && this.state.user.department.departmentName ? (
-    this.state.user.department.departmentName
-  ) : (
-    <Redirect to="/employee-list" />
-  )}
-</li>
-
-                                <li>
-                                  <span>Job Title: </span>{" "}
-                                  {this.state.currentJobTitle}
-                                </li>
-                                <li>
-                                  <span>Role: </span>
-                                  {this.state.user.role === "ROLE_ADMIN"
-                                    ? "Admin"
-                                    : this.state.user.role === "ROLE_MANAGER"
-                                    ? "Manager"
-                                    : "Employee"}
-                                </li>
-                              </ul>
-                            </div>
-                          </Col>
-                        </Row>
-                        <Row className="pt-4">
-                          <Col sm={6}>
-                            <Card className="secondary-card sal-view">
-                              <Card.Header>Salary Details</Card.Header>
-                              <Card.Body>
-                                <Card.Text id="sal-view-details">
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Employment Type:
-                                    </Form.Label>
-                                    <span>
-                                      {
-                                        this.state.user.user_financial_info
-                                          .employmentType   || this.state.user.jobs[0].employmentType
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Basic Salary:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info
-                                          .salaryBasic || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                </Card.Text>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                          <Col sm={6}>
-                            <Card className="secondary-card sal-view">
-                              <Card.Header>Allowances</Card.Header>
-                              <Card.Body>
-                                <Card.Text id="sal-view-allowances">
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      House Rent Allowance:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info
-                                          .allowanceHouseRent || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Medical Allowance:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info
-                                          .allowanceMedical || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Special Allowance:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info
-                                          .allowanceSpecial || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Fuel Allowance:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info
-                                          .allowanceFuel || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Phone Bill Allowance:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info
-                                          .allowancePhoneBill || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Other Allowance:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info
-                                          .allowanceOther || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Total Allowance:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info.allowanceFuel
-                                          +
-                                          this.state.user.user_financial_info.allowanceHouseRent
-                                          +
-                                          this.state.user.user_financial_info.allowanceMedical
-                                          +
-                                          this.state.user.user_financial_info.allowanceOther
-                                          +
-                                          this.state.user.user_financial_info.allowanceSpecial
-                                          +
-                                          this.state.user.user_financial_info.allowancePhoneBill
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                </Card.Text>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col cm={6}>
-                            <Card className="secondary-card">
-                              <Card.Header>Deductions</Card.Header>
-                              <Card.Body>
-                                <Card.Text id="sal-view-deductions">
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Tax Deduction:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info
-                                          .deductionTax || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      PF:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                    this.state.user.user_financial_info.pf || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      PT:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                       this.state.user.user_financial_info.pt || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      TDS:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                     this.state.user.user_financial_info.tds || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Other Deduction:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info
-                                          .deductionOther || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                  {/* <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Total Deduction:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info.pf
-                                        +
-                                        this.state.user.user_financial_info.pt
-                                        +
-                                        this.state.user.user_financial_info.tds
-                                        +
-                                        this.state.user.user_financial_info.deductionOther
-                                      }
-                                    </span>
-                                  </Form.Group> */}
-                                </Card.Text>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                          <Col sm={6}>
-                            <Card className="secondary-card">
-                              <Card.Header>Total Salary Details</Card.Header>
-                              <Card.Body>
-                                <Card.Text id="sal-view-total">
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Gross Salary:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info
-                                          .salaryGross || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Total Deduction:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info
-                                        .salaryGross -   this.state.user.user_financial_info
-                                        .salaryNet || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                  <Form.Group as={Row}>
-                                    <Form.Label className="label">
-                                      Net Salary:
-                                    </Form.Label>
-                                    <span>
-                                      ₹{" "}
-                                      {
-                                        this.state.user.user_financial_info
-                                          .salaryNet || 0
-                                      }
-                                    </span>
-                                  </Form.Group>
-                                </Card.Text>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </div>
-            </Col>
-          </Row>
-        ) : null}
-      </div>
+      <Redirect
+        to={{
+          pathname: "/salary-details",
+          state: { selectedUser: user },
+        }}
+      />
     );
   }
-}
+
+  if (!user) {
+    return null;
+  }
+
+  const {
+    fullName,
+    department,
+    role,
+    user_financial_info: financialInfo = {},
+  } = user;
+
+  const totalAllowance =
+    (financialInfo.allowanceHouseRent || 0) +
+    (financialInfo.allowanceMedical || 0) +
+    (financialInfo.allowanceSpecial || 0) +
+    (financialInfo.allowanceFuel || 0) +
+    (financialInfo.allowancePhoneBill || 0) +
+    (financialInfo.allowanceOther || 0);
+
+  const totalDeduction =
+    (financialInfo.deductionTax || 0) +
+    (financialInfo.pf || 0) +
+    (financialInfo.pt || 0) +
+    (financialInfo.tds || 0) +
+    (financialInfo.deductionOther || 0);
+
+  return (
+    <div>
+
+      <h3>Salary Details</h3>
+      <div className="row">
+      <div className="card col-sm-5">
+      <table>
+        <thead>
+          <tr>
+            <th colSpan="2">Profile Information</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Full Name:</td>
+            <td className="text-primary mb-3">{fullName}</td>
+          </tr>
+          <tr>
+            <td>Employee ID:</td>
+            <td>{user.username || "NA"}</td>
+          </tr>
+          <tr>
+            <td>Department:</td>
+            <td>
+              {department?.departmentName || <Redirect to="/employee-list" />}
+            </td>
+          </tr>
+          <tr>
+            <td>Job Title:</td>
+            <td>{currentJobTitle}</td>
+          </tr>
+          <tr>
+            <td>Role:</td>
+            <td>
+              {role === "ROLE_ADMIN"
+                ? "Admin"
+                : role === "ROLE_MANAGER"
+                ? "Manager"
+                : "Employee"}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      </div>
+      <div className="row">
+      <div className="card col-sm-5">
+      <h2>Salary Information</h2>
+      <table>
+        <thead>
+          <tr>
+            <th colSpan="2">Basic Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {/* <td>Employment Type:</td> */}
+            {/* <td>{financialInfo.employmentType || user.jobs[0].employmentType}</td> */}
+          </tr>
+          <tr>
+            <td>Basic Salary:</td>
+            <td>₹ {financialInfo.salaryBasic || 0}</td>
+          </tr>
+          <tr>
+            <td>Gross Salary:</td>
+            <td>₹ {financialInfo.salaryGross || 0}</td>
+          </tr>
+          <tr>
+            <td>Total Deductions:</td>
+            <td>₹ {totalDeduction}</td>
+          </tr>
+          <tr>
+            <td>Net Salary:</td>
+            <td>₹ {financialInfo.salaryNet || 0}</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div className="card col-sm-5">
+      <h2>Allowances</h2>
+      <table>
+        <thead>
+          <tr>
+            <th colSpan="2">Allowance Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>House Rent Allowance:</td>
+            <td>₹ {financialInfo.allowanceHouseRent || 0}</td>
+          </tr>
+          <tr>
+            <td>Medical Allowance:</td>
+            <td>₹ {financialInfo.allowanceMedical || 0}</td>
+          </tr>
+          <tr>
+            <td>Special Allowance:</td>
+            <td>₹ {financialInfo.allowanceSpecial || 0}</td>
+          </tr>
+          <tr>
+            <td>Fuel Allowance:</td>
+            <td>₹ {financialInfo.allowanceFuel || 0}</td>
+          </tr>
+          <tr>
+            <td>Phone Bill Allowance:</td>
+            <td>₹ {financialInfo.allowancePhoneBill || 0}</td>
+          </tr>
+          <tr>
+            <td>Other Allowance:</td>
+            <td>₹ {financialInfo.allowanceOther || 0}</td>
+          </tr>
+          <tr>
+            <td>Total Allowance:</td>
+            <td>₹ {totalAllowance}</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      </div>
+      <div className="row">
+      <div className="card col-sm-5">
+      <h2>Deductions</h2>
+      <table>
+        <thead>
+          <tr>
+            <th colSpan="2">Deduction Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Tax Deduction:</td>
+            <td>₹ {financialInfo.deductionTax || 0}</td>
+          </tr>
+          <tr>
+            <td>PF:</td>
+            <td>₹ {financialInfo.pf || 0}</td>
+          </tr>
+          <tr>
+            <td>PT:</td>
+            <td>₹ {financialInfo.pt || 0}</td>
+          </tr>
+          <tr>
+            <td>TDS:</td>
+            <td>₹ {financialInfo.tds || 0}</td>
+          </tr>
+          <tr>
+            <td>Other Deductions:</td>
+            <td>₹ {financialInfo.deductionOther || 0}</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      </div>
+    </div>
+  );
+};
+
+export default SalaryViewManager;

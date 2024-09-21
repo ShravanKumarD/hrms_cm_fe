@@ -12,6 +12,9 @@ import {
   FaMoneyCheck,
   FaBell,
   FaAngleLeft,
+  FaCalendarAlt,
+  FaList,
+  FaBriefcase,
 } from "react-icons/fa";
 import LogoWhite from "../assets/samcintlogowhite.png";
 import LogoMini from "../assets/10.png";
@@ -24,7 +27,7 @@ const Sidebar = styled.aside`
   transform: translateY(-50%);
   height: 70vh;
   width: ${(props) => (props.isCollapsed ? "70px" : "250px")};
-  background: #8adcd2;;
+  background: #8adcd2;
   backdrop-filter: blur(10px);
   border-radius: 20px;
   transition: all 0.3s ease;
@@ -85,8 +88,8 @@ const NavMenu = styled.nav`
     }
 
     scrollbar-width: thin;
-    scrollbar-color: ${(props) => props.theme.scrollbarThumb} ${(props) =>
-  props.theme.scrollbarTrack};
+    scrollbar-color: ${(props) => props.theme.scrollbarThumb}
+      ${(props) => props.theme.scrollbarTrack};
   }
 `;
 
@@ -142,7 +145,7 @@ const SidebarManager = ({ onToggle }) => {
   const userId = JSON.parse(localStorage.getItem("user"))?.id || "";
 
   useEffect(() => {
-    loadTree(); // Assumes this function is necessary, you might want to check if it needs user data
+    loadTree();
   }, []);
 
   useEffect(() => {
@@ -182,20 +185,53 @@ const SidebarManager = ({ onToggle }) => {
             <FaTachometerAlt />
             {!isCollapsed && "Dashboard"}
           </NavItem>
-          <NavItem to="/attendance-list">
+          {/* <NavItem to="/attendance-list">
             <FaCalendarCheck />
             {!isCollapsed && "Attendance List"}
-          </NavItem>
+          </NavItem> */}
+
+          <NavItem to="#" onClick={(e) => toggleSubMenu("attendance", e)}>
+  <FaCalendarCheck />
+  {!isCollapsed && "Attendance"}
+</NavItem>
+{expandedMenus.attendance && !isCollapsed && (
+  <>
+    <SubNavItem to="/attendance-list">
+      <FaCalendarCheck />
+      Attendance Status
+    </SubNavItem>
+    {/* <SubNavItem to="/attendance-list-detailed">
+      <FaList />
+      Attendance Overview
+    </SubNavItem> */}
+    <SubNavItem to="/attendance/startwork">
+            <FaBriefcase />
+            {!isCollapsed && "Start Work"}
+          </SubNavItem>
+  </>
+)}
+
           <NavItem to="#" onClick={(e) => toggleSubMenu("employee", e)}>
             <FaUser />
             {!isCollapsed && "Employee"}
           </NavItem>
           {expandedMenus.employee && !isCollapsed && (
-            <SubNavItem to="/employee-list">
-              <FaUsers />
-              Employee List
-            </SubNavItem>
+            <>
+              {/* <SubNavItem to="/emp-view">
+                <FaUser />
+                {!isCollapsed && "My Profile"}
+              </SubNavItem> */}
+              <SubNavItem to="/employee-list">
+                <FaUsers />
+                {!isCollapsed && "Employee List"}
+              </SubNavItem>
+            </>
           )}
+
+          <NavItem to="/holidays">
+            <FaCalendarAlt />
+            {!isCollapsed && "Holidays"}
+          </NavItem>
           <NavItem to="/application-list">
             <FaRocket />
             {!isCollapsed && "Applications"}

@@ -1,6 +1,9 @@
-import React, { useState } from "react";
-import { Container, Card } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Container } from "react-bootstrap";
 import styled from "styled-components";
+import moment from 'moment';
+import axios from "axios";
+import API_BASE_URL from "../env";
 
 const LeaveContainer = styled.div`
   width: 100%;
@@ -57,7 +60,7 @@ const LeaveTitle = styled.h3`
   margin: 0;
   padding-bottom: 10px;
   font-size: 18px;
-  color: ${(props) => props.theme.leaveTextColor};//teext colour
+  color: ${(props) => props.theme.leaveTextColor};
   z-index: 1;
   position: relative;
 `;
@@ -91,17 +94,60 @@ const ScrollIndicator = styled.div`
   transition: opacity 0.3s ease;
 `;
 
-const leaveTypes = [
-  { type: "Leave Balance", balance: 10, total: 22 },
-  { type: "Paid Leave", balance: 0, total: 12 },
-  // { type: "Privilege Leave", balance: 5, total: 10 },
-  // { type: "Casual Leave", balance: 3, total: 5 },
-  { type: "Sick Leave", balance: 2, total: 7 },
-  // { type: "Comp-Off", balance: 1, total: 3 },
-];
+let user = JSON.parse(localStorage.getItem("user"));
 
 const LeaveBalanceContainer = ({ theme = "green" }) => {
   const [showIndicator, setShowIndicator] = useState(false);
+  const [generalLeaves, setGenralLeaves] = useState(0);
+  const [totalLeaves, setTotalLeaves] = useState(0);
+  // const [sickLeaves, setSickLeaves] = useState(0);
+  let sickLeaves=0;
+
+  useEffect(() => {
+    axios.defaults.baseURL = API_BASE_URL;
+
+    axios
+      .get(`/api/applications/user/${user.id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then((res) => {
+        const formattedApplications = res.data.map((app) => ({
+          ...app,
+          startDate: moment(app.startDate).format("Do MMM YYYY"),
+          endDate: moment(app.endDate).format("Do MMM YYYY"),
+        }));
+
+        console.log(formattedApplications, "setLeaves");
+
+        setTotalLeaves(formattedApplications.length);
+
+        const totalapprovedlist = formattedApplications.filter((x) => {
+          console.log(x,"total")
+          return (
+            x.status === "Approved" && !/sick|Sick|SICK|headache|stomach|fever|pain/i.test(x.reason) && x.type === "Comp Off" );
+        });
+        setGenralLeaves(totalapprovedlist.length);
+
+        const totalSickleaves = formattedApplications.filter((x) => {
+          return /sick|Sick|SICK|headache|stomach|fever|pain/i.test(x.reason || "") && x.status === "Approved" &&  x.type !== "Comp Off" &&
+           x.type !=="Regularisation" && x.type !== "Work From Home" &&x.type !== "On duty" && x.type !== "Expense" && x.type!=="Ristricted Holiday" && x.type!=="Shroty"
+        });
+      })
+      .catch((err) => {
+        console.error("Error fetching applications:", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    // Log the updated state value here
+    console.log(generalLeaves, sickLeaves, "Updated leave counts");
+  }, [generalLeaves, sickLeaves]);
+
+  const leaveTypes = [
+    { type: "Leave Balance", balance: totalLeaves+9, total: 12 },
+    { type: "Paid Leave", balance: generalLeaves+8, total: 10 },
+    { type: "Sick Leave", balance: sickLeaves+1, total: 2 },
+  ];
 
   return (
     <Container

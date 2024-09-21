@@ -252,7 +252,7 @@ export default class EmployeeAdd extends Component {
     this.state = {
       fistname: "",
       lastname: "",
-      dateOfBirth: "",
+      dateOfBirth:new Date('2000-01-01'),
       gender: "",
       maritalStatus: "",
       fathername: "",
@@ -262,7 +262,7 @@ export default class EmployeeAdd extends Component {
       accountNumber: "",
       iBan: "",
       address: "",
-      country: "",
+      country: "India",
       city: "",
       mobile: null,
       phone: null,
@@ -272,7 +272,7 @@ export default class EmployeeAdd extends Component {
       role: "",
       department: "",
       departmentId: null,
-      startDate: "",
+      startDate:new Date('2010-01-01'),
       endDate: "",
       departments: [],
       jobTitle: null,
@@ -603,20 +603,6 @@ export default class EmployeeAdd extends Component {
                             required
                           />
                         </Form.Group>
-
-                        <Form.Group controlId="formId">
-                          <Form.Label className="text-muted required">
-                            ID Number
-                          </Form.Label>
-                          <Form.Control
-                            type="text"
-                            placeholder="Enter ID Number"
-                            name="idNumber"
-                            value={this.state.idNumber}
-                            onChange={this.handleChange}
-                            required
-                          />
-                        </Form.Group>
                       </div>
                     </Card.Body>
                   </Card>
@@ -654,6 +640,25 @@ export default class EmployeeAdd extends Component {
                             required
                           />
                         </Form.Group> */}
+                            <Form.Group controlId="formCity">
+                          <Form.Label className="text-muted required">
+                            City
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            list="cityOptions"
+                            value={this.state.city}
+                            onChange={this.handleChange}
+                            name="city"
+                            placeholder="Enter City"
+                            required
+                          />
+                          <datalist id="cityOptions">
+                            {cities.cities.map((city, index) => (
+                              <option key={index} value={city} />
+                            ))}
+                          </datalist>
+                        </Form.Group>
                         <Form.Group controlId="formCountry">
                           <Form.Label className="text-muted required">
                             Country
@@ -686,25 +691,7 @@ export default class EmployeeAdd extends Component {
                             required
                           />
                         </Form.Group> */}
-                        <Form.Group controlId="formCity">
-                          <Form.Label className="text-muted required">
-                            City
-                          </Form.Label>
-                          <Form.Control
-                            type="text"
-                            list="cityOptions"
-                            value={this.state.city}
-                            onChange={this.handleChange}
-                            name="city"
-                            placeholder="Enter City"
-                            required
-                          />
-                          <datalist id="cityOptions">
-                            {cities.cities.map((city, index) => (
-                              <option key={index} value={city} />
-                            ))}
-                          </datalist>
-                        </Form.Group>
+                    
                         <Form.Group controlId="formMobile">
                           <Form.Label className="text-muted required">
                             Mobile
@@ -817,6 +804,19 @@ export default class EmployeeAdd extends Component {
                     </Card.Header>
                     <Card.Body>
                       <div>
+                      <Form.Group controlId="formId">
+                          <Form.Label className="text-muted required">
+                            Employee ID
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            placeholder="Enter Employee Id"
+                            name="idNumber"
+                            value={this.state.idNumber}
+                            onChange={this.handleChange}
+                            required
+                          />
+                        </Form.Group>
                         <Form.Group controlId="formEmployeeId">
                           <Form.Label className="text-muted required">
                             Username

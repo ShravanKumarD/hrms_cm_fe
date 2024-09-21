@@ -188,7 +188,7 @@ const AttendanceTable = ({ records, date }) => {
         <tbody>
           {records.length > 0 ? (
             records
-              .slice()
+              .slice(-6)  // Show only the last 6 records
               .reverse()
               .map((record) => (
                 <tr key={record.id}>
@@ -433,35 +433,35 @@ const StartWork = () => {
     }
   };
 
-  useEffect(()=>{
-    const fetchApplications = async () => {
-      try {
-        axios.defaults.baseURL = API_BASE_URL;
-        const response = await axios.get("/api/applications", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        console.log(response.data,"data")
+  // useEffect(()=>{
+  //   const fetchApplications = async () => {
+  //     try {
+  //       axios.defaults.baseURL = API_BASE_URL;
+  //       const response = await axios.get("/api/applications", {
+  //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  //       });
+  //       console.log(response.data,"data")
 
-        const formattedApplications = response.data.map((app) => ({
-          ...app,
-          startDate: moment(app.startDate, [
-            "YYYY-MM-DD HH:mm:ss",
-            "HH:mm:ss",
-          ]).format("Do MMM YYYY"),
-          endDate: moment(app.endDate, [
-            "YYYY-MM-DD HH:mm:ss",
-            "HH:mm:ss",
-          ]).format("Do MMM YYYY"),
-        }));
-  let sortedApplications = formattedApplications.filter(x=>x.type ==="Leave" || x.type==="Restricted Holiday" || x.type==="Short Leave");
-  console.log(sortedApplications,"sortedApplications")     
-  setApplications(sortedApplications.reverse());
-      } catch (error) {
-      console.log(error)
-      }
-    };
-    fetchApplications();
-  },[])
+  //       const formattedApplications = response.data.map((app) => ({
+  //         ...app,
+  //         startDate: moment(app.startDate, [
+  //           "YYYY-MM-DD HH:mm:ss",
+  //           "HH:mm:ss",
+  //         ]).format("Do MMM YYYY"),
+  //         endDate: moment(app.endDate, [
+  //           "YYYY-MM-DD HH:mm:ss",
+  //           "HH:mm:ss",
+  //         ]).format("Do MMM YYYY"),
+  //       }));
+  // let sortedApplications = formattedApplications.filter(x=>x.type ==="Leave" || x.type==="Restricted Holiday" || x.type==="Short Leave");
+  // console.log(sortedApplications,"sortedApplications")     
+  // setApplications(sortedApplications.reverse());
+  //     } catch (error) {
+  //     console.log(error)
+  //     }
+  //   };
+  //   fetchApplications();
+  // },[])
 
   const handleEnd = () => {
     setModal({ show: true, action: "end" });
@@ -498,8 +498,8 @@ const StartWork = () => {
 
   return (
     <Container className="my-5">
-      <Card className="p-4 shadow-lg">
-        <h2 className="text-center mb-4">Let's get to Work</h2>
+      <div className="p-4 shadow-lg">
+        <h2 className="text-center">Let's get to Work</h2>
         {error && <Alert variant="danger">{error}</Alert>}
         {incompleteAttendance && (
           <Alert variant="warning">
@@ -519,7 +519,7 @@ const StartWork = () => {
         <Timeline todayAttendance={todayAttendance} />
         <TodayAttendance record={todayAttendance} />
         <AttendanceTable records={attendanceRecords} date={date} />
-      </Card>
+      </div>
       <ConfirmationModal
         show={modal.show}
         onHide={handleCloseModal}

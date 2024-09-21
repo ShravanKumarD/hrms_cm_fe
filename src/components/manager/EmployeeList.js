@@ -1,177 +1,171 @@
-import React, { Component } from "react";
-import { Card, Badge, Button, Form, Modal } from "react-bootstrap";
-import { Redirect } from "react-router-dom";
-import MaterialTable from "material-table";
+import React, { useState, useEffect, useCallback } from "react";
+import { Card, Badge, Button, Table, Modal } from "react-bootstrap";
 import axios from "axios";
-import { ThemeProvider } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
 import API_BASE_URL from "../../env";
+import { useHistory, Redirect } from "react-router-dom";
+import "../../components/EmployeeList.css"; // Import custom CSS for styling
 
-export default class EmployeeList extends Component {
-  constructor(props) {
-    super(props);
+const EmployeeList = () => {
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [empCount, setEmpCount] = useState(0);
+  const [editRedirect, setEditRedirect] = useState(false);
+  const history = useHistory();
 
-    this.state = {
-      users: [],
-      selectedUser: null,
-      viewRedirect: false,
-      viewSalaryRedirect: false,
-      editRedirect: false,
-      deleteModal: false,
-    };
-  }
-
-  componentDidMount() {
-    let deptId = JSON.parse(localStorage.getItem("user")).departmentId;
-    axios.defaults.baseURL = API_BASE_URL;
-    axios({
-      method: "get",
-      // url: "/api/users/department/" + deptId,
-      url: "/api/users",
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then((res) => {
-        this.setState({ users: res.data });
-      })
-      .catch((err) => {
-        console.log(err);
+  const fetchUsers = useCallback(async () => {
+    try {
+      axios.defaults.baseURL = API_BASE_URL;
+      const res = await axios.get("/api/users", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-  }
+      setEmpCount(res.data.length);
+      res.data.shift(1);
+      console.log(res.data,"users")
+      setUsers(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
 
-  onView = (user) => {
-    return (event) => {
-      event.preventDefault();
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
-      this.setState({ selectedUser: user, viewRedirect: true });
-    };
-  };
-
-  onSalaryView = (user) => {
-    return (event) => {
-      event.preventDefault();
-
-      this.setState({
-        selectedUser: { user: { id: user.id } },
-        viewSalaryRedirect: true,
-      });
-    };
-  };
-
-  render() {
-    const theme = createTheme({
-      overrides: {
-        MuiTableCell: {
-          root: {
-            padding: "6px 6px 6px 6px",
-          },
-        },
-      },
+  const handleView = (user) => {
+    history.push({
+      pathname: `/emp-view`,
+      state: { selectedUser: user },
     });
+  };
+  // const handleEdit = (user) => {
+  //   history.push({
+  //     pathname: "/employee-edit",
+  //     state: { selectedUser: user },
+  //   });
+  // };
 
-    return (
-      <div className="container-fluid pt-4">
-        {this.state.viewRedirect ? (
-          <Redirect
-            to={{
-              pathname: "/employee-view",
-              state: { selectedUser: this.state.selectedUser },
-            }}
-          ></Redirect>
-        ) : (
-          <></>
-        )}
-        {this.state.viewSalaryRedirect ? (
-          <Redirect
-            to={{
-              pathname: "/salary-view",
-              state: { selectedUser: this.state.selectedUser },
-            }}
-          ></Redirect>
-        ) : (
-          <></>
-        )}
-        <div className="col-sm-12">
-          <Card>
-            <Card.Header style={{ backgroundColor: "#515e73", color: "white" }}>
-              <div className="panel-title">
-                <strong>Employee List</strong>
-              </div>
-            </Card.Header>
-            <Card.Body>
-              <ThemeProvider theme={theme}>
-                <MaterialTable
-                  columns={[
-                    { title: "EMP ID", field: "id" },
-                    { title: "Full Name", field: "fullName" },
-                    { title: "Department", field: "department.departmentName" },
-                    {
-                      title: "Job Title",
-                      field: "jobs",
-                      render: (rowData) =>
-                        rowData.jobs.map((job, index) => {
-                          // if (
-                          //   new Date(job.startDate).setHours(0) <= Date.now() &&
-                          //   new Date(job.endDate).setHours(24) >= Date.now()
-                          // ) {
-                            return job.jobTitle;
-                          // }
-                        }),
-                    },
-                    { title: "Mobile", field: "user_personal_info.mobile" },
-                    {
-                      title: "Status",
-                      field: "active",
-                      render: (rowData) =>
-                        rowData.active ? (
-                          <Badge pill variant="success">
-                            Active
-                          </Badge>
-                        ) : (
-                          <Badge pill variant="danger">
-                            Inactive
-                          </Badge>
-                        ),
-                    },
-                    {
-                      title: "View",
-                      render: (rowData) => (
-                        <Form>
-                          <Button
-                            size="sm"
-                            variant="info"
-                            onClick={this.onView(rowData)}
-                          >
-                            <i className="far fa-address-card"></i>
-                          </Button>
-                          <Button
-                            className="ml-2"
-                            size="sm"
-                            variant="info"
-                            onClick={this.onSalaryView(rowData)}
-                          >
-                            <i className="fas fa-rupee-sign"></i>
-                          </Button>
-                        </Form>
-                      ),
-                    },
-                  ]}
-                  data={this.state.users}
-                  options={{
-                    rowStyle: (rowData, index) => {
-                      if (index % 2) {
-                        return { backgroundColor: "#f2f2f2" };
-                      }
-                    },
-                    pageSize: 10,
-                    pageSizeOptions: [10, 20, 30, 50, 75, 100],
-                  }}
-                  title="Employees"
-                />
-              </ThemeProvider>
-            </Card.Body>
-          </Card>
+  const handleDelete = (user) => {
+    setSelectedUser(user);
+    setDeleteModal(true);
+  };
+
+  const closeDeleteModal = () => setDeleteModal(false);
+
+  const deleteUser = async () => {
+    try {
+      await axios.delete(`/api/users/${selectedUser.id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setUsers(users.filter((user) => user.id !== selectedUser.id));
+      setEmpCount(empCount - 1);
+      closeDeleteModal();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  console.log(users ? users : "na", "users");
+  return (
+    <div className="container mt-4">
+      <div>
+        <div>
+          <h3>Employee List</h3>
+          <Badge bg="secondary">
+           <h4><strong>Total Employees: {empCount} members</strong></h4> 
+          </Badge>
+        </div>
+        <div>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Emp ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                {/* <th>Address</th>
+                <th>Marital Status</th>
+                <th>Date of Birth</th> */}
+                <th>Department</th>
+                <th>Job Title</th>
+                <th>Mobile</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id}>
+                  <td>{user.user_personal_info?.idNumber}</td>
+                  <td style={{ whiteSpace: "nowrap" }}>{user.fullName}</td>
+
+                  <td>{user.user_personal_info?.emailAddress}</td>
+                  {/* <td>{user.user_personal_info?.address}</td>
+                  <td>{user.user_personal_info?.maritalStatus}</td>
+                  <td>{user.user_personal_info?.dateOfBirth.split(' ')[0]}</td> */}
+                  <td>{user.department?.departmentName || "N/A"}</td>
+                  <td>{user.jobs[0]?.jobTitle || "N/A"}</td>
+                  <td>{user.user_personal_info?.mobile || "N/A"}</td>
+                  <td>
+  <span
+    className={`badge ${
+      user.active ? "bg-success" : "bg-danger"
+    }`}
+  >
+    {user.active ? "Active" : "Inactive"}
+  </span>
+</td>
+
+
+                  <td>
+                    <button
+                      className="btn btn-light btn-sm"
+                      onClick={() => handleView(user)}
+                    >
+                      <i className="far fa-eye"/>
+                    </button>
+                    {/* <button
+                      className="btn btn-light btn-sm"
+                      onClick={() => handleEdit(user)}
+                    >
+                      <i className="far fa-edit"/>
+                    </button> */}
+                    {/* {user.id !==
+                      JSON.parse(localStorage.getItem("user")).id && (
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        className="action-btn"
+                        onClick={() => handleDelete(user)}
+                      >
+                        <i className="far fa-trash-alt"></i> Delete
+                      </Button>
+                    )} */}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </div>
       </div>
-    );
-  }
-}
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={deleteModal} onHide={closeDeleteModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete {selectedUser?.fullName}?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeDeleteModal}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={deleteUser}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
+  );
+};
+
+export default EmployeeList;

@@ -14,6 +14,8 @@ import {
   FaFile,
   FaInfoCircle,
   FaAddressCard,
+  FaList,
+  FaPlus,
 } from "react-icons/fa";
 import LogoWhite from "../assets/samcintlogowhite.png";
 import Logo from "../assets/samcint_logo_2.png";
@@ -37,7 +39,7 @@ const Sidebar = styled.aside`
   left: ${(props) => (props.isCollapsed ? "20px" : "20px")};
   top: 42.7%;
   transform: translateY(-42.7%);
-  height: 70vh;
+  height: 68vh;
   width: ${(props) => (props.isCollapsed ? "70px" : "250px")};
   background: #8adcd2;
   backdrop-filter: blur(10px);
@@ -190,6 +192,7 @@ const SidebarEmployee = ({ onToggle }) => {
         </LogoContainer>
         <NavMenu>
           <NavItem to="/" exact>
+          
             <FaTachometerAlt />
             {!isCollapsed && "Dashboard"}
           </NavItem>
@@ -197,17 +200,36 @@ const SidebarEmployee = ({ onToggle }) => {
             <FaAddressCard />
             {!isCollapsed && "Profile"}
           </NavItem>
-          {/* <NavItem to="/attendance/timesheet">
-            <FaCalendarAlt />
-            {!isCollapsed && "Timesheet"}
-          </NavItem> */}
           <NavItem to="/attendance/startwork">
             <FaBriefcase />
             {!isCollapsed && "Attendance"}
           </NavItem>
-          <NavItem to="/application-list">
-            <FaRocket />
-            {!isCollapsed && "Applications"}
+
+        <NavItem to='' onClick={(e) => {
+  e.preventDefault();
+  toggleSubMenu("applications", e);
+}}>
+  <FaRocket />
+  {!isCollapsed && "Applications"}
+</NavItem>
+
+{expandedMenus.applications && !isCollapsed && (
+  <>
+    <SubNavItem to="/application">
+      <FaPlus />
+      Add Application
+    </SubNavItem>
+    <SubNavItem to="/application-list">
+      <FaList />
+      Application List
+    </SubNavItem>
+  </>
+)}
+
+          
+          <NavItem to="/holidays">
+          <FaCalendarAlt />
+          {!isCollapsed && "Holidays"}
           </NavItem>
           <NavItem to="/salary-view">
             <FaRupeeSign />

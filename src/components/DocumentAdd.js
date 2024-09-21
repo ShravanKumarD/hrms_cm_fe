@@ -558,7 +558,7 @@ export default class EmployeeAdd extends Component {
                           />
                         </Form.Group>
                         <Form.Group controlId="formIban">
-                          <Form.Label className="text-muted">iBan</Form.Label>
+                          <Form.Label className="text-muted">IFSC</Form.Label>
                           <Form.Control
                             type="text"
                             value={this.state.iBan}

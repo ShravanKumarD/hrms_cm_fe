@@ -93,7 +93,7 @@ const EmployeeDashboard = () => {
   return (
     <ThemeProvider theme={theme}>
       {/* <DashboardContainer> */}
-        <DashboardTitle>Employee Dashboard</DashboardTitle>
+        <h3>Employee Details</h3>
         {/* <FlexContainer>
           <FlexItem fullWidth>
             <Card title="Profile">
@@ -194,7 +194,7 @@ const EmployeeDashboard = () => {
     </tr> */}
               <tr>
                 <td>Full Name</td>
-                <td className="text-primary mb-3"><strong></strong></td>
+                <td className="text-primary mb-3"><strong>{user.fullName}</strong></td>
               </tr>
               <tr>
                 <td>Job Title</td>
@@ -321,7 +321,7 @@ const EmployeeDashboard = () => {
                   <td>{userFinancialInfo.accountNumber}</td>
                 </tr>
                 <tr>
-                  <td>IBAN</td>
+                  <td>IFSC</td>
                   <td>{userFinancialInfo.iban}</td>
                 </tr>
               </tbody>

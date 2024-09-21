@@ -285,7 +285,7 @@ const EmployeeView = () => {
                   </Row>
                   <Row className="mb-3">
                     <Col xs={5}>
-                      <strong>IBAN:</strong>
+                      <strong>IFSC:</strong>
                     </Col>
                     <Col xs={7}>
                       {userFinancialInfo.iban || "Not available"}

@@ -18,10 +18,11 @@ import DashboardHr from "./components/hr/Dashboard";
 import Layout from "./Layout/Layout";
 import EmployeeList from "./components/EmployeeList";
 import EmployeeListManager from "./components/manager/EmployeeList";
+import EmployeeViewManager from "./components/manager/EmployeeView";
 import EmployeeAdd from "./components/EmployeeAdd";
 import EmployeeView from "./components/EmployeeView";
 import EmployeeViewEmployee from "./components/employee/EmployeeView";
-import EmployeeViewManager from "./components/manager/EmployeeView";
+import EmployeeViewMngr from "./components/manager/EmployeeView";
 import EmployeeEdit from "./components/EmployeeEdit";
 import DocumentList from "./components/DocumentList";
 import DocumentAdd from "./components/DocumentAdd";
@@ -68,7 +69,11 @@ import "./App.css";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import Holidays from "./components/Holidays";
+import HolidaysEmployee from "./components/employee/Holidays";
+import HolidaysManager from "./components/manager/Holidays";
+import HolidaysHr from "./components/hr/Holidays";
 import PersonalLeaves from "./components/PersonalLeaves";
+import PersonalLeavesHr from "./components/hr/PersonalLeaves";
 import AttendanceListDetailed from "./components/AttendanceListDetailed";
 
 export default class App extends Component {
@@ -423,8 +428,8 @@ return(
           path="/announcement"
           component={withAuth(AnnouncementHR)}
         />
-     
-
+         <Route exact path="/holidays" component={HolidaysHr}/>
+         {/* <Route exact path="/personal-leaves" component={withAuth(PersonalLeavesHr)}/> */}
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />
       </Switch>
@@ -462,11 +467,7 @@ const ManagerContainer = () => {
           path="/employee-list"
           component={withAuth(EmployeeListManager)}
         />
-        <Route
-          exact
-          path="/employee-view"
-          component={withAuth(EmployeeViewManager)}
-        />
+        <Route exact path="/emp-view" component={withAuth(EmployeeViewManager)}/>
         <Route exact path="/job-list" component={withAuth(JobListManager)} />
         <Route
           exact
@@ -539,6 +540,8 @@ const ManagerContainer = () => {
          <Route exact path="/payment" component={withAuth(PaymentManager)} />
         <Route exact path="/employee-add" component={withAuth(EmployeeAdd)} />
         <Route exact path="/documents" component={withAuth(MyDocuments)} />
+        <Route exact path="/holidays" component={withAuth(HolidaysManager)}/>
+        {/* <Route exact path="/employee-manager" component={EmployeeViewEmployee}/> */}
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />
       </Switch>
@@ -607,6 +610,10 @@ const EmployeeContainer = () => {
                 path="/attendance/timesheet"
                 component={withAuth(Timesheet)}
               />
+              <Route 
+              exact 
+              path="/holidays"
+              component={HolidaysEmployee}/>
               {/* <Route
                 exact
                 path="/documents"

@@ -287,7 +287,7 @@ const EmployeeView = () => {
                                   </Form.Group>
                                   <Form.Group as={Row}>
                                     <Form.Label className="label">
-                                      IBAN:
+                                      IFSC:
                                     </Form.Label>
                                     <span>{userFinancialInfo.iban}</span>
                                   </Form.Group>

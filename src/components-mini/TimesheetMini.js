@@ -40,12 +40,10 @@ export default function Calendar() {
         const allHolidays = holidayResponse.data;
         setHolidays(allHolidays);
         setOptionalHolidays(allHolidays.filter(x => x.description === "Optional"));
-  
-        // Fetch users
+
         const userResponse = await axios.get("/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        // Set birthday events
         const birthdayEvents = userResponse.data.map(user => {
           const birthDate = moment(user.user_personal_info?.dateOfBirth, 'YYYY-MM-DD');
   
@@ -94,7 +92,7 @@ export default function Calendar() {
         // Set birthday events
         const birthdayEvents = userResponse.data.map(user => {
           const birthDate = moment(user.user_personal_info?.dateOfBirth, 'YYYY-MM-DD');
-          if (birthDate.isValid()) {
+          if (birthDate) {
             return {
               title: `${user.fullName.split(' ')[0]}'s Birthday`,
               date: birthDate.format('YYYY-MM-DD'),

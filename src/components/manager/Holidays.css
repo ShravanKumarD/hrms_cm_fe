@@ -1,0 +1,138 @@
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .title {
+    
+    font-weight: 500;
+    margin: 0;
+  }
+  
+  .toggle-button {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #007bff;
+    background-color: #fff;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  
+  .toggle-button:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .content {
+    margin-top: 10px;
+  }
+  
+  .holiday-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .holiday-table th, .holiday-table td {
+    /* padding: px; */
+    text-align: center;
+    border: 1px solid #ddd; 
+  }
+  
+  .holiday-table th {
+    background-color: #f4f4f4;
+  }
+  
+  .additional-holidays {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .additional-title {
+    margin: 0;
+    font-size: 20px;
+  }
+  
+  .additional-holidays .toggle-button {
+    margin-left: auto; /* Aligns button to the right */
+  }
+  
+  .personal-leaves {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .error {
+    color: #e74c3c;
+    font-size: 16px;
+  }
+  
+  .applications-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .applications-table th, .applications-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .applications-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .applications-table tr {
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .applications-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .details-button {
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #007bff;
+    background-color: #fff;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  
+  .details-button:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+  .filter-section{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+ 
