@@ -40,17 +40,12 @@ export default function Calendar() {
         const allHolidays = holidayResponse.data;
         setHolidays(allHolidays);
         setOptionalHolidays(allHolidays.filter(x => x.description === "Optional"));
-  
-        // Fetch users
+
         const userResponse = await axios.get("/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
-        // Set birthday events
         const birthdayEvents = userResponse.data.map(user => {
           const birthDate = moment(user.user_personal_info?.dateOfBirth, 'YYYY-MM-DD');
-          console.log(user.user_personal_info?.dateOfBirth, 'raw birthdate'); // Log raw birthdate
-          console.log(birthDate.isValid(), 'birthDate is valid'); // Log validity
   
           if (birthDate.isValid()) {
             return {
@@ -62,8 +57,6 @@ export default function Calendar() {
           }
           return null;
         }).filter(event => event !== null);
-  
-        console.log(birthdayEvents, "birthdayEvents");
         setBirthdays(birthdayEvents);
         
       } catch (error) {
@@ -73,53 +66,7 @@ export default function Calendar() {
   
     fetchData();
   }, []);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        axios.defaults.baseURL = API_BASE_URL;
-        const token = localStorage.getItem("token");
-  
-        // Fetch holidays
-        const holidayResponse = await axios.get('/api/holiday', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const allHolidays = holidayResponse.data;
-  
-        // Set holidays and optional holidays only once
-        setHolidays(allHolidays.filter(x => x.description !== "Optional")); // Non-optional holidays
-        setOptionalHolidays(allHolidays.filter(x => x.description === "Optional")); // Optional holidays
-  
-        // Fetch users
-        const userResponse = await axios.get("/api/users", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-  
-        // Set birthday events
-        const birthdayEvents = userResponse.data.map(user => {
-          const birthDate = moment(user.user_personal_info?.dateOfBirth, 'YYYY-MM-DD');
-          if (birthDate.isValid()) {
-            return {
-              title: `${user.fullName.split(' ')[0]}'s Birthday`,
-              date: birthDate.format('YYYY-MM-DD'),
-              backgroundColor: "rgba(255, 223, 186, 0.5)",
-              borderColor: "rgba(255, 223, 186, 0.8)"
-            };
-          }
-          return null;
-        }).filter(event => event !== null);
-  
-        setBirthdays(birthdayEvents);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-  
-    fetchData();
-  }, []);
-  
-  console.log(birthdays, 'birthdays updated'); // Log updated birthdays
+ 
   const handleDayCellDidMount = (info) => {
     const { date, el } = info;
     const cellDateString = date.toDateString();

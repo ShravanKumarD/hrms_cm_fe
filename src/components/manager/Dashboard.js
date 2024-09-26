@@ -42,6 +42,7 @@ const Dashboard = () => {
           <LightweightStartWork theme={selectedTheme} />
           {/* <HoursWorkedLastWeek theme={selectedTheme} /> */}
           <LeaveBalance theme={selectedTheme} />
+          <RecentAnnouncements />
         </div>
       </div>
  
@@ -51,7 +52,7 @@ const Dashboard = () => {
           <RecentApplications />
         </div>
         <div className="col-md-6">
-          <RecentAnnouncements />
+      
         </div>
       </div>
     </div>

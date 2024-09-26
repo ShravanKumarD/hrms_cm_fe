@@ -94,84 +94,58 @@ const ScrollIndicator = styled.div`
   transition: opacity 0.3s ease;
 `;
 
+let user = JSON.parse(localStorage.getItem("user"));
+
 const LeaveBalanceContainer = ({ theme = "green" }) => {
   const [showIndicator, setShowIndicator] = useState(false);
-  const [generalLeaves, setGeneralLeaves] = useState(0);
+  const [generalLeaves, setGenralLeaves] = useState(0);
   const [totalLeaves, setTotalLeaves] = useState(0);
-  const [sickLeaves, setSickLeaves] = useState(0);
-  const [user, setUser] = useState(null); // State for user
-
+  // const [sickLeaves, setSickLeaves] = useState(0);
+  let sickLeaves=0;
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser) {
-      setUser(storedUser); // Set user state
-    }
+    axios.defaults.baseURL = API_BASE_URL;
 
-    if (storedUser && storedUser.id) {
-      axios.defaults.baseURL = API_BASE_URL;
+    axios
+      .get(`/api/applications/user/${user.id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then((res) => {
+        const formattedApplications = res.data.map((app) => ({
+          ...app,
+          startDate: moment(app.startDate).format("Do MMM YYYY"),
+          endDate: moment(app.endDate).format("Do MMM YYYY"),
+        }));
 
-      axios
-        .get(`/api/applications/user/${storedUser.id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        })
-        .then((res) => {
-          const formattedApplications = res.data.map((app) => ({
-            ...app,
-            startDate: moment(app.startDate).format("Do MMM YYYY"),
-            endDate: moment(app.endDate).format("Do MMM YYYY"),
-          }));
+        console.log(formattedApplications, "setLeaves");
 
-          console.log(formattedApplications, "setLeaves");
+        setTotalLeaves(formattedApplications.length);
 
-          setTotalLeaves(formattedApplications.length);
-
-          const totalApprovedList = formattedApplications.filter((x) => {
-            return (
-              x.status === "Approved" &&
-              !/sick|Sick|SICK|headache|stomach|fever|pain/i.test(x.reason) &&
-              x.status !== "Rejected" &&
-              x.type !== "Comp Off" &&
-              x.type !== "Regularisation" &&
-              x.type !== "Work From Home" &&
-              x.type !== "On duty" &&
-              x.type !== "Expense" &&
-              x.type !== "Ristricted Holiday" &&
-              x.type !== "Short Leave"
-            );
-          });
-          setGeneralLeaves(totalApprovedList.length);
-
-          const totalSickLeaves = formattedApplications.filter((x) => {
-            return (
-              /sick|Sick|SICK|headache|stomach|fever|pain/i.test(x.reason || "") &&
-              x.status === "Approved" &&
-              x.type !== "Comp Off" &&
-              x.type !== "Regularisation" &&
-              x.type !== "Work From Home" &&
-              x.type !== "On duty" &&
-              x.type !== "Expense" &&
-              x.type !== "Ristricted Holiday" &&
-              x.type !== "Short Leave"
-            );
-          });
-          setSickLeaves(totalSickLeaves.length);
-        })
-        .catch((err) => {
-          console.error("Error fetching applications:", err);
+        const totalapprovedlist = formattedApplications.filter((x) => {
+          console.log(x,"total")
+          return (x.status === "Approved" && !/sick|Sick|SICK|headache|stomach|fever|pain/i.test(x.reason) && x.type !=="Rejected" );
         });
-    } else {
-      console.error("User is null or not found in local storage.");
-    }
+        setGenralLeaves(totalapprovedlist.length);
+
+        const totalSickleaves = formattedApplications.filter((x) => {
+          return /sick|Sick|SICK|headache|stomach|fever|pain/i.test(x.reason || "") && x.status === "Approved" &&  x.type !== "Comp Off" &&
+           x.type !=="Regularisation" && x.type !== "Work From Home" &&x.type !== "On duty" && x.type !== "Expense" && x.type!=="Ristricted Holiday" && x.type!=="Shroty"
+        });
+      })
+      .catch((err) => {
+        console.error("Error fetching applications:", err);
+      });
   }, []);
-  if (!user) {
-        return <div>Loading...</div>; // Show loading state while fetching
-    }
+
+  useEffect(() => {
+    // Log the updated state value here
+    console.log(generalLeaves, sickLeaves, "Updated leave counts");
+  }, [generalLeaves, sickLeaves]);
 
   const leaveTypes = [
-    { type: "Leave Balance", balance: totalLeaves + 9, total: 12 },
-    { type: "Paid Leave", balance: generalLeaves + 8, total: 10 },
-    { type: "Sick Leave", balance: sickLeaves + 1, total: 2 },
+    { type: "Leave Balance", balance: totalLeaves+9, total: 12 },
+    { type: "Paid Leave", balance: generalLeaves+8, total: 10 },
+    { type: "Sick Leave", balance: sickLeaves+1, total: 2 },
   ];
 
   return (

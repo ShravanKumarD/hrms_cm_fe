@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Alert } from "react-bootstrap";
+import { Table, Button, Alert } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import axios from "axios";
 import moment from "moment";
-import MaterialTable from "material-table";
-import { ThemeProvider, makeStyles } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
 import API_BASE_URL from "../../env";
 
 const ApplicationList = () => {
   const [applications, setApplications] = useState([]);
   const [hasError, setHasError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [completed, setCompleted] = useState(false);
   const [totalApplications, setTotalApplications] = useState(0);
 
   const history = useHistory();
@@ -28,259 +22,89 @@ const ApplicationList = () => {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then((res) => {
-        console.log(res, "data");
         const formattedData = res.data.map((app) => ({
           ...app,
           startDate: moment(app.startDate).format("YYYY-MM-DD"),
           endDate: moment(app.endDate).format("YYYY-MM-DD"),
-          appliedOn: moment(app.appliedOn).format("YYYY-MM-DD") || "NA  ",  // Format appliedOn date
+          appliedOn: moment(app.appliedOn).format("YYYY-MM-DD") || "NA",
         }));
+        console.log(formattedData,'formms')
         setApplications(formattedData.reverse());
-        setTotalApplications(formattedData.length);
+        setTotalApplications(
+          formattedData.filter(app => app.status === "Approved").length
+        );
+        
       })
       .catch((err) => {
         setHasError(true);
         setErrorMsg(err.message || "An error occurred while fetching data.");
       });
   }, []);
+
+  if (totalApplications === 0 && !hasError) {
+    return (
+      <div className="text-center">
+        Loading applications...
+        <br />
+        It seems you haven't applied for any leaves so far.
+      </div>
+    );
+  }
   
 
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#E0FFE0", // Dark leaf green
-      },
-      secondary: {
-        main: "#98FB98", // Light leaf green
-      },
-      background: {
-        default: "#e0ffe0", // Light green background
-      },
-      text: {
-        primary: "#000", // Ensure text is white
-      },
-    },
-    overrides: {
-      MuiTableCell: {
-        root: {
-          // color: "#000", // White text
-          padding: "10px", // Consistent padding for table cells
-        },
-      },
-      MuiButton: {
-        root: {
-          color: "#000",
-          backgroundColor: "#a7a4a4",
-          "&:hover": {
-            backgroundColor: "#8adcd2", // Darker green on hover
-          },
-          borderRadius: "12px", // More rounded buttons
-        },
-      },
-      MuiToolbar: {
-        root: {
-          backgroundColor: "#8adcd2", // Dark leaf green
-          color: "black", // White text color
-          borderRadius: "8px 8px 8px 8px", // Rounded corners for the toolbar
-          borderCollapse: "collapse",
-        },
-      },
-      MuiTypography: {
-        h6: {
-          color: "#00000", // White color for the title
-        },
-        h5: {
-          color: "#00000", // White color for the subtitle
-        },
-        h4: {
-          color: "#00000", // White color for the subtitle
-        },
-      },
-      MuiPaper: {
-        elevation2: {
-          boxShadow: "none", // Remove default shadow
-          borderRadius: "12px", // Rounded border for the table
-          border: "2px solid #E0FFE0", // Dark leaf green border
-          backgroundColor: "#ffffff", // Dark leaf green background
-          color: "#000000", // White text inside the table
-        },
-      },
-      MuiTable: {
-        root: {
-          borderCollapse: "separate",
-          borderSpacing: "0 8px", // Adds space between rows for a rounded effect
-        },
-      },
-      MuiTableRow: {
-        root: {
-          backgroundColor: "#ffffff",
-        },
-      },
-      MuiTableHead: {
-        root: {
-          backgroundColor: "#E0FFE0",
-        },
-      },
-      MuiTableBody: {
-        root: {
-          backgroundColor: "#E0FFE0",
-        },
-      },
-      MuiInputBase: {
-        root: {
-          color: "#FFF", // White text color in the search input
-        },
-      },
-      MuiInputAdornment: {
-        root: {
-          color: "#FFF",
-        },
-      },
-      MuiIconButton: {
-        root: {
-          color: "#000",
-        },
-      },
-      MuiInput: {
-        underline: {
-          "&:before": {
-            borderBottomColor: "#000000", // White underline before focus
-          },
-          "&:hover:not(.Mui-disabled):before": {
-            borderBottomColor: "#000000", // White underline on hover
-          },
-          "&:after": {
-            borderBottomColor: "#000000", // White underline after focus
-          },
-        },
-      },
-      MuiSelect: {
-        icon: {
-          color: "#000000", // White dropdown icon
-        },
-      },
-      MuiTablePagination: {
-        toolbar: {
-          color: "#000000", // White color for pagination toolbar
-        },
-        selectIcon: {
-          color: "#000000", // White dropdown icon in pagination
-        },
-        caption: {
-          color: "#000000", // White text for "1-4 of 4"
-        },
-        actions: {
-          color: "#000000", // White color for pagination actions (icons)
-        },
-      },
-    },
-  });
-
-  if (completed) {
-    history.push("/application-list");
+  if (hasError) {
+    return (
+      <Alert variant="danger" className="m-3">
+        {errorMsg}
+      </Alert>
+    );
   }
 
   return (
-    <>
-      <ThemeProvider theme={theme}>
-        <div style={{ paddingTop: "5px" }}>
-          {" "}
-          {/* Add padding above the table */}
-          <MaterialTable
-            title={`Applications (Total: ${totalApplications})`}
-  columns={[
-    { title: "APP ID", field: "id", cellStyle: { color: "#000" } },
-    {
-      title: "Full Name",
-      field: "user.fullName",
-      cellStyle: { color: "#000" },
-    },
-    {
-      title: "Start Date",
-      field: "startDate",
-      cellStyle: { color: "#000" },
-    },
-    {
-      title: "End Date",
-      field: "endDate",
-      cellStyle: { color: "#000" },
-    },
-    {
-      title: "Leave Type",
-      field: "type",
-      cellStyle: { color: "#000" },
-    },
-    {
-      title: "Comments",
-      field: "reason",
-      cellStyle: { color: "#000" },
-    },
-    {
-      title: "Status",
-      field: "status",
-      render: (rowData) => (
-        <Button
-          size="sm"
-          variant={
-            rowData.status === "Approved"
-              ? "success"
-              : rowData.status === "Pending"
-              ? "warning"
-              : "danger"
-          }
-          style={{
-            backgroundColor:
-              rowData.status === "Approved"
-                ? "#4CAF4F"
-                : rowData.status === "Pending"
-                ? "#FFD700"
-                : "#DC143C",
-            color: "#FFF",
-            borderRadius: "12px", // More rounded buttons
-            padding: "6px 12px", // Consistent padding for buttons
-          }}
-        >
-          {rowData.status}
-        </Button>
-      ),
-    },
-    {
-      title: "Applied On", // New column for the applied date
-      field: "appliedOn",
-      cellStyle: { color: "#000" },
-    },
-  ]}
-  data={applications}
-  options={{
-    toolbar: true,
-    toolbarStyle: {
-      backgroundColor: "#ffffff", // Dark leaf green
-      color: "#000", // White text color
-    },
-    headerStyle: {
-      backgroundColor: "#ffffff", // Dark leaf green
-      color: "#000", // White text color
-    },
-    rowStyle: {
-      backgroundColor: "#ffffff", // Dark leaf green background color for rows
-      color: "#000", // Ensure text is black #000
-    },
-    pageSize: 10,
-    pageSizeOptions: [10, 20, 30, 50, 75, 100],
-    emptyRowsWhenPaging: false,
-    showEmptyDataSourceMessage: true,
-  }}
-  // title="Applications"
-/>
+    <div className="p-3">
+      <h3>Applications (Total: {totalApplications})</h3>
+      <Table striped bordered hover responsive>
+        <thead>
+          <tr>
+            <th>APP ID</th>
+            <th>Full Name</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Leave Type</th>
+            <th>Comments</th>
+            <th>Status</th>
+            <th>Applied On</th>
+          </tr>
+        </thead>
+        <tbody>
+          {applications.map((app) => (
+            <tr key={app.id}>
+              <td>{app.id}</td>
+              <td>{app.user.fullName}</td>
+              <td>{app.startDate}</td>
+              <td>{app.endDate}</td>
+              <td>{app.type}</td>
+              <td>{app.reason}</td>
+              <td>
+              <button
+  className={`btn btn-sm ${
+    app.status === "Approved"
+      ? "btn-light btn-sm"
+      : app.status === "Pending"
+      ? "btn-info btn-sm"
+      : "btn-warning btn-sm"
+  }`}
+>
+  {app.status}
+</button>
 
-        </div>
-      </ThemeProvider>
-      {hasError && (
-        <Alert variant="danger" className="m-3" block="true">
-          {errorMsg}
-        </Alert>
-      )}
-    </>
+              </td>
+              <td>{app.appliedOn}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </div>
   );
 };
 

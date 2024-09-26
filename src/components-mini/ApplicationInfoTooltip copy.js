@@ -7,6 +7,9 @@ const CustomTooltip = styled(Tooltip)`
     max-width: 400px; // Adjust this value as needed
     width: max-content;
     text-align: left;
+    // background-color: white;
+    // color: black;
+    // border: 1px solid rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -16,14 +19,9 @@ const StyledTable = styled.table`
 
   td {
     border: 1px solid rgba(0, 0, 0, 0.2); /* Increase the opacity of the table lines */
-    padding: 8px;
+    left: 0;
+    text-align: left;
     font-size: 0.9rem;
-     color: #ffff; /* Ensure text is visible */
-  }
-  
-  td.description {
-    font-style: italic; /* Make it resemble a paragraph style */
-    color:#ffff /* Lighten the description text */
   }
 `;
 
@@ -31,13 +29,14 @@ const ApplicationInfoTooltip = ({ placement = "left" }) => {
   const [show, setShow] = useState(false);
 
   const applicationTypes = {
-    "Leave": "Request time off from work",
-    "Regularisation": "Correct or update attendance records",
+    Leave: "Request time off from work",
+    Regularisation: "Correct or update attendance records",
     "Work From Home": "Request to work remotely",
     "On Duty": "Official work outside the office",
     "Comp Off": "Compensatory time off for extra work hours",
-    "Expense": "Submit expense claims for reimbursement",
-    "Restricted Holiday": "Optional holidays based on cultural or religious observances",
+    Expense: "Submit expense claims for reimbursement",
+    "Restricted Holiday":
+      "Optional holidays based on cultural or religious observances",
     "Short Leave": "Brief absence during work hours",
   };
 
@@ -56,7 +55,7 @@ const ApplicationInfoTooltip = ({ placement = "left" }) => {
           {Object.entries(applicationTypes).map(([type, description]) => (
             <tr key={type}>
               <td>{type}</td>
-              <td className="description">{description}</td>
+              <td>{description}</td>
             </tr>
           ))}
         </tbody>

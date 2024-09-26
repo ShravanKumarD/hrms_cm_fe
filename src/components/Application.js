@@ -62,7 +62,7 @@ const Application = () => {
   };
 
   return (
-    <div className="container-fluid pt-4">
+    <div className="container-fluid ">
       {hasError ? (
         <Alert variant="danger" className="m-3" block>
           {errMsg}
@@ -70,14 +70,13 @@ const Application = () => {
       ) : completed ? (
         <Redirect to="/application-list" />
       ) : null}
-      <Card className="mb-3 main-card">
+      <Card >
         <Card.Header className="d-flex justify-content-between align-items-center">
-          <b>Make Application</b>
+          <h2>Make Application</h2>
           <div className="ml-auto">
             <ApplicationInfoTooltip />
           </div>
         </Card.Header>
-
         <Card.Body>
           <Form onSubmit={onSubmit}>
             <Form.Group controlId="formType">
@@ -97,7 +96,7 @@ const Application = () => {
                 <option value="Comp Off">Comp Off</option>
                 <option value="Expense">Expense</option>
                 <option value="Restricted Holiday">Restricted Holiday</option>
-                {/* <option value="Short Leave">Short Leave</option> */}
+                <option value="Short Leave">Short Leave</option>
               </Form.Control>
             </Form.Group>
             <Form.Group controlId="formStartDate">

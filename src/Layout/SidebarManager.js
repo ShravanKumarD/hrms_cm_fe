@@ -20,6 +20,28 @@ import LogoWhite from "../assets/samcintlogowhite.png";
 import LogoMini from "../assets/10.png";
 import "../App.css";
 
+
+
+
+const theme = {
+  primary: "#27ae60",
+  secondary: "#27ae60",
+  active: "#1e8449",
+  hover: "rgba(255, 255, 255, 0.2)",
+  text: "#000000",
+  scrollbarThumb: "rgba(255, 255, 255, 0.3)",
+  scrollbarTrack: "rgba(255, 255, 255, 0.1)",
+};
+
+// const theme = {
+//   primary: "#27ae60",
+//   hover: "rgba(255, 255, 255, 0.2)",
+//   text: "#FFFFFF",
+//   scrollbarThumb: "rgba(255, 255, 255, 0.3)",
+//   scrollbarTrack: "rgba(255, 255, 255, 0.1)",
+// };
+
+
 const Sidebar = styled.aside`
   position: fixed;
   left: 20px;
@@ -63,34 +85,38 @@ const NavMenu = styled.nav`
   flex-grow: 1;
   overflow-y: auto;
   padding: 10px 0;
+  // background: rgba(255, 255, 255, 0.2);
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
   backdrop-filter: blur(10px);
+
+  // dont show scrollbar when not hovering
   scrollbar-width: none;
 
   &:hover {
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: ${(props) => props.theme.scrollbarTrack};
-      border-radius: 8px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: ${(props) => props.theme.scrollbarThumb};
-      border-radius: 8px;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-      background: ${(props) => props.theme.hover};
-    }
-
-    scrollbar-width: thin;
-    scrollbar-color: ${(props) => props.theme.scrollbarThumb}
-      ${(props) => props.theme.scrollbarTrack};
+  /* Scrollbar Styles */
+  &::-webkit-scrollbar {
+    width: 8px;
   }
+
+  &::-webkit-scrollbar-track {
+    background: #8adcd2;
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #8adcd2;
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a7a4a4;
+  }
+
+  scrollbar-width: thin;
+  scrollbar-color: ${(props) => props.theme.scrollbarThumb}
+    ${(props) => props.theme.scrollbarTrack};
+    
 `;
 
 const NavItem = styled(NavLink)`
@@ -102,11 +128,12 @@ const NavItem = styled(NavLink)`
   transition: background-color 0.3s, color 0.3s;
 
   &:hover {
-    background-color: ${(props) => props.theme.hover};
-    color: ${(props) => props.theme.text};
+    background-color: #a7a4a4;
+    color:#000000;
   }
 
   &.active {
+    // background-color: ${(props) => props.theme.active};
     color: ${(props) => props.theme.text};
   }
 
@@ -130,14 +157,6 @@ const ToggleButton = styled.button`
   cursor: pointer;
   font-size: 1.2em;
 `;
-
-const theme = {
-  primary: "#27ae60",
-  hover: "rgba(255, 255, 255, 0.2)",
-  text: "#FFFFFF",
-  scrollbarThumb: "rgba(255, 255, 255, 0.3)",
-  scrollbarTrack: "rgba(255, 255, 255, 0.1)",
-};
 
 const SidebarManager = ({ onToggle }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);

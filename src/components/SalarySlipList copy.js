@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Card, Button } from "react-bootstrap";
+import { Card, Button, Table, Modal } from "react-bootstrap";
 import axios from "axios";
 import moment from "moment";
-import MaterialTable from "material-table";
-import { ThemeProvider, createTheme } from "@material-ui/core/styles";
 import SalarySlipAddModal from "./SalarySlipAddModal";
 import SalarySlipEditModal from "./SalarySlipEditModal";
 import SalarySlipDeleteModal from "./SalarySlipDeleteModal";
-import SalarySlipPreviewModal from "./SalarySlipPreviewModal";
+import SalarySlipTemplate from "./SalarySlipTemplate";
 import API_BASE_URL from "../env";
 
 const convertToCSV = (data) => {
@@ -85,6 +83,28 @@ const downloadCSV = (data, filterBy) => {
   document.body.removeChild(link);
 };
 
+const SalarySlipPreviewModal = ({ show, onHide, data }) => {
+  console.log(data, "SalarySlipPreviewModal data");
+
+  return (
+    <Modal show={show} onHide={onHide} size="lg" centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Salary Slip Preview</Modal.Title>
+      </Modal.Header>
+      {/* <Modal.Body> */}
+        {/* Pass the entire data object directly to the SalarySlipTemplate */}
+        <SalarySlipTemplate data={data} />
+      {/* </Modal.Body> */}
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onHide}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
+
+
 const SalarySlipList = () => {
   const [salarySlips, setSalarySlips] = useState([]);
   const [selectedSalarySlip, setSelectedSalarySlip] = useState(null);
@@ -119,6 +139,7 @@ const SalarySlipList = () => {
   }, [fetchData]);
 
   const handleModalShow = (modalType, slip = null) => {
+    console.log(`Opening ${modalType} modal with slip:`, slip);
     setSelectedSalarySlip(slip);
     setShowModal((prevState) => ({
       ...prevState,
@@ -135,156 +156,101 @@ const SalarySlipList = () => {
     });
   };
 
-  const theme = createTheme({
-    overrides: {
-      MuiTableCell: {
-        root: {
-          padding: "6px",
-        },
-      },
-    },
-  });
-
-  const ActionButton = ({ variant, icon, label, onClick }) => (
-    <Button size="sm" variant={variant} onClick={onClick} className="mx-1 mb-1">
-      <i className={`fa fa-${icon}`}></i> {label}
-    </Button>
-  );
-
   return (
-    <div className="container-fluid pt-2">
-      <div className="row">
-        <div className="col-sm-12">
-          <h4>
-            <Button
-              variant="link"
-              onClick={() => handleModalShow("add")}
-              className="p-0"
-              style={{ color: "blue", cursor: "pointer" }}
-            >
-              <i className="fa fa-plus" /> Add Salary Slip
-            </Button>
-          </h4>
-          <div>
-            <ThemeProvider theme={theme}>
-              <MaterialTable
-                columns={[
-                  {
-                    title: "Action",
-                    render: (rowData) => (
-                      <div className="text-center">
-                        <ActionButton
-                          variant="primary"
-                          icon="eye"
-                          label="Preview"
-                          onClick={() => handleModalShow("preview", rowData)}
-                        />
-                        <ActionButton
-                          variant="danger"
-                          icon="trash"
-                          label="Delete"
-                          onClick={() => handleModalShow("delete", rowData)}
-                        />
-                      </div>
-                    ),
-                  },
-                  { title: "ID", field: "id" },
-                  { title: "Name", field: "name" },
-                  { title: "User ID", field: "userId" },
-                  { title: "Address", field: "address" },
-                  { title: "Designation", field: "designation" },
-                  {
-                    title: "Month",
-                    field: "month",
-                    render: (rowData) =>
-                      moment(rowData.month, "M, YYYY").format("MMM, YYYY"),
-                  },
-                  { title: "Date of Joining", field: "date_of_joining" },
-                  { title: "Basic Salary", field: "basic_salary" },
-                  { title: "HRA", field: "hra" },
-                  {
-                    title: "Conveyance Allowance",
-                    field: "conveyance_allowance",
-                  },
-                  { title: "Special Allowance", field: "special_allowance" },
-                  { title: "Medical Allowance", field: "medical_allowance" },
-                  { title: "Total Earnings", field: "total_earnings" },
-                  { title: "TDS", field: "tds" },
-                  { title: "Professional Tax", field: "professional_tax" },
-                  { title: "Employee PF", field: "employee_pf" },
-                  { title: "Other Deductions", field: "other_deductions" },
-                  { title: "Total Deductions", field: "total_deductions" },
-                ]}
-                data={salarySlips}
-                options={{
-                  rowStyle: (rowData, index) =>
-                    index % 2 ? { backgroundColor: "#f2f2f2" } : {},
-                  pageSize: 8,
-                  pageSizeOptions: [5, 10, 20, 30, 50, 75, 100],
-                }}
-                title="Salary Slips"
-                actions={[
-                  {
-                    icon: () => <i className="fas fa-download"></i>,
-                    tooltip: "Download All Salary Slips",
-                    isFreeAction: true,
-                    onClick: () => downloadCSV(salarySlips, {}),
-                  },
-                  {
-                    icon: () => <i className="fas fa-file-invoice"></i>,
-                    tooltip: "Download Current Month's Salary Slips",
-                    isFreeAction: true,
-                    onClick: () => {
-                      const currentMonth = moment().format("MMM-YYYY");
-                      downloadCSV(salarySlips, { month: currentMonth });
-                    },
-                  },
-                  {
-                    icon: () => <i className="fas fa-calendar-check"></i>,
-                    tooltip: "Download Current Year's Salary Slips",
-                    isFreeAction: true,
-                    onClick: () => {
-                      const currentYear = moment().format("YYYY");
-                      downloadCSV(salarySlips, { year: currentYear });
-                    },
-                  },
-                ]}
-              />
-            </ThemeProvider>
-          </div>
-          {showModal.edit && (
-            <SalarySlipEditModal
-              show={showModal.edit}
-              onHide={closeModal}
-              data={selectedSalarySlip}
-              onUpdateSuccess={fetchData}
-            />
-          )}
-          {showModal.add && (
-            <SalarySlipAddModal
-              show={showModal.add}
-              onHide={closeModal}
-              onAddSuccess={fetchData}
-              selectedUserId={selectedSalarySlip?.userId}
-            />
-          )}
-          {showModal.delete && (
-            <SalarySlipDeleteModal
-              show={showModal.delete}
-              onHide={closeModal}
-              salarySlipId={selectedSalarySlip.id}
-              onDeleteSuccess={fetchData}
-            />
-          )}
-          {showModal.preview && (
-            <SalarySlipPreviewModal
-              show={showModal.preview}
-              onHide={closeModal}
-              data={selectedSalarySlip}
-            />
-          )}
-        </div>
-      </div>
+    <div>
+      <Card.Header>
+        <button
+         className="dashboard-icons mx-1 mb-1"
+          onClick={() => handleModalShow("add")}
+        >
+          <i className="fa fa-plus"></i> Add Salary Slip
+        </button>
+        <button
+       className="dashboard-icons mx-1 mb-1"
+          onClick={() => downloadCSV(salarySlips, {})}
+        >
+          <i className="fa fa-download"></i> Export CSV
+        </button>
+      </Card.Header>
+      <Card.Body>
+        <Table bordered hover responsive>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Month</th>
+              <th>Basic Salary</th>
+              <th>HRA</th>
+              <th>Conveyance Allowance</th>
+              <th>Special Allowance</th>
+              <th>Medical Allowance</th>
+              <th>Total Earnings</th>
+              <th>TDS</th>
+              <th>Professional Tax</th>
+              <th>Employee PF</th>
+              <th>Other Deductions</th>
+              <th>Total Deductions</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {salarySlips.map((slip) => (
+              <tr key={slip.id}>
+                <td>{slip.id}</td>
+                <td>{slip.name}</td>
+                <td>{moment(slip.month, "M, YYYY").format("MMM-YYYY")}</td>
+                <td>{slip.basic_salary}</td>
+                <td>{slip.hra}</td>
+                <td>{slip.conveyance_allowance}</td>
+                <td>{slip.special_allowance}</td>
+                <td>{slip.medical_allowance}</td>
+                <td>{slip.total_earnings}</td>
+                <td>{slip.tds}</td>
+                <td>{slip.professional_tax}</td>
+                <td>{slip.employee_pf}</td>
+                <td>{slip.other_deductions}</td>
+                <td>{slip.total_deductions}</td>
+                <td>
+                  <div style={{ display: "flex", gap: "5px" }}>
+                    <Button
+                      variant="light"
+                      onClick={() => handleModalShow("edit", slip)}
+                      className="sm"
+                    >
+                      <i className="fa fa-edit"></i>
+                    </Button>
+                    <Button
+                      variant="light"
+                      onClick={() => handleModalShow("delete", slip)}
+                      className="sm"
+                    >
+                      <i className="fa fa-trash"></i>
+                    </Button>
+                    <Button
+                      variant="light"
+                      onClick={() => handleModalShow("preview", slip)}
+                      className="sm"
+                    >
+                      <i className="fa fa-eye"></i>
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Card.Body>
+
+      {showModal.add && <SalarySlipAddModal show={showModal.add} onHide={closeModal} onSuccess={fetchData} />}
+      {showModal.edit && <SalarySlipEditModal show={showModal.edit} onHide={closeModal} slip={selectedSalarySlip} onSuccess={fetchData} />}
+      {showModal.delete && <SalarySlipDeleteModal show={showModal.delete} onHide={closeModal} slip={selectedSalarySlip} onDeleteSuccess={fetchData} />}
+      {showModal.preview && (
+        <SalarySlipPreviewModal
+          show={showModal.preview}
+          onHide={closeModal}
+          data={selectedSalarySlip}
+        />
+      )}
     </div>
   );
 };

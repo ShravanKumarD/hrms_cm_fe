@@ -1,23 +1,55 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from 'react-router-dom';
 import axios from "axios";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import moment from "moment";
+
 import TimesheetMini from "./../components-mini/TimesheetMini";
 import RecentAnnouncements from "./RecentAnnouncements";
 import API_BASE_URL from "../env";
+
+import {
+  FaMoneyBill,
+  FaBell,
+  FaAngleLeft,
+  FaBriefcase,
+  FaList,
+  FaPlus,
+  FaUsers,
+  FaBuilding,
+  FaFileInvoiceDollar,
+  FaFileSignature,
+  FaFileExport,
+  FaMoneyCheck,
+  FaShoppingCart,
+  FaFileInvoice,
+  FaHollyBerry,
+  FaCalendarAlt,
+  FaUserClock,
+  FaBellSlash,
+} from "react-icons/fa";
 
 const Dashboard = () => {
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [disabledButtons, setDisabledButtons] = useState({});
   const [userNames, setUserNames] = useState({});
+  const [users, setUsers] = useState([]);
   const [showModal1, setShowModal1] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
   const [showModal3, setShowModal3] = useState(false);
+  const [attendances, setAttendances] = useState([]);
   const [todaysCount, setTodaysCount] = useState(0);
+  const [absentCount, setAbsentCount] = useState(0);
+  const [monthlyAttendance, setMonthlyAttendance] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
   const [empCount, setEmpCount] = useState(0);
+  const modal1Ref = useRef(null);
+  const modal2Ref = useRef(null);
+  const modal3Ref = useRef(null);
+  const button1Ref = useRef(null);
+  const button2Ref = useRef(null);
+  const button3Ref = useRef(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -25,7 +57,7 @@ const Dashboard = () => {
     axios.defaults.baseURL = API_BASE_URL;
     fetchApplications(token);
     fetchUsers(token);
-    fetchAttendance(token);
+    fetchData(token);
   }, [location]);
 
   const fetchApplications = async (token) => {
@@ -42,76 +74,132 @@ const Dashboard = () => {
         }));
 
       setFilteredApplications(formattedApplications.reverse());
-      fetchUserNames([...new Set(formattedApplications.map(app => app.userId))]);
+      const userIds = [...new Set(formattedApplications.map(app => app.userId))];
+      fetchUserNames(userIds);
       setDisabledButtons(formattedApplications.reduce((acc, app) => {
         acc[app.id] = app.status !== "Pending";
         return acc;
       }, {}));
     } catch (err) {
-      console.error(err.response?.data?.message || "Error occurred");
+      console.error(err.response?.data?.message || "An error occurred");
     }
   };
 
-  const fetchUsers = async (token) => {
+  const fetchUsers = useCallback(async (token) => {
     try {
       const res = await axios.get("/api/users", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEmpCount(res.data.length);
+      setUsers(res.data);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, []);
 
-  const fetchAttendance = async (token) => {
+  const fetchData = useCallback(async (token) => {
     try {
-      const res = await axios.get("/api/attendance", {
+      const response = await axios.get("/api/attendance", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const formattedAttendances = res.data.map(att => ({
-        ...att,
-        date: moment(att.date).format("YYYY-MM-DD"),
+
+      const formattedAttendances = response.data.map((attendance) => ({
+        ...attendance,
+        date: moment(attendance.date).format("YYYY-MM-DD"),
+        clockinTime: attendance.clockinTime
+          ? moment(attendance.clockinTime).format("hh:mm A")
+          : "",
+        clockoutTime: attendance.clockoutTime
+          ? moment(attendance.clockoutTime).format("hh:mm A")
+          : "",
       }));
-      const todaysCount = formattedAttendances.filter(att => moment(att.date).isSame(moment(), 'day')).length;
-      setTodaysCount(todaysCount);
+
+      setAttendances(formattedAttendances.reverse());
+      const today = moment().startOf("day");
+      const todaysAttendance = formattedAttendances.filter((attendance) =>
+        moment(attendance.date).isSame(today, "day")
+      );
+      setTodaysCount(todaysAttendance.length);
+
+      const monthlyData = {};
+      formattedAttendances.forEach((att) => {
+        const monthYear = moment(att.date).format("YYYY-MM");
+        const day = moment(att.date).format("DD");
+
+        monthlyData[monthYear] = monthlyData[monthYear] || {};
+        monthlyData[monthYear][day] = (monthlyData[monthYear][day] || 0) + 1;
+      });
+
+      const monthlyAttendance = Object.entries(monthlyData).map(
+        ([monthYear, days]) => ({
+          monthYear,
+          days: Object.entries(days).map(([day, count]) => ({ day, count })),
+        })
+      );
+
+      setMonthlyAttendance(monthlyAttendance);
       const employeeNames = [...new Set(formattedAttendances.map(att => att.user.fullName))];
       setEmployeeList(employeeNames);
-    } catch (err) {
-      console.error("Failed to fetch attendance:", err);
+    } catch (error) {
+      console.error("Failed to fetch attendance records:", error);
     }
-  };
+  }, []);
+
+  const absentCountToday = empCount - todaysCount;
+
+  const handleStatusChange = useCallback((app, status) => {
+    axios.defaults.baseURL = API_BASE_URL;
+    axios
+      .put(`/api/applications/${app.id}`, { status }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then(() => {
+        setFilteredApplications(prev => prev.map(item => item.id === app.id ? { ...item, status } : item));
+        setDisabledButtons(prev => ({
+          ...prev,
+          [app.id]: status !== "Pending"
+        }));
+      })
+      .catch((err) => {
+        console.error(err.response?.data?.message || "An error occurred");
+      });
+  }, []);
 
   const fetchUserNames = async (userIds) => {
     try {
-      const responses = await Promise.all(userIds.map(userId =>
+      const userNameRequests = userIds.map(userId =>
         axios.get(`/api/users/${userId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
-      ));
-      setUserNames(responses.reduce((acc, res) => {
+      );
+      const responses = await Promise.all(userNameRequests);
+      const nameMap = responses.reduce((acc, res) => {
         acc[res.data.id] = res.data.fullName;
         return acc;
-      }, {}));
+      }, {});
+
+      setUserNames(nameMap);
     } catch (error) {
       console.error("Error fetching user names:", error);
     }
   };
 
-  const handleStatusChange = (app, status) => {
-    axios.put(`/api/applications/${app.id}`, { status }, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then(() => {
-        setFilteredApplications(prev => prev.map(item => item.id === app.id ? { ...item, status } : item));
-        setDisabledButtons(prev => ({ ...prev, [app.id]: status !== "Pending" }));
-      })
-      .catch(err => console.error(err.response?.data?.message || "Error occurred"));
+  const handleShowModal = (modalSetter, buttonRef, modalRef) => {
+    modalSetter(true);
+    positionModal(buttonRef.current, modalRef.current);
   };
-
-  const absentCountToday = empCount - todaysCount;
 
   const handleCloseModal = (modalSetter) => {
     modalSetter(false);
+  };
+
+  const positionModal = (buttonElement, modalElement) => {
+    if (buttonElement && modalElement) {
+      const buttonRect = buttonElement.getBoundingClientRect();
+      modalElement.style.position = 'absolute';
+      modalElement.style.top = `${buttonRect.top}px`;
+      modalElement.style.left = `${buttonRect.left - modalElement.offsetWidth - 10}px`;
+    }
   };
 
   return (
@@ -121,15 +209,14 @@ const Dashboard = () => {
           <TimesheetMini />
         </div>
         <div className="col-sm-2 pt-4">
-          <button className="dashboard-icons" onClick={() => setShowModal1(true)}>Applications</button>
+          <button ref={button1Ref} className="dashboard-icons" onClick={() => handleShowModal(setShowModal1, button1Ref, modal1Ref)}>Applications</button>
           <p>&nbsp;</p>
-          <button className="dashboard-icons" onClick={() => setShowModal2(true)}>Announcements</button>
+          <button ref={button2Ref} className="dashboard-icons" onClick={() => handleShowModal(setShowModal2, button2Ref, modal2Ref)}>Announcements</button>
           <p>&nbsp;</p>
-          <button className="dashboard-icons" onClick={() => setShowModal3(true)}>Daily Workforce Summary</button>
+          <button ref={button3Ref} className="dashboard-icons" onClick={() => handleShowModal(setShowModal3, button3Ref, modal3Ref)}>Daily Workforce Summary</button>
         </div>
       </div>
 
-  
       {/* Modal for Applications */}
       <Modal show={showModal1} onHide={() => handleCloseModal(setShowModal1)} backdrop="static" className="modalApplications">
         <Modal.Header closeButton>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { ThemeProvider } from "styled-components";
 import API_BASE_URL from "../env";
 
 const RecentAnnouncements = () => {
@@ -13,18 +12,21 @@ const RecentAnnouncements = () => {
 
     if (deptId) {
       axios.defaults.baseURL = API_BASE_URL;
-      axios({
-        method: "get",
-        url: "/api/departmentAnnouncements/recent/department/" + deptId,
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      }).then((res) => {
-        if (isMounted) {
-          const sortedAnnouncements = res.data.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          );
-          setRecentAnnouncements(sortedAnnouncements);
-        }
-      });
+      axios
+        .get(`/api/departmentAnnouncements/recent/department/${deptId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        })
+        .then((res) => {
+          if (isMounted) {
+            const sortedAnnouncements = res.data.sort(
+              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            );
+            setRecentAnnouncements(sortedAnnouncements);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching recent announcements:", error);
+        });
     }
 
     return () => {
@@ -32,22 +34,14 @@ const RecentAnnouncements = () => {
     };
   }, []);
 
-  const theme = {
-    calendarIcon: {
-      textColor: "white", // text color of the header and footer
-      primaryColor: "#0da472", // background of the header and footer
-      backgroundColor: "#fafafa",
-    },
-  };
-
   const days = [
+    "Sunday", // fixed index to start with Sunday
     "Monday",
     "Tuesday",
     "Wednesday",
     "Thursday",
     "Friday",
     "Saturday",
-    "Sunday",
   ];
 
   const monthNames = [
@@ -65,15 +59,18 @@ const RecentAnnouncements = () => {
     "December",
   ];
 
+  if (recentAnnouncements.length === 0) {
+    return null; // No announcements, hide the section
+  }
+
   return (
-    <div className="card"style={{backgroundColor:"#8adcd2"}}>
-      <div  style={{ textAlign: "center" }}></div>
-      <h3>Recent Announcements</h3>
+    <div className="card" style={{ backgroundColor: "#8adcd2" }}>
+      <h3 style={{ textAlign: "center" }}>Recent Announcements</h3>
       <ul>
         {recentAnnouncements.map((announcement) => (
           <li
-            style={{ listStyle: "none" }}
             key={announcement.id}
+            style={{ listStyle: "none" }}
             className="mb-2 mt-1"
           >
             <div className="float-left mr-2">
@@ -88,7 +85,7 @@ const RecentAnnouncements = () => {
             <span>
               <strong>{announcement.announcementTitle}</strong>
             </span>
-            <br className="p-1" />
+            <br />
             <small>{announcement.announcementDescription}</small>
             <hr className="pt-2 pb-1 mb-0" />
           </li>
