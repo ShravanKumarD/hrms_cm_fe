@@ -48,7 +48,7 @@ const Login = () => {
     try {
       axios.defaults.baseURL = API_BASE_URL;
       const res = await axios.post("/login", user);
-      localStorage.setItem("token", res.data.token);
+        .setItem("token", res.data.token);
       setDone(true);
     } catch (err) {
       console.error(err);

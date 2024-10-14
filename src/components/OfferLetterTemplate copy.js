@@ -7,6 +7,7 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 import API_BASE_URL from "../env";
 import waterMark from "./../assets/10.png";
 import html2canvas from "html2canvas";
+import "./OfferletterTable.css";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const OfferLetterTemplate = forwardRef(({
@@ -18,7 +19,7 @@ const OfferLetterTemplate = forwardRef(({
   stipend,
   startDate,
   hrName,
-  sender_title,
+  sender_title,props
 }, ref) => {
   const [showSlip, setShowSlip] = useState(false);
   const [user, setUser] = useState({});
@@ -26,7 +27,8 @@ const OfferLetterTemplate = forwardRef(({
   const toggleSlip = () => {
     setShowSlip((prevShowSlip) => !prevShowSlip);
   };
-
+let compensationDetails=JSON.parse(localStorage.getItem('compensationDetails'));
+console.log(compensationDetails,'compensationDetails')
   // const downloadPDF = async () => {
   //   if (pageRefs.current && pageRefs.current.length > 0) {
   //     try {
@@ -74,6 +76,7 @@ const OfferLetterTemplate = forwardRef(({
   // };
 
   const downloadPDF = async () => {
+    localStorage.removeItem('compensationDetails');
     if (pageRefs.current && pageRefs.current.length > 0) {
       try {
         await new Promise(resolve => requestAnimationFrame(resolve));
@@ -167,19 +170,24 @@ const OfferLetterTemplate = forwardRef(({
   };
 
   return (
-    <div>
-      <Card>
-        <Card.Body>
-          <Row className="mt-3">
-            <Col>
-              <Button onClick={toggleSlip}>
-                {showSlip ? "Hide Offer Letter" : "Show Offer Letter"}
-              </Button>
-            </Col>
-            <Col>
-              <Button onClick={downloadPDF}>Download PDF</Button>
-            </Col>
-          </Row>
+        <>
+  <div style={{ textAlign: "center", marginTop: "20px", }}>
+   <Row>
+<Col>
+  <button className="dashboard-icons" onClick={toggleSlip}>
+    {showSlip ? "Hide Salary Slip" : "Show Salary Slip"}
+  </button>
+  </Col>
+  <Col>
+  <button className="dashboard-icons" onClick={downloadPDF} style={{ marginLeft: "10px" }}>
+    Download PDF
+  </button>
+  </Col>
+  </Row>
+</div>
+
+
+<Card.Body>
           {showSlip && (
             <>
               <Row>
@@ -522,167 +530,11 @@ const OfferLetterTemplate = forwardRef(({
                         when deemed necessary.
                       </li>
                     </ul>
-
-                    <h2>COMPENSATION STRUCTURE</h2>
-                    <table>
-                      <tr>
-                        <th class="header">Employee Name</th>
-                        <th class="header">Date of Joining</th>
-                        <th class="header">Designation</th>
-                        <th class="header" colspan="2">
-                          Salary & Benefits Structure
-                        </th>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>Salary PM</td>
-                        <td>Salary PA</td>
-                      </tr>
-                      <tr>
-                        <td class="section-title" colspan="5">
-                          A) Fixed Pay
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="header">Basic</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                      </tr>
-                      <tr>
-                        <td class="header">House Rent Allowance</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                      </tr>
-                      <tr>
-                        <td class="header">Medical Allowance</td>
-                        <td>1,250</td>
-                        <td>15,000</td>
-                        <td>1,250</td>
-                        <td>15,000</td>
-                      </tr>
-                      <tr>
-                        <td class="header">Conveyance Allowance</td>
-                        <td>1,600</td>
-                        <td>19,200</td>
-                        <td>1,600</td>
-                        <td>19,200</td>
-                      </tr>
-                      <tr>
-                        <td class="header">Special Allowance</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                      </tr>
-                      <tr>
-                        <td class="header">Performance Bonus</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                      </tr>
-                      <tr>
-                        <td class="header">Gross Salary</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                      </tr>
-                      <tr>
-                        <td class="section-title" colspan="5">
-                          B) Deductions
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="header">Employee PF</td>
-                        <td>1,800</td>
-                        <td>21,600</td>
-                        <td>1,800</td>
-                        <td>21,600</td>
-                      </tr>
-                      <tr>
-                        <td class="header">Professional Tax</td>
-                        <td>200</td>
-                        <td>2,400</td>
-                        <td>200</td>
-                        <td>2,400</td>
-                      </tr>
-                      <tr>
-                        <td class="header">TDS</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td class="header">Total Deductions</td>
-                        <td>2,000</td>
-                        <td>24,000</td>
-                        <td>2,000</td>
-                        <td>24,000</td>
-                      </tr>
-                      <tr>
-                        <td class="section-title" colspan="5">
-                          Net Salary
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="header">Net Salary</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                      </tr>
-                      <tr>
-                        <td class="section-title" colspan="5">
-                          C) Other Benefits (Not Paid in Cash)
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="header">
-                          Provident Fund (Employer's Contribution)
-                        </td>
-                        <td>1,800</td>
-                        <td>21,600</td>
-                        <td>1,800</td>
-                        <td>21,600</td>
-                      </tr>
-                      <tr>
-                        <td class="header">Total</td>
-                        <td>1,800</td>
-                        <td>21,600</td>
-                        <td>1,800</td>
-                        <td>21,600</td>
-                      </tr>
-                      <tr>
-                        <td class="section-title" colspan="5">
-                          Cost to Company (CTC = A + C)
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="header">Cost to Company (CTC)</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                      </tr>
-                    </table>
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                <p>&nbsp;</p>
-                <p>&nbsp;</p>
-                <div ref={el => (pageRefs.current[4] = el)} style={pageStyle}>
-                    <div style={waterMarkStyle}></div>
-                    <p> Yours faithfully</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p> Yours faithfully</p>
                     <p>
                       <strong>Human Resource Department</strong>
                     </p>
@@ -699,20 +551,138 @@ const OfferLetterTemplate = forwardRef(({
                     <p style={{ textAlign: "right" }}>
                       Signature of the Employee
                     </p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
                   
 
+
+                  {/* yours */}
+                  </div>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                <div ref={el => (pageRefs.current[4] = el)} style={pageStyle}>
+                    <div style={waterMarkStyle}></div>
+                    <h2>COMPENSATION STRUCTURE</h2>
+
+                    <table class="styled-table">
+  <tr>
+    <th></th>
+    <th>Date of Joining</th>
+    <th>Designation</th>
+    <th colspan="2">Salary & Benefits Structure</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>Salary PM</td>
+    <td>Salary PA</td>
+  </tr>
+  <tr>
+    <td colspan="5">A) Fixed Pay</td>
+  </tr>
+  <tr>
+    <td>Basic</td>
+    <td>-</td>
+    <td>-</td>
+    <td>66,666</td>
+    <td>7,99,992</td>
+  </tr>
+  <tr>
+    <td>House Rent Allowance</td>
+    <td>-</td>
+    <td>-</td>
+    <td>33,333</td>
+    <td>3,99,996</td>
+  </tr>
+  <tr>
+    <td>Medical Allowance</td>
+    <td>-</td>
+    <td>-</td>
+    <td>1,250</td>
+    <td>15,000</td>
+  </tr>
+  <tr>
+    <td>Conveyance Allowance</td>
+    <td>-</td>
+    <td>-</td>
+    <td>1,600</td>
+    <td>19,200</td>
+  </tr>
+  <tr>
+    <td>Special Allowance</td>
+    <td>-</td>
+    <td>-</td>
+    <td>47,151</td>
+    <td>5,65,812</td>
+  </tr>
+  <tr>
+    <td>Performance Bonus</td>
+    <td>-</td>
+    <td>-</td>
+    <td>16,666</td>
+    <td>1,99,992</td>
+  </tr>
+  <tr>
+    <td>Gross Salary</td>
+    <td>-</td>
+    <td>-</td>
+    <td>1,66,666</td>
+    <td>19,99,992</td>
+  </tr>
+  <tr>
+    <td colspan="5">B) Deductions</td>
+  </tr>
+  <tr>
+    <td>Provident Fund (Employer's Contribution)</td>
+    <td>-</td>
+    <td>-</td>
+    <td>7,999</td>
+    <td>95,988</td>
+  </tr>
+  <tr>
+    <td>Professional Tax</td>
+    <td>-</td>
+    <td>-</td>
+    <td>200</td>
+    <td>2,400</td>
+  </tr>
+  <tr>
+    <td>Income Tax</td>
+    <td>-</td>
+    <td>-</td>
+    <td>30,000</td>
+    <td>3,60,000</td>
+  </tr>
+  {/* <tr>
+    <td colspan="5">C) Other Benefits (Not Paid in Cash)</td>
+  </tr> */}
+  <tr>
+    <td>Total</td>
+    <td>-</td>
+    <td>-</td>
+    <td>1,66,666</td>
+    <td>19,99,992</td>
+  </tr>
+  <tr>
+    <td colspan="5">Cost to Company (CTC = A + C)</td>
+  </tr>
+  <tr>
+    <td>Cost to Company (CTC)</td>
+    <td>-</td>
+    <td>-</td>
+    <td>1,77,871</td>
+    <td>21,34,452</td>
+  </tr>
+</table>
+
+
+
+
+
+               
+<p>&nbsp;</p>
+                    <p>&nbsp;</p>
                     <hr />
                     <p style={{ textAlign: "center" }}>
                       4th Floor, B-Wing , Purva Summit, White field Road, Hitec
@@ -727,8 +697,7 @@ const OfferLetterTemplate = forwardRef(({
             </>
           )}
         </Card.Body>
-      </Card>
-    </div>
+      </>
   );
 });
 

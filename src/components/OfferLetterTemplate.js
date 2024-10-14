@@ -565,12 +565,10 @@ console.log(compensationDetails,'compensationDetails')
                     <h2>COMPENSATION STRUCTURE</h2>
                     <table class="styled-table">
   <tr>
-    <th class="header"></th>
-    <th class="header">Date of Joining</th>
-    <th class="header">Designation</th>
-    <th class="header" colspan="2">
-      Salary & Benefits Structure
-    </th>
+    <th></th>
+    <th>Date of Joining</th>
+    <th>Designation</th>
+    <th colspan="2">Salary & Benefits Structure</th>
   </tr>
   <tr>
     <td></td>
@@ -580,141 +578,100 @@ console.log(compensationDetails,'compensationDetails')
     <td>Salary PA</td>
   </tr>
   <tr>
-    <td class="section-title" colspan="5">
-      A) Fixed Pay
-    </td>
+    <td colspan="5">A) Fixed Pay</td>
   </tr>
   <tr>
-    <td class="header">Basic</td>
+    <td>Basic</td>
     <td>-</td>
     <td>-</td>
-    <td>{compensationDetails.basic}</td>
-    <td>-</td>
+    <td>66,666</td>
+    <td>7,99,992</td>
   </tr>
   <tr>
-    <td class="header">House Rent Allowance</td>
-    <td>-</td>
-    <td>-</td>
-    <td>{compensationDetails.houseRentAllowance}</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td class="header">Medical Allowance</td>
-    <td>{compensationDetails.medicalAllowance}</td>
-    <td>{compensationDetails.medicalAllowance * 12}</td>
-    <td>{compensationDetails.medicalAllowance}</td>
-    <td>{compensationDetails.medicalAllowance * 12}</td>
-  </tr>
-  <tr>
-    <td class="header">Conveyance Allowance</td>
-    <td>{compensationDetails.conveyanceAllowance}</td>
-    <td>{compensationDetails.conveyanceAllowance * 12}</td>
-    <td>{compensationDetails.conveyanceAllowance}</td>
-    <td>{compensationDetails.conveyanceAllowance * 12}</td>
-  </tr>
-  <tr>
-    <td class="header">Special Allowance</td>
+    <td>House Rent Allowance</td>
     <td>-</td>
     <td>-</td>
-    <td>{compensationDetails.specialAllowance}</td>
-    <td>-</td>
+    <td>33,333</td>
+    <td>3,99,996</td>
   </tr>
   <tr>
-    <td class="header">Performance Bonus</td>
-    <td>-</td>
-    <td>-</td>
-    <td>{compensationDetails.performanceBonus}</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td class="header">Gross Salary</td>
+    <td>Medical Allowance</td>
     <td>-</td>
     <td>-</td>
-    <td>{compensationDetails.grossSalary}</td>
-    <td>-</td>
+    <td>1,250</td>
+    <td>15,000</td>
   </tr>
   <tr>
-    <td class="section-title" colspan="5">
-      B) Deductions
-    </td>
-  </tr>
-  <tr>
-    <td class="header">Employee PF</td>
-    <td>{compensationDetails.employeePF}</td>
-    <td>{compensationDetails.employeePF * 12}</td>
-    <td>{compensationDetails.employeePF}</td>
-    <td>{compensationDetails.employeePF * 12}</td>
-  </tr>
-  <tr>
-    <td class="header">Professional Tax</td>
-    <td>{compensationDetails.professionalTax}</td>
-    <td>{compensationDetails.professionalTax * 12}</td>
-    <td>{compensationDetails.professionalTax}</td>
-    <td>{compensationDetails.professionalTax * 12}</td>
-  </tr>
-  <tr>
-    <td class="header">TDS</td>
-    <td>{compensationDetails.tds}</td>
-    <td>{compensationDetails.tds * 12}</td>
-    <td>{compensationDetails.tds}</td>
-    <td>{compensationDetails.tds * 12}</td>
-  </tr>
-  <tr>
-    <td class="header">Total Deductions</td>
-    <td>{compensationDetails.totalDeductions}</td>
-    <td>{compensationDetails.totalDeductions * 12}</td>
-    <td>{compensationDetails.totalDeductions}</td>
-    <td>{compensationDetails.totalDeductions * 12}</td>
-  </tr>
-  <tr>
-    <td class="section-title" colspan="5">
-      Net Salary
-    </td>
-  </tr>
-  <tr>
-    <td class="header">Net Salary</td>
-    <td>{compensationDetails.netSalary}</td>
-    <td>{compensationDetails.netSalary * 12}</td>
-    <td>{compensationDetails.netSalary}</td>
-    <td>{compensationDetails.netSalary * 12}</td>
-  </tr>
-  <tr>
-    <td class="section-title" colspan="5">
-      C) Other Benefits (Not Paid in Cash)
-    </td>
-  </tr>
-  <tr>
-    <td class="header">
-      Provident Fund (Employer's Contribution)
-    </td>
-    <td>{compensationDetails.providentFund}</td>
-    <td>{compensationDetails.providentFund * 12}</td>
-    <td>{compensationDetails.providentFund}</td>
-    <td>{compensationDetails.providentFund * 12}</td>
-  </tr>
-  <tr>
-    <td class="header">Total</td>
-    <td>{compensationDetails.providentFund}</td>
-    <td>{compensationDetails.providentFund * 12}</td>
-    <td>{compensationDetails.providentFund}</td>
-    <td>{compensationDetails.providentFund * 12}</td>
-  </tr>
-  <tr>
-    <td class="section-title" colspan="5">
-      Cost to Company (CTC = A + C)
-    </td>
-  </tr>
-  <tr>
-    <td class="header">Cost to Company (CTC)</td>
+    <td>Conveyance Allowance</td>
     <td>-</td>
     <td>-</td>
-    <td>{Number(compensationDetails.basic) +
-     Number(compensationDetails.houseRentAllowance) + 
-     Number(compensationDetails.medicalAllowance )+ 
-     Number(compensationDetails.conveyanceAllowance) + 
-     Number (    compensationDetails.specialAllowance )+
-     Number( compensationDetails.performanceBonus) +Number( compensationDetails.providentFund)}</td>
+    <td>1,600</td>
+    <td>19,200</td>
+  </tr>
+  <tr>
+    <td>Special Allowance</td>
     <td>-</td>
+    <td>-</td>
+    <td>47,151</td>
+    <td>5,65,812</td>
+  </tr>
+  <tr>
+    <td>Performance Bonus</td>
+    <td>-</td>
+    <td>-</td>
+    <td>16,666</td>
+    <td>1,99,992</td>
+  </tr>
+  <tr>
+    <td>Gross Salary</td>
+    <td>-</td>
+    <td>-</td>
+    <td>1,66,666</td>
+    <td>19,99,992</td>
+  </tr>
+  <tr>
+    <td colspan="5">B) Deductions</td>
+  </tr>
+  <tr>
+    <td>Provident Fund (Employer's Contribution)</td>
+    <td>-</td>
+    <td>-</td>
+    <td>7,999</td>
+    <td>95,988</td>
+  </tr>
+  <tr>
+    <td>Professional Tax</td>
+    <td>-</td>
+    <td>-</td>
+    <td>200</td>
+    <td>2,400</td>
+  </tr>
+  <tr>
+    <td>Income Tax</td>
+    <td>-</td>
+    <td>-</td>
+    <td>30,000</td>
+    <td>3,60,000</td>
+  </tr>
+  {/* <tr>
+    <td colspan="5">C) Other Benefits (Not Paid in Cash)</td>
+  </tr> */}
+  <tr>
+    <td>Total</td>
+    <td>-</td>
+    <td>-</td>
+    <td>1,66,666</td>
+    <td>19,99,992</td>
+  </tr>
+  <tr>
+    <td colspan="5">Cost to Company (CTC = A + C)</td>
+  </tr>
+  <tr>
+    <td>Cost to Company (CTC)</td>
+    <td>-</td>
+    <td>-</td>
+    <td>1,77,871</td>
+    <td>21,34,452</td>
   </tr>
 </table>
 

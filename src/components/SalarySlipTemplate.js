@@ -6,7 +6,7 @@ import axios from "axios";
 import API_BASE_URL from "../env";
 import moment from "moment";
 import jsPDF from "jspdf";
-import "./SalarySlip.css"
+import "./SalarySlip.css";
 
 let userData = null;
 
@@ -135,12 +135,12 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
 
         pdf.setFontSize(10);
         pdf.setProperties({
-          title: 'Salary slip',
-          author: 'Samcint Solutions Pvt. Ltd.',
-          subject: 'Salary slip Document',
-          keywords: 'Salary slip, samcint, employment'
+          title: "Salary slip",
+          author: "Samcint Solutions Pvt. Ltd.",
+          subject: "Salary slip Document",
+          keywords: "Salary slip, samcint, employment",
         });
-  
+
         // pdf.text(
         //   "This is a computer-generated payslip and does not require a signature or stamp.",
         //   pageWidth / 2,
@@ -148,7 +148,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
         //   { align: "center" }
         // );
 
-        pdf.save("SalarySlip.pdf");
+        pdf.save("MurthyBalaji_Aug.pdf");
       });
     } else {
       console.error("Print element not found");
@@ -187,7 +187,8 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
         </div>
         <div style={{ textAlign: "right" }}>
           <p style={{ margin: 0, fontWeight: "normal" }}>
-            Payslip for {moment(data.month, "M, YYYY").format("MMM, YYYY")}
+            {/* Payslip for {moment(data.month, "M, YYYY").format("MMM, YYYY")} */}
+            Payslip for Aug, 2024
           </p>
           <p style={{ margin: "5px 0 0 0", fontSize: "12px" }}>Amount in INR</p>
         </div>
@@ -202,41 +203,48 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
           {[
             [
               "Employee Code",
-              userData.username || "-",
+              "SSA001" || "-",
               "Employee Name",
-              data.name,
+              "Murthy Balaji",
             ],
             [
               "Bank",
-              userData.user_financial_info.bankName || "-",
+              // userData.user_financial_info.bankName || "-",
+              "ICICI Bank",
               "A/c No",
-              userData.user_financial_info.accountNumber || "-",
+              // userData.user_financial_info.accountNumber || "-",
+              "007501562762",
             ],
             [
               "DOJ",
-              // 2024-08-24
-              moment(data.date_of_joining, "YYYY-MM-DD").format("D MMM YYYY"),
+              "01-05-2015",
+              // moment(data.date_of_joining, "YYYY-MM-DD").format("D MMM YYYY"),
               "LOP Days",
-              `${30 - Number(data.daysWorked)}`,
+              // `${30 - Number(data.daysWorked)}`,
+              0,
             ],
             [
               "PF A/c No",
               data.pfAccountNumber || "-",
               "STD Days",
-              totalDaysInMonth,
+              // totalDaysInMonth,
+              31,
             ],
-            ["PF UAN", data.pfUAN || "-", "No. of Days Paid", data.daysWorked],
+            ["PF UAN", 100429297415 || "-", "No. of Days Paid", 31],
             [
               "Department",
-              userData.department?.departmentName ?? "",
+              // userData.department?.departmentName ?? "",
+              "Financial Planning and Analysis",
               "Designation",
-              userData.jobs?.[0]?.jobTitle ?? "",
+              // userData.jobs?.[0]?.jobTitle ?? "",
+              "Chief Financial Officer",
             ],
             [
               "Location",
-              data.address,
+              "Hyderabad",
+              // data.address,
               "Previous Month LOP",
-              data.previousMonthLop || "-",
+              0,
             ],
             [
               "ESI No",
@@ -259,7 +267,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
         </tbody>
       </Table>
 
-      <Table 
+      <Table
         bordered
         size="sm"
         className="mt-4"
@@ -268,7 +276,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
           lineHeight: "1.2",
           margin: "0",
           color: "black",
-          textAlign:"left"
+          textAlign: "left",
         }}
       >
         <thead style={{ backgroundColor: "#f0f0f0" }}>
@@ -281,42 +289,22 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
         </thead>
         <tbody>
           {[
-            ["Basic", data.basic_salary, "PF Employee Cont.", data.employee_pf],
-            [
-              "House Rent Allowance",
-              data.hra,
-              "Professional Tax",
-              data.professional_tax,
-            ],
-            [
-              "Children Education Allowance",
-              data.childrenEducationAllowance || "-",
-              "VPF",
-              data.vpf || "-",
-            ],
-            [
-              "Children Hostel Allowance",
-              data.childrenHostelAllowance || "-",
-              "Income Tax",
-              data.tds,
-            ],
-            ["Leave Travel Assistance", data.lta || "-", "", ""],
-            [
-              "Self-Owned Vehicle Expenses",
-              data.vehicleExpenses || "-",
-              "",
-              "",
-            ],
-            ["Medical", data.medical_allowance || "-", "", ""],
+            ["Basic", 200000, "PF Employee Cont.", 1800],
+            [ "House Rent Allowance", 100000, "Professional Tax",200,],
+            ["Special Allowance", 97150 || "-","Income Tax",77593,],
+            ["Conveyance Allowance", 1600 || "-","VPF",data.vpf || "-",],
+            ["Medical Allowance", 1250 || "-", "", ""],
+            ["Performance Bonus", 161682 || "-", "", ""],
+            ["Children Education Allowance", "-"],
+            [  "Children Hostel Allowance", "-"],
+       
+    
+           
+        
+            [ "Self-Owned Vehicle Expenses", data.vehicleExpenses || "-", "","",],
             ["Meal Allowance", data.mealAllowance || "-", "", ""],
             ["Flexi Allowance", data.flexiAllowance || "-", "", ""],
-            ["Performance Bonus", data.joiningBonus || "-", "", ""],
-            [
-              "Transportation Allowance",
-              data.conveyance_allowance || "-",
-              "",
-              "",
-            ],
+            ["Leave Travel Assistance", data.lta || "-", "", ""],
           ].map(
             (
               [earningsLabel, earningsValue, deductionsLabel, deductionsValue],
@@ -335,13 +323,13 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               <strong>GROSS EARNINGS</strong>
             </td>
             <td>
-              <strong>{data.total_earnings}</strong>
+              <strong>561682</strong>
             </td>
             <td>
               <strong>GROSS DEDUCTIONS</strong>
             </td>
             <td>
-              <strong>{data.total_deductions}</strong>
+              <strong>79593</strong>
             </td>
           </tr>
           <tr style={{ backgroundColor: "#f0f0f0" }}>
@@ -349,7 +337,7 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
               <strong>NET PAY</strong>
             </td>
             <td style={{ textAlign: "left" }}>
-              <strong>{netPay}</strong>
+              <strong>482089</strong>
             </td>
           </tr>
         </tbody>
@@ -371,21 +359,24 @@ const SalarySlipTemplate = React.forwardRef((props, ref) => {
   return (
     <>
       <Card.Body>
-      <div style={{ textAlign: "center", marginTop: "20px", }}>
-   <Row>
-<Col>
-  <button className="dashboard-icons" onClick={toggleSlip}>
-    {showSlip ? "Hide Salary Slip" : "Show Salary Slip"}
-  </button>
-  </Col>
-  <Col>
-  <button className="dashboard-icons" onClick={downloadPDF} style={{ marginLeft: "10px" }}>
-    Download PDF
-  </button>
-  </Col>
-  </Row>
-</div>
-
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <Row>
+            <Col>
+              <button className="dashboard-icons" onClick={toggleSlip}>
+                {showSlip ? "Hide Salary Slip" : "Show Salary Slip"}
+              </button>
+            </Col>
+            <Col>
+              <button
+                className="dashboard-icons"
+                onClick={downloadPDF}
+                style={{ marginLeft: "10px" }}
+              >
+                Download PDF
+              </button>
+            </Col>
+          </Row>
+        </div>
 
         {showSlip && (
           <>
